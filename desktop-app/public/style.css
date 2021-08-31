@@ -1,0 +1,29 @@
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: baseline;
+}
+html {
+	box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+html,
+body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+
+body {
+	font-family: 'Segoe UI', sans-serif;
+	background: #202225;
+	color: #fff;
+	border: 2px solid #202225;
+	box-shadow: 5px 10px #000000;
+	overflow-y: hidden;
+}
