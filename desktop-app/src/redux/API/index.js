@@ -1,7 +1,5 @@
 import axios from 'axios';
-const { SERVER_API_URL } = process.env;
-const API = axios.create({ baseURL: SERVER_API_URL });
-
+const API = axios.create({ baseURL: 'http://localhost:3001' });
 API.interceptors.request.use((req) => {
 	if (window.localStorage.getItem('access_token')) {
 		const token = window.localStorage.getItem('access_token');
@@ -11,5 +9,4 @@ API.interceptors.request.use((req) => {
 });
 
 //auth route
-export const login = (email, password) =>
-	API.get(`/auth/login?email=${email}&password=${password}`);
+export const login = (data) => API.post(`/auth/login`, data);

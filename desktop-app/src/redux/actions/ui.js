@@ -1,3 +1,4 @@
+import { CHANGE_MIC_STATE, CHANGE_VOLUME_STATE } from "../constants";
 const remote = window.require ? window.require('electron').remote : null;
 const WIN = remote.getCurrentWindow();
 
@@ -32,5 +33,19 @@ export const maximize = () => {
 		} catch (error) {
 			console.log(error);
 		}
+	};
+};
+
+export const changeVolumeState = () => {
+	return {
+		type: CHANGE_VOLUME_STATE,
+		payload: null,
+	};
+};
+
+export const changeMicState = () => {
+	return {
+		type: CHANGE_MIC_STATE,
+		payload: null,
 	};
 };

@@ -4,8 +4,10 @@ import { makeStyles } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import WindowControls from './components/WindowControls';
 import GuestRoute from './components/GuestRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 //views
 import Login from './views/Login';
+import Home from './views/Home';
 
 const useStyles = makeStyles((theme) => ({
 	app: {
@@ -29,6 +31,7 @@ const App = () => {
 			<WindowControls />
 			<Switch>
 				<GuestRoute path="/" exact component={Login} />
+				<ProtectedRoute path="/home" exact component={Home} />
 				<Route path="*" render={() => <Redirect to="/" />} />
 			</Switch>
 		</div>

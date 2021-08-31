@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	tittle: {
-        margin: theme.spacing(2),
+		margin: theme.spacing(2),
 		textAlign: 'left',
 		color: '#8e9297',
 		fontSize: '1.4rem',
@@ -130,11 +130,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = () => {
-    const dispatch = useDispatch();
+	const dispatch = useDispatch();
 	const [stateAuth, setStateAuth] = useState('login');
 	const [inputLogin, setInputLogin] = useState({
-		email: '',
-		password: '',
+		email: 'karlosagreda@hotmail.com',
+		password: '123456',
 	});
 	const [inputRegister, setInputRegister] = useState({
 		username: '',
@@ -165,8 +165,8 @@ const Login = () => {
 	};
 
 	const handleOnSubmitLogin = () => {
-        dispatch(login())
-    };
+		dispatch(login(inputLogin.email, inputLogin.password));
+	};
 	const handleOnSubmitRegister = () => {};
 	const handleOnSubmitRecoveryPassword = () => {};
 

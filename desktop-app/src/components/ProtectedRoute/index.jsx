@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
 
-const GuestRoute = ({ component: Component, ...restOfProps }) => {
+const ProtectedRoute = ({ component: Component, ...restOfProps }) => {
 	const { isAuthenticated } = useSelector((state) => state.auth);
 
 	return (
@@ -10,13 +10,13 @@ const GuestRoute = ({ component: Component, ...restOfProps }) => {
 			{...restOfProps}
 			render={(props) =>
 				isAuthenticated ? (
-					<Redirect to="/home" />
-				) : (
 					<Component {...restOfProps} {...props} />
+				) : (
+					<Redirect to="/" />
 				)
 			}
 		/>
 	);
 };
 
-export default GuestRoute;
+export default ProtectedRoute;

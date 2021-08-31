@@ -9,8 +9,8 @@ import {
 export const login = (email, password) => {
 	return async (dispatch) => {
 		try {
-			const response = await API.login(email, password);
-			if (response.data?.menssage === 'successful') {
+			const response = await API.login({ email, password });
+			if (response.data?.message === 'successful') {
 				console.log('user', response.data.user);
 				dispatch(setUser(response.data.user));
 				dispatch(setToken(response.data.token));
@@ -18,11 +18,10 @@ export const login = (email, password) => {
 				//dispatch(ConnectServerIO(token));
 			} else {
 				dispatch(logOut());
-				dispatch(setLoading(false));
 			}
-		} catch (_error) {
+		} catch (error) {
+			console.log("error login", error);
 			dispatch(logOut());
-			dispatch(setLoading(false));
 		}
 	};
 };

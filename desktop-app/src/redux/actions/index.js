@@ -1,2 +1,8 @@
-export { minimize, maximize, close } from './ui';
+export {
+	minimize,
+	maximize,
+	close,
+	changeVolumeState,
+	changeMicState,
+} from './ui';
 export { login, logOut } from './auth';
