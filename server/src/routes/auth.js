@@ -10,7 +10,7 @@ router.post('/login', async (req, res, next) => {
 	try {
 		const { email, password } = req.body;
 		if (email === '' || password === '') {
-			return res.json({
+			return res.status(400).json({
 				message: 'Bad request!',
 			});
 		}
@@ -20,12 +20,12 @@ router.post('/login', async (req, res, next) => {
 			},
 		});
 		if (!user) {
-			return res.json({
+			return res.status(400).json({
 				message: 'Bad request!',
 			});
 		}
 		if (!Bcrypt.compareSync(password, user.password)) {
-			return res.json({
+			return res.status(400).json({
 				message: 'Invalid password!',
 			});
 		}
@@ -33,7 +33,7 @@ router.post('/login', async (req, res, next) => {
 		const token = jwt.sign(organizedUser, SERVER_SECRET_KEY, {
 			expiresIn: 604800,
 		});
-		return res.json({
+		return res.status(200).json({
 			message: 'successful',
 			user: organizedUser,
 			token: token,

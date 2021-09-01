@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -10,10 +11,13 @@ import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
+import TextField from '@material-ui/core/TextField';
 
 //icons
 import CloseIcon from '@material-ui/icons/Close';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+//actions
+import { createGroup } from '../../../redux/actions';
 
 const DialogDeleteStyle = withStyles({
 	paper: {
@@ -33,10 +37,46 @@ const useStyles = makeStyles((theme) => ({
 	dialogActions: {
 		backgroundColor: '#f6f6f7',
 	},
-	center: {
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
+	center: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
+	centerInput: {
+		'paddingLeft': theme.spacing(6),
+		'paddingRight': theme.spacing(6),
+		'display': 'flex',
+		'alignItems': 'center',
+		'justifyContent': 'center',
+		'input': {
+			color: '#8e9297',
+			borderColor: '#8e9297',
+		},
+		'& label.Mui-focused': {
+			color: '#5865f2',
+			borderColor: '#8e9297',
+		},
+		'& .MuiInput-underline:after': {
+			borderBottomColor: '#8e9297',
+			color: '#5865f2',
+			borderColor: '#8e9297',
+		},
+		'& .MuiOutlinedInput-root': {
+			'& fieldset': {
+				color: '#5865f2',
+				borderColor: '#8e9297',
+			},
+			'&:hover fieldset': {
+				color: '#5865f2',
+				borderColor: '#8e9297',
+			},
+			'&.Mui-focused fieldset': {
+				color: '#5865f2',
+				borderColor: '#5865f2',
+			},
+		},
+		'& .Mui-error': {
+			color: '#8e9297',
+		},
+		'& .MuiFormHelperText-root': {
+			color: '#5865f2',
+		},
 	},
 	button: {
 		'fontSize': '1.0rem',
@@ -146,20 +186,42 @@ const useStyles = makeStyles((theme) => ({
 		padding: theme.spacing(0),
 		margin: theme.spacing(0),
 	},
+	input: {
+		fontWeight: 'bold',
+		padding: theme.spacing(0),
+		width: '100%',
+		marginTop: '6px',
+		marginBottom: '0px',
+		fontSize: '0.8rem',
+		color: '#5865f2',
+		borderColor: '#8e9297',
+	},
 }));
 
 const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 	const classes = useStyles();
+	const dispatch = useDispatch();
 	const [state, setState] = useState('createOrAdd');
+	const [name, setName] = useState('');
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [previewImage, setPreviewImage] = useState(null);
 
 	const handleOnConfirmCreate = () => {
-		//onConfirm(ID);
+		if (selectedFile && name !== '') {
+			dispatch(createGroup(selectedFile, name));
+			setState('createOrAdd');
+			setPreviewImage(null);
+			setSelectedFile(null);
+			setName('');
+		}
+	};
+
+	const handleOnChangeName = (e) => {
+		setName(e.target.value);
 	};
 
 	const handleOnConfirmAdd = () => {
-		//onConfirm(ID);
+		//AddGroup
 	};
 
 	const handleOnCancel = () => {
@@ -174,8 +236,10 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 	};
 
 	const onFileChange = (event) => {
-		setSelectedFile(event.target.files[0]);
-		setPreviewImage(URL.createObjectURL(event.target.files[0]));
+		if (event.target.files[0]) {
+			setSelectedFile(event.target.files[0]);
+			setPreviewImage(URL.createObjectURL(event.target.files[0]));
+		}
 	};
 
 	return (
@@ -246,42 +310,60 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 										onChange={onFileChange}
 									/>
 									{selectedFile === null ? (
-										<>
-											<label
-												htmlFor="raised-button-file"
-												className={classes.centerPhoto}
+										<label
+											htmlFor="raised-button-file"
+											className={classes.centerPhoto}
+										>
+											<IconButton
+												component="span"
+												color="inherit"
+												className={classes.buttonPhoto}
 											>
-												<IconButton
-													component="span"
-													color="inherit"
-													className={classes.buttonPhoto}
-												>
-													<PhotoCameraIcon className={classes.iconPhoto} />
-												</IconButton>
-											</label>
-										</>
+												<PhotoCameraIcon className={classes.iconPhoto} />
+											</IconButton>
+										</label>
 									) : (
-										<>
-											<label
-												htmlFor="raised-button-file"
-												className={classes.centerPhoto}
+										<label
+											htmlFor="raised-button-file"
+											className={classes.centerPhoto}
+										>
+											<IconButton
+												component="span"
+												color="inherit"
+												className={classes.buttonPhoto}
 											>
-												<IconButton
-													component="span"
-													color="inherit"
-													className={classes.buttonPhoto}
-												>
-													{selectedFile && (
-														<Avatar
-															alt="previewImage"
-															src={previewImage}
-															className={classes.previewImage}
-														/>
-													)}
-												</IconButton>
-											</label>
-										</>
+												{selectedFile && (
+													<Avatar
+														alt="previewImage"
+														src={previewImage}
+														className={classes.previewImage}
+													/>
+												)}
+											</IconButton>
+										</label>
 									)}
+								</div>
+								<div className={classes.centerInput}>
+									<TextField
+										className={classes.input}
+										label="Nombre"
+										type="text"
+										autoComplete="current-password"
+										variant="outlined"
+										value={name}
+										onChange={handleOnChangeName}
+										InputProps={{
+											className: classes.input,
+										}}
+										InputLabelProps={{
+											className: classes.input,
+										}}
+									/>
+								</div>
+								<div className={classes.center}>
+									<Typography className={classes.text}>
+										Al crear un servidor aceptas las Directivas de la comunidad.
+									</Typography>
 								</div>
 							</>
 						)}

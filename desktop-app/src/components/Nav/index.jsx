@@ -19,7 +19,11 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SoundConfirm from './../../assets/sounds/confirm.wav';
 import SoundCancel from './../../assets/sounds/cancel.wav';
 //actions
-import { changeMicState, changeVolumeState } from '../../redux/actions';
+import {
+	changeMicState,
+	changeVolumeState,
+	setOpenAddGroup,
+} from '../../redux/actions';
 //dialogs
 import DialogAddGroup from './components/DialogCreateOrAddGroup';
 
@@ -132,8 +136,7 @@ const Nav = () => {
 	const [playCancelConfirm] = useSound(SoundCancel);
 	const classes = useStyles();
 	const { user } = useSelector((state) => state.auth);
-	const { volume, mic } = useSelector((state) => state.ui);
-	const [openAddGroup, setOpenAddGroup] = useState(false);
+	const { volume, mic, openAddGroup } = useSelector((state) => state.ui);
 
 	const handleOnChangeMic = () => {
 		if (mic) {
@@ -154,11 +157,11 @@ const Nav = () => {
 	};
 
 	const handleOnAddGroup = () => {
-		setOpenAddGroup(true);
+		dispatch(setOpenAddGroup(true));
 	};
 
 	const handleOnCloseAddGroup = () => {
-		setOpenAddGroup(false);
+		dispatch(setOpenAddGroup(false));
 	};
 
 	return (

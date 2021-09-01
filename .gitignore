@@ -1,6 +1,7 @@
 # Photoshop directories
 psd/
-
+# images upload directories
+imagesUpload/
 # Logs
 logs
 *.log
