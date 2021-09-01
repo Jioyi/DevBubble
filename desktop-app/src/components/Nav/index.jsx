@@ -10,16 +10,18 @@ import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import Avatar from '@material-ui/core/Avatar';
 //icons
-import MenuIcon from '@material-ui/icons/Menu';
 import MicIcon from '@material-ui/icons/Mic';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 //sounds
 import SoundConfirm from './../../assets/sounds/confirm.wav';
 import SoundCancel from './../../assets/sounds/cancel.wav';
 //actions
 import { changeMicState, changeVolumeState } from '../../redux/actions';
+//dialogs
+import DialogAddGroup from './components/DialogCreateOrAddGroup';
 
 const drawerWidth = 220;
 
@@ -34,12 +36,25 @@ const useStyles = makeStyles((theme) => ({
 		zIndex: theme.zIndex.drawer + 1,
 	},
 	toolbar: {
+		borderRight: '2px solid #202225',
+		borderBottom: '2px solid #202225',
 		padding: theme.spacing(0),
 		margin: theme.spacing(0),
 		minHeight: '20px',
 	},
-	menuButton: {
-		fontSize: '2rem',
+	icon: {
+		'margin': '6px',
+		'color': '#747f8d',
+		'&:hover': {
+			color: '#ffffff',
+		},
+	},
+	iconButton: {
+		'padding': theme.spacing(0),
+		'margin': '6px',
+		'&:hover': {
+			backgroundColor: '#32353a',
+		},
 	},
 	maxWidth: {
 		flexGrow: 1,
@@ -50,10 +65,11 @@ const useStyles = makeStyles((theme) => ({
 		width: drawerWidth,
 	},
 	groupsToolbar: {
+		display: 'flex',
 		padding: theme.spacing(0),
 		margin: theme.spacing(0),
 		backgroundColor: '#2f3136',
-		width: drawerWidth,
+		width: `${drawerWidth}px`,
 	},
 	drawerEnd: {
 		position: 'fixed',
@@ -117,6 +133,7 @@ const Nav = () => {
 	const classes = useStyles();
 	const { user } = useSelector((state) => state.auth);
 	const { volume, mic } = useSelector((state) => state.ui);
+	const [openAddGroup, setOpenAddGroup] = useState(false);
 
 	const handleOnChangeMic = () => {
 		if (mic) {
@@ -136,14 +153,32 @@ const Nav = () => {
 		dispatch(changeVolumeState());
 	};
 
+	const handleOnAddGroup = () => {
+		setOpenAddGroup(true);
+	};
+
+	const handleOnCloseAddGroup = () => {
+		setOpenAddGroup(false);
+	};
+
 	return (
 		<div className={classes.root}>
 			<AppBar position="fixed" className={classes.appBar}>
 				<Toolbar className={classes.toolbar}>
 					<div className={classes.groupsToolbar}>
-						<IconButton color="inherit" className={classes.menuButton}>
-							<MenuIcon />
+						<div>logo</div>
+						<div className={classes.maxWidth}>max</div>
+						<IconButton
+							color="inherit"
+							onClick={handleOnAddGroup}
+							className={classes.iconButton}
+						>
+							<AddCircleIcon className={classes.icon} />
 						</IconButton>
+						<DialogAddGroup
+							open={openAddGroup}
+							onCancel={handleOnCloseAddGroup}
+						></DialogAddGroup>
 					</div>
 					<div className={classes.maxWidth}>max</div>
 					<div>logo</div>

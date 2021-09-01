@@ -10,8 +10,6 @@ const token = window.localStorage.getItem('access_token');
 const userEmpy = {
 	ID: null,
 };
-console.log("user store:", user);
-console.log("token store:", token);
 const initialState = {
 	user: user ? user : userEmpy,
 	token: token ? token : null,

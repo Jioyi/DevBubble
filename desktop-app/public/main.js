@@ -14,10 +14,10 @@ const createWindow = () => {
 		nativeWindowOpen: true,
 		backgroundColor: '#202225',
 		webPreferences: {
+			enableRemoteModule: true,
 			contextIsolation: false,
 			nodeIntegration: true,
 			nodeIntegrationInWorker: true,
-			enableRemoteModule: true,
 		},
 	});
 	mainWindow.loadURL('http://localhost:3000');
