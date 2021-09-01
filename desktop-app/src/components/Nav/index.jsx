@@ -25,7 +25,7 @@ import {
 	setOpenAddGroup,
 } from '../../redux/actions';
 //dialogs
-import DialogAddGroup from './components/DialogCreateOrAddGroup';
+import DialogCreateOrAddGroup from './components/DialogCreateOrAddGroup';
 
 const drawerWidth = 220;
 
@@ -178,10 +178,10 @@ const Nav = () => {
 						>
 							<AddCircleIcon className={classes.icon} />
 						</IconButton>
-						<DialogAddGroup
+						<DialogCreateOrAddGroup
 							open={openAddGroup}
 							onCancel={handleOnCloseAddGroup}
-						></DialogAddGroup>
+						></DialogCreateOrAddGroup>
 					</div>
 					<div className={classes.maxWidth}>max</div>
 					<div>logo</div>

@@ -11,10 +11,13 @@ export const createGroup = (image, name) => {
 			if (response.data?.message === 'successful') {
 				dispatch(setOpenAddGroup(false));
 			} else {
-				//
+				dispatch(setOpenAddGroup(false));
+				//mostrar un error
 			}
 		} catch (error) {
 			console.log('error create group', error);
+			dispatch(setOpenAddGroup(false));
+				//mostrar un error
 		}
 	};
 };

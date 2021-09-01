@@ -41,7 +41,7 @@ const Home = () => {
 			<div className={classes.offset}></div>
 			<Nav />
 			<div className={classes.page}>
-				<Typography className={classes.tittle}>Homess</Typography>
+				<Typography className={classes.tittle}>Home</Typography>
 			</div>
 		</Paper>
 	);

@@ -254,7 +254,6 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 					</IconButton>
 				</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
 						{state === 'createOrAdd' && (
 							<>
 								<Typography className={classes.tittle}>
@@ -315,7 +314,7 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 											className={classes.centerPhoto}
 										>
 											<IconButton
-												component="span"
+												component={'span'}
 												color="inherit"
 												className={classes.buttonPhoto}
 											>
@@ -328,7 +327,7 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 											className={classes.centerPhoto}
 										>
 											<IconButton
-												component="span"
+												component={'span'}
 												color="inherit"
 												className={classes.buttonPhoto}
 											>
@@ -346,7 +345,6 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 								<div className={classes.centerInput}>
 									<TextField
 										className={classes.input}
-										label="Nombre"
 										type="text"
 										autoComplete="current-password"
 										variant="outlined"
@@ -367,7 +365,6 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 								</div>
 							</>
 						)}
-					</DialogContentText>
 				</DialogContent>
 				<DialogActions className={classes.dialogActions}>
 					{state === 'create' && (
