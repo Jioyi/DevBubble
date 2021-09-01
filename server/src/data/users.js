@@ -6,6 +6,11 @@ const users = [
 		email: 'karlosagreda@hotmail.com',
 		password: Bcrypt.hashSync("123456", 10),
 	},
+	{
+		ID: uuidv4(),
+		email: 'karlosagreda2@hotmail.com',
+		password: Bcrypt.hashSync("123456", 10),
+	},
 ];
 
 module.exports = users;
