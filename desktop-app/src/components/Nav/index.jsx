@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-//import { useHistory } from 'react-router-dom';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import useSound from 'use-sound';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,12 +7,10 @@ import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
-import Avatar from '@material-ui/core/Avatar';
 //icons
 import MicIcon from '@material-ui/icons/Mic';
-import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import HeadsetIcon from '@material-ui/icons/Headset';
 import SettingsIcon from '@material-ui/icons/Settings';
-import Brightness1Icon from '@material-ui/icons/Brightness1';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 //sounds
 import SoundConfirm from './../../assets/sounds/confirm.wav';
@@ -24,7 +21,8 @@ import {
 	changeVolumeState,
 	setOpenAddGroup,
 } from '../../redux/actions';
-//dialogs
+//components
+import MenuUserState from './components/MenuUserState';
 import DialogCreateOrAddGroup from './components/DialogCreateOrAddGroup';
 
 const drawerWidth = 220;
@@ -86,25 +84,6 @@ const useStyles = makeStyles((theme) => ({
 		bottom: 0,
 		width: `${drawerWidth}px`,
 		...theme.mixins.toolbar,
-	},
-	relative: {
-		position: 'relative',
-	},
-	avatar: {
-		marginLeft: '8px',
-	},
-	avatarStatus: {
-		position: 'absolute',
-		padding: theme.spacing(0),
-		right: -10,
-		bottom: -10,
-	},
-	iconAvatarStatus: {
-		stroke: '#292b2f',
-		strokeWidth: 4,
-		height: '20px',
-		width: '20px',
-		color: '#3ba55d',
 	},
 	iconSettings: {
 		'margin': '6px',
@@ -194,16 +173,7 @@ const Nav = () => {
 				}}
 			>
 				<div className={classes.drawerEnd}>
-					<div className={classes.relative}>
-						<Avatar
-							className={classes.avatar}
-							alt="user-picture"
-							src={`./avatar/${user.avatar}`}
-						/>
-						<div className={classes.avatarStatus}>
-							<Brightness1Icon className={classes.iconAvatarStatus} />
-						</div>
-					</div>
+					<MenuUserState user={user} />
 					<div className={classes.maxWidth}></div>
 					<IconButton
 						className={classes.buttonSettings}
@@ -220,7 +190,7 @@ const Nav = () => {
 						className={classes.buttonSettings}
 						onClick={handleOnChangeVolume}
 					>
-						<VolumeUpIcon
+						<HeadsetIcon
 							className={clsx({
 								[classes.iconSettings]: volume,
 								[classes.iconSettingsCancel]: !volume,

@@ -23,6 +23,11 @@ module.exports = (sequelize) => {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false,
 			},
+			state: {
+				type: DataTypes.ENUM,
+				values: ['connected', 'absent', 'doNotDisturb', 'invisible'],
+				defaultValue: 'connected',
+			},
 		},
 		{ timestamps: true }
 	);

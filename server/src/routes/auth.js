@@ -1,9 +1,9 @@
 const { Router } = require('express');
 const router = Router();
 const jwt = require('jsonwebtoken');
-const { organizeUser } = require('./../utils');
-const { User } = require('../db.js');
+const { User, Group } = require('../db.js');
 const Bcrypt = require('bcrypt');
+const { checkToken } = require('../security');
 const { SERVER_SECRET_KEY } = process.env;
 
 router.post('/login', async (req, res, next) => {
@@ -18,6 +18,17 @@ router.post('/login', async (req, res, next) => {
 			where: {
 				email: email,
 			},
+			attributes: ['ID', 'email', 'avatar', 'password', 'state'],
+			include: [
+				{
+					model: Group,
+					as: 'groups',
+					attributes: ['ID', 'name', 'image'],
+					through: {
+						attributes: [],
+					},
+				},
+			],
 		});
 		if (!user) {
 			return res.status(400).json({
@@ -29,13 +40,43 @@ router.post('/login', async (req, res, next) => {
 				message: 'Invalid password!',
 			});
 		}
-		const organizedUser = organizeUser(user);
-		const token = jwt.sign(organizedUser, SERVER_SECRET_KEY, {
+		let auxUser = user.toJSON();
+		delete auxUser.password;
+		const token = jwt.sign(auxUser, SERVER_SECRET_KEY, {
 			expiresIn: 604800,
 		});
 		return res.status(200).json({
 			message: 'successful',
-			user: organizedUser,
+			user: auxUser,
+			token: token,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+router.get('/check_token', checkToken, async (req, res, next) => {
+	try {
+		const user = await User.findOne({
+			where: { ID: req.user.ID },
+			attributes: ['ID', 'email', 'avatar', 'state'],
+			include: [
+				{
+					model: Group,
+					as: 'groups',
+					attributes: ['ID', 'name', 'image'],
+					through: {
+						attributes: [],
+					},
+				},
+			],
+		});
+		const token = jwt.sign(user.toJSON(), SERVER_SECRET_KEY, {
+			expiresIn: 604800,
+		});
+		return res.status(200).json({
+			message: 'successful',
+			user: user,
 			token: token,
 		});
 	} catch (error) {

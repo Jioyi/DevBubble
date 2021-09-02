@@ -6,16 +6,34 @@ import {
 	SET_LOADING,
 } from '../constants';
 
+export const checkToken = () => {
+	return async (dispatch) => {
+		try {
+			const response = await API.checkToken();
+			if (response.data?.message === 'successful') {
+				console.log('check', response.data.user);
+				dispatch(setUser(response.data.user));
+				dispatch(setToken(response.data.token));
+			} else {
+				dispatch(logOut());
+			}
+			dispatch(setLoading(false));
+		} catch (error) {
+			console.log("error checkToken", error);
+			dispatch(setLoading(false));
+		}
+	};
+};
+
 export const login = (email, password) => {
 	return async (dispatch) => {
 		try {
 			const response = await API.login({ email, password });
 			if (response.data?.message === 'successful') {
-				console.log('user', response.data.user);
+				console.log('login', response.data.user);
 				dispatch(setUser(response.data.user));
 				dispatch(setToken(response.data.token));
 				dispatch(setAuthenticate(true));
-				//dispatch(ConnectServerIO(token));
 			} else {
 				dispatch(logOut());
 			}

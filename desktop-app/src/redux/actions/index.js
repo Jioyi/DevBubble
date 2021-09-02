@@ -6,5 +6,5 @@ export {
 	changeMicState,
 	setOpenAddGroup
 } from './ui';
-export { login, logOut } from './auth';
+export { login, logOut, setLoading, checkToken } from './auth';
 export { createGroup } from './group';

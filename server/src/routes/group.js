@@ -5,7 +5,6 @@ const { User, Group } = require('../db.js');
 const middlewareUploadFile = require('../utils/middlewareUploadFile');
 const { v4: uuidv4 } = require('uuid');
 const sharp = require('sharp');
-const fs = require('fs');
 
 router.post('/', checkToken, middlewareUploadFile, async (req, res, next) => {
 	try {
@@ -21,7 +20,6 @@ router.post('/', checkToken, middlewareUploadFile, async (req, res, next) => {
 				.status(400)
 				.send({ message: 'Please, image missing for server!' });
 		}
-		console.log(req.file);
 		if (req.file.mimetype !== 'image/gif') {
 			sharp(req.file.path)
 				.resize(250)
@@ -34,17 +32,12 @@ router.post('/', checkToken, middlewareUploadFile, async (req, res, next) => {
 					}
 				);
 		}
-
 		const groupCreated = await Group.create({
 			ID: uuidv4(),
 			name: name,
 			image: image,
 		});
-		const user = await User.findOne({
-			//borrar cuando cambie lo de abajo
-			where: { email: req.user.email },
-		});
-		await groupCreated.setOwner(user.ID); //req.user.ID
+		await groupCreated.setOwner(req.user.ID);
 		return res.json({
 			message: 'successful',
 			server: groupCreated,

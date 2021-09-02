@@ -16,12 +16,14 @@ const ui = (state = initialState, action) => {
 		case CHANGE_VOLUME_STATE:
 			return {
 				...state,
+				mic: !state.volume ? true : false,
 				volume: !state.volume,
 			};
 		case CHANGE_MIC_STATE:
 			return {
 				...state,
 				mic: !state.mic,
+				volume: !state.mic ? true : state.volume,
 			};
 		case SET_OPEN_ADD_GROUP:
 			return {

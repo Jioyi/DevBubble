@@ -1,4 +1,10 @@
 const organizeUser = (user) => {
+	let groups = [];
+	if (user.groups !== null) {
+		for (let i in user.groups) {
+			groups.push(user.groups[i]);
+		}
+	}
 	/*let roles = [];
 	let permissions = [];
 	if (user.roles !== null) {
@@ -17,6 +23,8 @@ const organizeUser = (user) => {
 		ID: user.ID,
 		email: user.email,
 		avatar: user.avatar,
+		connected: user.connected,
+		groups: groups,
 	};
 };
 

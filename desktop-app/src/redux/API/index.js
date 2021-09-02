@@ -15,6 +15,7 @@ API.interceptors.request.use((req) => {
 
 //auth route
 export const login = (data) => API.post(`/auth/login`, data);
+export const checkToken = () => API.get(`/auth/check_token`);
 
 //group route
 export const createGroup = (data) =>
