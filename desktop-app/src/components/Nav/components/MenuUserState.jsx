@@ -14,7 +14,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 //actions
-import { logOut } from '../../../redux/actions';
+import { logOut, ChangeUserState } from '../../../redux/actions';
 const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',
@@ -30,13 +30,6 @@ const useStyles = makeStyles((theme) => ({
 		padding: theme.spacing(0),
 		right: -10,
 		bottom: -10,
-	},
-	iconAvatarStatus: {
-		stroke: '#292b2f',
-		strokeWidth: 4,
-		height: '20px',
-		width: '20px',
-		color: '#3ba55d',
 	},
 	userMenu: {
 		backgroundColor: '#2f3136',
@@ -66,9 +59,23 @@ const useStyles = makeStyles((theme) => ({
 		width: '16px',
 		color: '#3ba55d',
 	},
+	iconConnectStroke: {
+		stroke: '#292b2f',
+		strokeWidth: 4,
+		height: '20px',
+		width: '20px',
+		color: '#3ba55d',
+	},
 	iconAbsent: {
 		height: '16px',
 		width: '16px',
+		color: '#faa81a',
+	},
+	iconAbsentStroke: {
+		stroke: '#292b2f',
+		strokeWidth: 4,
+		height: '20px',
+		width: '20px',
 		color: '#faa81a',
 	},
 	iconDoNotDisturb: {
@@ -76,9 +83,23 @@ const useStyles = makeStyles((theme) => ({
 		width: '16px',
 		color: '#ed4245',
 	},
+	iconDoNotDisturbStroke: {
+		stroke: '#292b2f',
+		strokeWidth: 4,
+		height: '20px',
+		width: '20px',
+		color: '#ed4245',
+	},
 	iconInvisible: {
 		height: '16px',
 		width: '16px',
+		color: '#747f8d',
+	},
+	iconInvisibleStroke: {
+		stroke: '#292b2f',
+		strokeWidth: 4,
+		height: '20px',
+		width: '20px',
 		color: '#747f8d',
 	},
 	iconExit: {
@@ -91,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const MenuUserState = ({ user }) => {
+const MenuUserState = ({ user, userState }) => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(null);
@@ -109,6 +130,11 @@ const MenuUserState = ({ user }) => {
 		dispatch(logOut());
 	};
 
+	const handleChangeUserState = (state) => {
+		setOpen(null);
+		dispatch(ChangeUserState(state));
+	};
+
 	return (
 		<>
 			<IconButton
@@ -124,7 +150,15 @@ const MenuUserState = ({ user }) => {
 						src={`./avatar/${user.avatar}`}
 					/>
 					<div className={classes.avatarStatus}>
-						<Brightness1Icon className={classes.iconAvatarStatus} />
+						{userState === 'connected' ? (
+							<Brightness1Icon className={classes.iconConnectStroke} />
+						) : userState === 'absent' ? (
+							<Brightness1Icon className={classes.iconAbsentStroke} />
+						) : userState === 'doNotDisturb' ? (
+							<Brightness1Icon className={classes.iconDoNotDisturbStroke} />
+						) : (
+							<Brightness1Icon className={classes.iconInvisibleStroke} />
+						)}
 					</div>
 				</div>
 			</IconButton>
@@ -136,11 +170,13 @@ const MenuUserState = ({ user }) => {
 				open={Boolean(open)}
 				onClose={handleUserMenuStateClose}
 			>
-				<MenuItem className={classes.menuItem}>
+				<MenuItem
+					className={classes.menuItem}
+					onClick={() => handleChangeUserState('connected')}
+				>
 					<span
 						color="inherit"
 						aria-label="add"
-						//onClick={() => history.push('/post')}
 						className={classes.menuItemSpan}
 					>
 						<Brightness1Icon className={classes.iconConnect} />
@@ -150,11 +186,13 @@ const MenuUserState = ({ user }) => {
 						</Typography>
 					</span>
 				</MenuItem>
-				<MenuItem className={classes.menuItem}>
+				<MenuItem
+					className={classes.menuItem}
+					onClick={() => handleChangeUserState('absent')}
+				>
 					<span
 						color="inherit"
 						aria-label="add"
-						//onClick={() => history.push('/post')}
 						className={classes.menuItemSpan}
 					>
 						<Brightness2Icon className={classes.iconAbsent} />
@@ -164,11 +202,13 @@ const MenuUserState = ({ user }) => {
 						</Typography>
 					</span>
 				</MenuItem>
-				<MenuItem className={classes.menuItem}>
+				<MenuItem
+					className={classes.menuItem}
+					onClick={() => handleChangeUserState('doNotDisturb')}
+				>
 					<span
 						color="inherit"
 						aria-label="add"
-						//onClick={() => history.push('/post')}
 						className={classes.menuItemSpan}
 					>
 						<RemoveCircleIcon className={classes.iconDoNotDisturb} />
@@ -178,11 +218,13 @@ const MenuUserState = ({ user }) => {
 						</Typography>
 					</span>
 				</MenuItem>
-				<MenuItem className={classes.menuItem}>
+				<MenuItem
+					className={classes.menuItem}
+					onClick={() => handleChangeUserState('invisible')}
+				>
 					<span
 						color="inherit"
 						aria-label="add"
-						//onClick={() => history.push('/post')}
 						className={classes.menuItemSpan}
 					>
 						<RadioButtonUncheckedIcon className={classes.iconInvisible} />
@@ -192,11 +234,10 @@ const MenuUserState = ({ user }) => {
 						</Typography>
 					</span>
 				</MenuItem>
-				<MenuItem className={classes.menuItem}>
+				<MenuItem className={classes.menuItem} onClick={handleLogOut}>
 					<span
 						color="inherit"
 						aria-label="add"
-						onClick={handleLogOut}
 						className={classes.menuItemSpan}
 					>
 						<ExitToAppIcon className={classes.iconExit} />

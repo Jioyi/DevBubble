@@ -5,6 +5,7 @@ import {
 	SET_AUTHENTICATE,
 	SET_LOADING,
 } from '../constants';
+import { setUserState } from './ui';
 
 export const checkToken = () => {
 	return async (dispatch) => {
@@ -14,6 +15,7 @@ export const checkToken = () => {
 				console.log('check', response.data.user);
 				dispatch(setUser(response.data.user));
 				dispatch(setToken(response.data.token));
+				dispatch(setUserState(response.data.user.state));
 			} else {
 				dispatch(logOut());
 			}
@@ -34,6 +36,7 @@ export const login = (email, password) => {
 				dispatch(setUser(response.data.user));
 				dispatch(setToken(response.data.token));
 				dispatch(setAuthenticate(true));
+				dispatch(setUserState(response.data.user.state));
 			} else {
 				dispatch(logOut());
 			}

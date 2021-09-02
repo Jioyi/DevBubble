@@ -115,7 +115,9 @@ const Nav = () => {
 	const [playCancelConfirm] = useSound(SoundCancel);
 	const classes = useStyles();
 	const { user } = useSelector((state) => state.auth);
-	const { volume, mic, openAddGroup } = useSelector((state) => state.ui);
+	const { userState, volume, mic, openAddGroup } = useSelector(
+		(state) => state.ui
+	);
 
 	const handleOnChangeMic = () => {
 		if (mic) {
@@ -173,7 +175,7 @@ const Nav = () => {
 				}}
 			>
 				<div className={classes.drawerEnd}>
-					<MenuUserState user={user} />
+					<MenuUserState user={user} userState={userState} />
 					<div className={classes.maxWidth}></div>
 					<IconButton
 						className={classes.buttonSettings}

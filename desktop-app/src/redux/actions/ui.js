@@ -1,4 +1,10 @@
-import { CHANGE_MIC_STATE, CHANGE_VOLUME_STATE, SET_OPEN_ADD_GROUP } from "../constants";
+import * as API from '../API';
+import {
+	CHANGE_MIC_STATE,
+	CHANGE_VOLUME_STATE,
+	SET_OPEN_ADD_GROUP,
+	SET_USER_STATE,
+} from '../constants';
 const remote = window.require ? window.require('electron').remote : null;
 const WIN = remote.getCurrentWindow();
 
@@ -57,3 +63,22 @@ export const setOpenAddGroup = (payload) => {
 	};
 };
 
+export const ChangeUserState = (state) => {
+	return async (dispatch) => {
+		try {
+			const response = await API.ChangeUserState(state);
+			if (response.data?.message === 'successful') {
+				dispatch(setUserState(state));
+			}
+		} catch (error) {
+			console.log('ChangeUserState', error);
+		}
+	};
+};
+
+export const setUserState = (payload) => {
+	return {
+		type: SET_USER_STATE,
+		payload: payload,
+	};
+};

@@ -2,9 +2,11 @@ import {
 	CHANGE_VOLUME_STATE,
 	CHANGE_MIC_STATE,
 	SET_OPEN_ADD_GROUP,
+	SET_USER_STATE
 } from '../constants';
 
 const initialState = {
+	userState: 'invisible',
 	volume: true,
 	mic: true,
 	openAddGroup: false,
@@ -29,6 +31,11 @@ const ui = (state = initialState, action) => {
 			return {
 				...state,
 				openAddGroup: payload,
+			};
+		case SET_USER_STATE:
+			return {
+				...state,
+				userState: payload,
 			};
 		default:
 			return state;

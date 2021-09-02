@@ -7,4 +7,6 @@ export const SET_LOADING = 'SET_LOADING';
 export const CHANGE_VOLUME_STATE = 'CHANGE_VOLUME_STATE';
 export const CHANGE_MIC_STATE = 'CHANGE_MIC_STATE';
 export const SET_OPEN_ADD_GROUP = 'SET_OPEN_ADD_GROUP';
+export const SET_USER_STATE = 'SET_USER_STATE';
+
 

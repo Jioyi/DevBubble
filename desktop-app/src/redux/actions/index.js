@@ -4,7 +4,8 @@ export {
 	close,
 	changeVolumeState,
 	changeMicState,
-	setOpenAddGroup
+	setOpenAddGroup,
+	ChangeUserState,
 } from './ui';
 export { login, logOut, setLoading, checkToken } from './auth';
 export { createGroup } from './group';
