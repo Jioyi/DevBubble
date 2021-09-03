@@ -9,16 +9,15 @@ const sharp = require('sharp');
 router.post('/', checkToken, middlewareUploadFile, async (req, res, next) => {
 	try {
 		const { name } = req.body;
-		const { filename: image } = req.file;
-		if (!name) {
+		if (req.file === undefined) {
 			return res
 				.status(400)
-				.send({ message: 'Please, enter a name for the new server!' });
+				.send({ message: 'invalid image type!' });
 		}
-		if (req.file == undefined) {
+		if (!name || name === '') {
 			return res
 				.status(400)
-				.send({ message: 'Please, image missing for server!' });
+				.send({ message: 'enter a name for the new server!' });
 		}
 		if (req.file.mimetype !== 'image/gif') {
 			sharp(req.file.path)
@@ -35,12 +34,13 @@ router.post('/', checkToken, middlewareUploadFile, async (req, res, next) => {
 		const groupCreated = await Group.create({
 			ID: uuidv4(),
 			name: name,
-			image: image,
+			image: req.file.filename,
 		});
 		await groupCreated.setOwner(req.user.ID);
+		await groupCreated.addUser(req.user.ID);
 		return res.json({
 			message: 'successful',
-			server: groupCreated,
+			group: groupCreated,
 		});
 	} catch (error) {
 		next(error);

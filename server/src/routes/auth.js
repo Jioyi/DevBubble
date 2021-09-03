@@ -18,17 +18,7 @@ router.post('/login', async (req, res, next) => {
 			where: {
 				email: email,
 			},
-			attributes: ['ID', 'email', 'avatar', 'password', 'state'],
-			include: [
-				{
-					model: Group,
-					as: 'groups',
-					attributes: ['ID', 'name', 'image'],
-					through: {
-						attributes: [],
-					},
-				},
-			],
+			attributes: ['ID', 'email', 'avatar', 'password'],
 		});
 		if (!user) {
 			return res.status(400).json({
@@ -71,12 +61,15 @@ router.get('/check_token', checkToken, async (req, res, next) => {
 				},
 			],
 		});
-		const token = jwt.sign(user.toJSON(), SERVER_SECRET_KEY, {
+		let auxUser = user.toJSON();
+		delete auxUser.groups;
+		const token = jwt.sign(auxUser, SERVER_SECRET_KEY, {
 			expiresIn: 604800,
 		});
 		return res.status(200).json({
 			message: 'successful',
-			user: user,
+			user: auxUser,
+			groups: user.groups,
 			token: token,
 		});
 	} catch (error) {

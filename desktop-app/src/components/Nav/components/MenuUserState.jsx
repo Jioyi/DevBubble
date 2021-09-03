@@ -6,7 +6,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-
 //icons
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
@@ -15,6 +14,7 @@ import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 //actions
 import { logOut, ChangeUserState } from '../../../redux/actions';
+
 const useStyles = makeStyles((theme) => ({
 	root: {
 		display: 'flex',

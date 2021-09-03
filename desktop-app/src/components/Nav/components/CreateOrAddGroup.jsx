@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -11,21 +11,36 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 import TextField from '@material-ui/core/TextField';
-
 //icons
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import CloseIcon from '@material-ui/icons/Close';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 //actions
 import { createGroup } from '../../../redux/actions';
+import { setOpenAddGroup } from '../../../redux/actions';
 
-const DialogDeleteStyle = withStyles({
+const DialogStyle = withStyles({
 	paper: {
 		backgroundColor: '#ffffff',
 		color: '#000000',
 	},
 })(Dialog);
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({	
+	icon: {
+		'margin': '6px',
+		'color': '#747f8d',
+		'&:hover': {
+			color: '#ffffff',
+		},
+	},
+	iconButton: {
+		'padding': theme.spacing(0),
+		'margin': '6px',
+		'&:hover': {
+			backgroundColor: '#32353a',
+		},
+	},
 	dialog: {
 		padding: theme.spacing(0),
 		margin: theme.spacing(0),
@@ -197,21 +212,23 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const DialogCreateOrAddGroup = ({ open, onCancel }) => {
+const CreateOrAddGroup = () => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const [state, setState] = useState('createOrAdd');
 	const [name, setName] = useState('');
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [previewImage, setPreviewImage] = useState(null);
+	const { openAddGroup } = useSelector((state) => state.ui);
+
+	const handleOnAddGroup = () => {
+		dispatch(setOpenAddGroup(true));
+	};
 
 	const handleOnConfirmCreate = () => {
 		if (selectedFile && name !== '') {
 			dispatch(createGroup(selectedFile, name));
-			setState('createOrAdd');
-			setPreviewImage(null);
-			setSelectedFile(null);
-			setName('');
+			dispatch(setOpenAddGroup(false));
 		}
 	};
 
@@ -224,10 +241,7 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 	};
 
 	const handleOnCancel = () => {
-		onCancel();
-		setState('createOrAdd');
-		setPreviewImage(null);
-		setSelectedFile(null);
+		dispatch(setOpenAddGroup(false));
 	};
 
 	const handleOnState = (state) => {
@@ -241,10 +255,28 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 		}
 	};
 
+	useEffect(() => {
+		if (!openAddGroup) {
+			setTimeout(() => {
+				setState('createOrAdd');
+				setPreviewImage(null);
+				setSelectedFile(null);
+				setName('');
+			}, 200);
+		}
+	}, [openAddGroup]);
+
 	return (
-		<div>
-			<DialogDeleteStyle
-				open={open === undefined ? false : open}
+		<>
+			<IconButton
+				color="inherit"
+				onClick={handleOnAddGroup}
+				className={classes.iconButton}
+			>
+				<AddCircleIcon className={classes.icon} />
+			</IconButton>
+			<DialogStyle
+				open={openAddGroup === undefined ? false : openAddGroup}
 				aria-labelledby={'dialog-add-group'}
 			>
 				<DialogTitle id={'dialog-add-group'} className={classes.dialog}>
@@ -253,117 +285,117 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 					</IconButton>
 				</DialogTitle>
 				<DialogContent>
-						{state === 'createOrAdd' && (
-							<>
-								<Typography className={classes.tittle}>
-									Crea un servidor
-								</Typography>
-								<Typography className={classes.text}>
-									Tu servidor es donde te reunes con tu grupo de trabajo. Crea
-									el tullo y comienza a compartir.
-								</Typography>
-								<div className={classes.center}>
-									<Button
-										onClick={() => {
-											handleOnState('create');
-										}}
-										className={classes.buttonCreate}
+					{state === 'createOrAdd' && (
+						<>
+							<Typography className={classes.tittle}>
+								Crea un servidor
+							</Typography>
+							<Typography className={classes.text}>
+								Tu servidor es donde te reunes con tu grupo de trabajo. Crea el
+								tullo y comienza a compartir.
+							</Typography>
+							<div className={classes.center}>
+								<Button
+									onClick={() => {
+										handleOnState('create');
+									}}
+									className={classes.buttonCreate}
+								>
+									Crear un servidor
+								</Button>
+							</div>
+							<Divider variant="middle" className={classes.divider} />
+							<Typography className={classes.tittle}>
+								¿Ya tienes una invitacion?
+							</Typography>
+							<div className={classes.center}>
+								<Button
+									onClick={() => {
+										handleOnState('add');
+									}}
+									className={classes.button}
+								>
+									Únete a un servidor
+								</Button>
+							</div>
+						</>
+					)}
+					{state === 'create' && (
+						<>
+							<Typography className={classes.tittle}>
+								Personaliza tu servidor
+							</Typography>
+							<Typography className={classes.text}>
+								Dale una personalidad propia a tu nuevo servidor con un nombre y
+								un icono. Siempre puedes cambiarlo más tarde.
+							</Typography>
+							<div className={classes.center}>
+								<input
+									accept="image/*"
+									className={classes.inputHide}
+									style={{ display: 'none' }}
+									id="raised-button-file"
+									multiple
+									type="file"
+									onChange={onFileChange}
+								/>
+								{selectedFile === null ? (
+									<label
+										htmlFor="raised-button-file"
+										className={classes.centerPhoto}
 									>
-										Crear un servidor
-									</Button>
-								</div>
-								<Divider variant="middle" className={classes.divider} />
-								<Typography className={classes.tittle}>
-									¿Ya tienes una invitacion?
-								</Typography>
-								<div className={classes.center}>
-									<Button
-										onClick={() => {
-											handleOnState('add');
-										}}
-										className={classes.button}
+										<IconButton
+											component={'span'}
+											color="inherit"
+											className={classes.buttonPhoto}
+										>
+											<PhotoCameraIcon className={classes.iconPhoto} />
+										</IconButton>
+									</label>
+								) : (
+									<label
+										htmlFor="raised-button-file"
+										className={classes.centerPhoto}
 									>
-										Únete a un servidor
-									</Button>
-								</div>
-							</>
-						)}
-						{state === 'create' && (
-							<>
-								<Typography className={classes.tittle}>
-									Personaliza tu servidor
-								</Typography>
+										<IconButton
+											component={'span'}
+											color="inherit"
+											className={classes.buttonPhoto}
+										>
+											{selectedFile && (
+												<Avatar
+													alt="previewImage"
+													src={previewImage}
+													className={classes.previewImage}
+												/>
+											)}
+										</IconButton>
+									</label>
+								)}
+							</div>
+							<div className={classes.centerInput}>
+								<TextField
+									className={classes.input}
+									type="text"
+									autoComplete="current-password"
+									variant="outlined"
+									value={name}
+									onChange={handleOnChangeName}
+									InputProps={{
+										className: classes.input,
+									}}
+									InputLabelProps={{
+										className: classes.input,
+									}}
+								/>
+							</div>
+							<div className={classes.center}>
 								<Typography className={classes.text}>
-									Dale una personalidad propia a tu nuevo servidor con un nombre
-									y un icono. Siempre puedes cambiarlo más tarde.
+									Al crear un servidor aceptas las Directivas de la comunidad.
 								</Typography>
-								<div className={classes.center}>
-									<input
-										accept="image/*"
-										className={classes.inputHide}
-										style={{ display: 'none' }}
-										id="raised-button-file"
-										multiple
-										type="file"
-										onChange={onFileChange}
-									/>
-									{selectedFile === null ? (
-										<label
-											htmlFor="raised-button-file"
-											className={classes.centerPhoto}
-										>
-											<IconButton
-												component={'span'}
-												color="inherit"
-												className={classes.buttonPhoto}
-											>
-												<PhotoCameraIcon className={classes.iconPhoto} />
-											</IconButton>
-										</label>
-									) : (
-										<label
-											htmlFor="raised-button-file"
-											className={classes.centerPhoto}
-										>
-											<IconButton
-												component={'span'}
-												color="inherit"
-												className={classes.buttonPhoto}
-											>
-												{selectedFile && (
-													<Avatar
-														alt="previewImage"
-														src={previewImage}
-														className={classes.previewImage}
-													/>
-												)}
-											</IconButton>
-										</label>
-									)}
-								</div>
-								<div className={classes.centerInput}>
-									<TextField
-										className={classes.input}
-										type="text"
-										autoComplete="current-password"
-										variant="outlined"
-										value={name}
-										onChange={handleOnChangeName}
-										InputProps={{
-											className: classes.input,
-										}}
-										InputLabelProps={{
-											className: classes.input,
-										}}
-									/>
-								</div>
-								<div className={classes.center}>
-									<Typography className={classes.text}>
-										Al crear un servidor aceptas las Directivas de la comunidad.
-									</Typography>
-								</div>
-							</>
-						)}
+							</div>
+						</>
+					)}
 				</DialogContent>
 				<DialogActions className={classes.dialogActions}>
 					{state === 'create' && (
@@ -405,8 +437,8 @@ const DialogCreateOrAddGroup = ({ open, onCancel }) => {
 						</>
 					)}
 				</DialogActions>
-			</DialogDeleteStyle>
-		</div>
+			</DialogStyle>
+		</>
 	);
 };
-export default DialogCreateOrAddGroup;
+export default CreateOrAddGroup;

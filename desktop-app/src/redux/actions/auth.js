@@ -5,6 +5,7 @@ import {
 	SET_AUTHENTICATE,
 	SET_LOADING,
 } from '../constants';
+import { setGroups } from './group';
 import { setUserState } from './ui';
 
 export const checkToken = () => {
@@ -12,10 +13,11 @@ export const checkToken = () => {
 		try {
 			const response = await API.checkToken();
 			if (response.data?.message === 'successful') {
-				console.log('check', response.data.user);
+				console.log('check', response.data);
 				dispatch(setUser(response.data.user));
-				dispatch(setToken(response.data.token));
+				dispatch(setToken(response.data.token));			
 				dispatch(setUserState(response.data.user.state));
+				dispatch(setGroups(response.data.groups));
 			} else {
 				dispatch(logOut());
 			}
@@ -36,7 +38,6 @@ export const login = (email, password) => {
 				dispatch(setUser(response.data.user));
 				dispatch(setToken(response.data.token));
 				dispatch(setAuthenticate(true));
-				dispatch(setUserState(response.data.user.state));
 			} else {
 				dispatch(logOut());
 			}
