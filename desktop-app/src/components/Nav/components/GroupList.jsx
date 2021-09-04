@@ -9,7 +9,7 @@ import Avatar from '@material-ui/core/Avatar';
 //icons
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 //actions
-import { selectGroup } from '../../../redux/actions';
+import { setGroupSelectedID } from '../../../redux/actions';
 const SERVER_API_URL = 'http://localhost:3001'; //cambiar por varialbe de entorno
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +61,6 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	menuItemImage: {
-		margin: '4px',
 		marginRight: '20px',
 	},
 	selectedGroupImage: {
@@ -75,7 +74,7 @@ const GroupList = () => {
 	const dispatch = useDispatch();
 	const [group, setGroup] = useState(null);
 	const [open, setOpen] = useState(null);
-	const { groups, groupSelected } = useSelector((state) => state.group);
+	const { groups, groupSelectedID } = useSelector((state) => state.group);
 
 	const handleMenuGroupsOpen = (event) => {
 		setOpen(event.currentTarget);
@@ -85,14 +84,14 @@ const GroupList = () => {
 		setOpen(null);
 	};
 
-	const handleSelectGroup = (ID) => {
-		dispatch(selectGroup(ID));
+	const handleSetGroupSelectedID = (ID) => {
+		dispatch(setGroupSelectedID(ID));
 		setOpen(null);
 	};
 
 	useEffect(() => {
-		setGroup(groups.find((group) => group.ID === groupSelected));
-	}, [groupSelected, groups]);
+		setGroup(groups.find((group) => group.ID === groupSelectedID));
+	}, [groupSelectedID, groups]);
 
 	return (
 		<div className={classes.root}>
@@ -138,7 +137,7 @@ const GroupList = () => {
 									key={group.ID}
 									className={classes.menuItem}
 									onClick={() => {
-										handleSelectGroup(group.ID);
+										handleSetGroupSelectedID(group.ID);
 									}}
 								>
 									<span
@@ -149,7 +148,7 @@ const GroupList = () => {
 										<Avatar
 											variant="rounded"
 											className={classes.menuItemImage}
-											alt="group-image"
+											alt={`group-image-${group.ID}`}
 											src={`${SERVER_API_URL}/images/${group.image}`}
 										/>
 										<Typography

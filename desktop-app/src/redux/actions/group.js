@@ -1,5 +1,5 @@
 import * as API from '../API';
-import { SET_GROUPS, SELECT_GROUP, ADD_GROUP } from '../constants';
+import { SET_GROUPS, SET_SELECT_GROUP, ADD_GROUP, SET_CHANNELS } from '../constants';
 import { setOpenAddGroup } from './ui';
 
 export const createGroup = (image, name) => {
@@ -38,11 +38,34 @@ export const setGroups = (groups) => {
 	};
 };
 
-export const selectGroup = (IDGroup) => {
-	window.localStorage.setItem('group_selected', IDGroup);
+export const setGroupSelectedID = (IDGroup) => {
+	window.localStorage.setItem('group_selected_id', IDGroup);
 	return {
-		type: SELECT_GROUP,
+		type: SET_SELECT_GROUP,
 		payload: IDGroup,
 	};
 };
 
+// channels
+export const getChannels = (groupID) => {
+	return async (dispatch) => {
+		try {
+			const response = await API.getChannels(groupID);
+			if (response.data?.message === 'successful') {
+				dispatch(setChannels(response.data.channels));
+			} else {
+				//mostrar un error
+			}
+		} catch (error) {
+			console.log('error getChannels', error);
+			//mostrar un error
+		}
+	};
+};
+
+export const setChannels = (channels) => {
+	return {
+		type: SET_CHANNELS,
+		payload: channels,
+	};
+};

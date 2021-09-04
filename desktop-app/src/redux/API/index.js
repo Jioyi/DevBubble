@@ -28,3 +28,6 @@ export const createGroup = (data) =>
 			'Content-Type': 'multipart/form-data',
 		},
 	});
+
+//channel route
+export const getChannels = (groupID) => API.get(`/channel/${groupID}`);

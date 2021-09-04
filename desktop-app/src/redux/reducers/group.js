@@ -1,9 +1,15 @@
-import { SET_GROUPS, SELECT_GROUP, ADD_GROUP } from '../constants';
+import {
+	SET_GROUPS,
+	SET_SELECT_GROUP,
+	ADD_GROUP,
+	SET_CHANNELS,
+} from '../constants';
 
-const groupSelected = window.localStorage.getItem('group_selected');
+const groupSelectedID = window.localStorage.getItem('group_selected_id');
 const initialState = {
 	groups: [],
-	groupSelected: groupSelected ? groupSelected : null,
+	groupSelectedID: groupSelectedID ? groupSelectedID : null,
+	channels: [],
 };
 
 const group = (state = initialState, action) => {
@@ -14,10 +20,15 @@ const group = (state = initialState, action) => {
 				...state,
 				groups: payload,
 			};
-		case SELECT_GROUP:
+		case SET_CHANNELS:
 			return {
 				...state,
-				groupSelected: payload,
+				channels: payload,
+			};
+		case SET_SELECT_GROUP:
+			return {
+				...state,
+				groupSelectedID: payload,
 			};
 		case ADD_GROUP:
 			return {

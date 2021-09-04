@@ -10,8 +10,16 @@ export const SET_OPEN_ADD_GROUP = 'SET_OPEN_ADD_GROUP';
 export const SET_USER_STATE = 'SET_USER_STATE';
 // constants group
 export const SET_GROUPS = 'SET_GROUPS';
-export const SELECT_GROUP = 'SELECT_GROUP';
+export const SET_SELECT_GROUP = 'SET_SELECT_GROUP';
 export const ADD_GROUP = 'ADD_GROUP';
+export const SET_CHANNELS = 'SET_CHANNELS';
+// constants socket
+export const SET_MAIN_SOCKET = 'SET_MAIN_SOCKET';
+export const ADD_USER_STREAM = 'ADD_USER_STREAM';
+export const REMOVE_USER_STREAM = 'REMOVE_USER_STREAM';
+
+
+
 
 
 

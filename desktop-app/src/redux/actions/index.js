@@ -8,4 +8,5 @@ export {
 	ChangeUserState,
 } from './ui';
 export { login, logOut, setLoading, checkToken } from './auth';
-export { createGroup, selectGroup } from './group';
+export { createGroup, setGroupSelectedID, getChannels } from './group';
+export { ConnectVoiceChannel } from './socket';

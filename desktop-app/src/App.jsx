@@ -11,6 +11,7 @@ import Loading from './components/Loading';
 //views
 import Login from './views/Login';
 import Home from './views/Home';
+import VoiceChannel from './views/VoiceChannel';
 //actions
 import { setLoading, checkToken } from './redux/actions';
 
@@ -57,6 +58,7 @@ const App = () => {
 			<Switch>
 				<GuestRoute path="/" exact component={Login} />
 				<ProtectedRoute path="/home" exact component={Home} />
+				<ProtectedRoute path="/voice_channel" exact component={VoiceChannel} />
 				<Route path="*" render={() => <Redirect to="/" />} />
 			</Switch>
 		</div>

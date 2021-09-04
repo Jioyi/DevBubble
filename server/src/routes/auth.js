@@ -54,7 +54,7 @@ router.get('/check_token', checkToken, async (req, res, next) => {
 				{
 					model: Group,
 					as: 'groups',
-					attributes: ['ID', 'name', 'image'],
+					attributes: ['ID', 'name', 'image',"ownerID"],
 					through: {
 						attributes: [],
 					},

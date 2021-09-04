@@ -3,50 +3,36 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
-//const { User } = require('./db');
+const { User } = require('./db');
 const server = express();
-//const { checkToken } = require('./security');
+const { checkTokenForSocketIO } = require('./security');
 const http = require('http').createServer(server);
-/*const socket = require('socket.io')(http, {
+
+const socket = require('socket.io')(http, {
 	cors: {
-		origin: process.env.CLIENT_URL,
+		origin: '*',
 	},
 });
 
 socket.on('connection', async (socket) => {
-	const user = await checkToken(socket.handshake.query.token);
-	if (user === null) {
-		return socket.disconnect();
-	}
-	const userCheck = await User.findByPk(user.ID, {
-		attributes: ['ID', 'connected'],
-	});
-	if (userCheck.connected === true) {
-		return socket.disconnect();
-	}
-	await User.update(
-		{
-			connected: true,
-		},
-		{
-			where: {
-				ID: user.ID,
-			},
-		}
-	);
+	const user = await checkTokenForSocketIO(socket.handshake.query.token);
+	if (!user) return socket.disconnect();
+
+	await User.update({ connected: true }, { where: { ID: user.ID } });
 	socket.join(user.ID);
 	console.log(`User ID:${user.ID} connected!`);
+
+	socket.on('join-channel-voice', (channelID) => {
+		socket.join(channelID);
+		socket.broadcast.to(channelID).emit('new-user-connected', user);
+		console.log('new connetion id channel:', channelID);
+		socket.on('disconnect', () => {
+			socket.broadcast.to(channelID).emit('user-disconnected', user.ID);
+		});
+	});
+
 	socket.on('disconnect', async () => {
-		await User.update(
-			{
-				connected: false,
-			},
-			{
-				where: {
-					ID: user.ID,
-				},
-			}
-		);
+		await User.update({ connected: false }, { where: { ID: user.ID } });
 		console.log(`User ID:${user.ID} disconnected!`);
 	});
 });
@@ -54,7 +40,8 @@ socket.on('connection', async (socket) => {
 server.use((req, res, next) => {
 	req.socket = socket;
 	next();
-});*/
+});
+
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser());

@@ -8,6 +8,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import UserState from './components/UserState';
 import CreateOrAddGroup from './components/CreateOrAddGroup';
 import GroupList from './components/GroupList';
+import ChannelsList from './components/ChannelList';
 
 const drawerWidth = 300;
 
@@ -22,19 +23,47 @@ const useStyles = makeStyles((theme) => ({
 		zIndex: theme.zIndex.drawer + 1,
 	},
 	toolbar: {
+		flexGrow: 1,
 		borderRight: '2px solid #202225',
 		borderBottom: '2px solid #202225',
 		padding: theme.spacing(0),
 		margin: theme.spacing(0),
-		minHeight: '20px',
+		height: '50px',
 	},
 	maxWidth: {
 		flexGrow: 1,
 	},
 	drawer: {
-		marginTop: '32px',
+		marginTop: '94px',
 		backgroundColor: '#2f3136',
 		width: drawerWidth,
+		overflowY: 'hidden',
+		overflowX: 'hidden',
+	},
+	drawerMiddle: {
+		'padding': '0px',
+		'paddingBottom': '158px',
+		'overflowY': 'auto',
+		'&::-webkit-scrollbar': {
+			width: '0.4em',
+		},
+		'&::-webkit-scrollbar-track': {
+			height: '0.4em',
+			boxShadow: 'inset 0 0 5px rgba(0,0,0,0.00)',
+			webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.04)',
+		},
+		'&::-webkit-scrollbar-thumb': {
+			backgroundColor: 'rgba(0,0,0,.4)',
+			outline: '0px solid slategrey',
+		},
+		'&::-webkit-scrollbar-track-piece:end': {
+			background: 'transparent',
+			marginBottom: '158px',
+		},
+		'&::-webkit-scrollbar-track-piece:start': {
+			background: 'transparent',
+		},
+		'overflowX': 'hidden',
 	},
 	groupsToolbar: {
 		display: 'flex',
@@ -42,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
 		margin: theme.spacing(0),
 		backgroundColor: '#2f3136',
 		width: `${drawerWidth}px`,
+		height: '100%',
 	},
 	drawerEnd: {
 		position: 'fixed',
@@ -60,7 +90,6 @@ const useStyles = makeStyles((theme) => ({
 const Nav = () => {
 	const classes = useStyles();
 	const { user } = useSelector((state) => state.auth);
-	
 
 	return (
 		<div className={classes.root}>
@@ -72,7 +101,6 @@ const Nav = () => {
 						<CreateOrAddGroup />
 					</div>
 					<div className={classes.maxWidth}>max</div>
-					<div>logo</div>
 				</Toolbar>
 			</AppBar>
 			<Drawer
@@ -81,6 +109,9 @@ const Nav = () => {
 					paper: classes.drawer,
 				}}
 			>
+				<div className={classes.drawerMiddle}>
+					<ChannelsList/>
+				</div>
 				<div className={classes.drawerEnd}>
 					<UserState user={user} />
 				</div>

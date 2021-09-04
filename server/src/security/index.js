@@ -20,6 +20,19 @@ const checkToken = (req, res, next) => {
 	});
 };
 
+const checkTokenForSocketIO = (token) => {
+	return new Promise(async (resolve, reject) => {
+		jwt.verify(token, SERVER_SECRET_KEY, (error, decoded) => {
+			if (error) {
+				resolve(null);
+			} else {
+				resolve(decoded);
+			}
+		});
+	});
+};
+
 module.exports = {
+	checkTokenForSocketIO,
 	checkToken,
 };

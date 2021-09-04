@@ -6,6 +6,7 @@ import {
 	SET_LOADING,
 } from '../constants';
 import { setGroups } from './group';
+import { ConnectServerIO } from './socket';
 import { setUserState } from './ui';
 
 export const checkToken = () => {
@@ -15,15 +16,16 @@ export const checkToken = () => {
 			if (response.data?.message === 'successful') {
 				console.log('check', response.data);
 				dispatch(setUser(response.data.user));
-				dispatch(setToken(response.data.token));			
+				dispatch(setToken(response.data.token));
 				dispatch(setUserState(response.data.user.state));
 				dispatch(setGroups(response.data.groups));
+				dispatch(ConnectServerIO(response.data.token));
 			} else {
 				dispatch(logOut());
+				dispatch(setLoading(false));
 			}
-			dispatch(setLoading(false));
 		} catch (error) {
-			console.log("error checkToken", error);
+			console.log('error checkToken', error);
 			dispatch(setLoading(false));
 		}
 	};
@@ -34,7 +36,7 @@ export const login = (email, password) => {
 		try {
 			const response = await API.login({ email, password });
 			if (response.data?.message === 'successful') {
-				console.log('login', response.data.user);
+				console.log('login', response.data);
 				dispatch(setUser(response.data.user));
 				dispatch(setToken(response.data.token));
 				dispatch(setAuthenticate(true));
@@ -42,7 +44,7 @@ export const login = (email, password) => {
 				dispatch(logOut());
 			}
 		} catch (error) {
-			console.log("error login", error);
+			console.log('error login', error);
 			dispatch(logOut());
 		}
 	};
