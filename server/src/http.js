@@ -15,26 +15,38 @@ const socket = require('socket.io')(http, {
 });
 
 socket.on('connection', async (socket) => {
-	const user = await checkTokenForSocketIO(socket.handshake.query.token);
-	if (!user) return socket.disconnect();
+	//conexion de usuario para notificaciones y mensaje globales
+	if (socket.handshake.query.token) {
+		const user = await checkTokenForSocketIO(socket.handshake.query.token);
 
-	await User.update({ connected: true }, { where: { ID: user.ID } });
-	socket.join(user.ID);
-	console.log(`User ID:${user.ID} connected!`);
+		if (!user) return socket.disconnect();
+		await User.update({ connected: true }, { where: { ID: user.ID } });
 
-	socket.on('join-channel-voice', (channelID) => {
-		socket.join(channelID);
-		socket.broadcast.to(channelID).emit('new-user-connected', user);
-		console.log('new connetion id channel:', channelID);
-		socket.on('disconnect', () => {
-			socket.broadcast.to(channelID).emit('user-disconnected', user.ID);
+		socket.join(user.ID);
+		console.log(`User ID:${user.ID} connected!`);
+
+		socket.on('disconnect', async () => {
+			await User.update({ connected: false }, { where: { ID: user.ID } });
+			console.log(`User ID:${user.ID} disconnected!`);
 		});
-	});
+	}
+	//conexion a un voice channel
+	if (socket.handshake.query.voiceChannelID) {
+		const voiceChannelID = socket.handshake.query.voiceChannelID;
 
-	socket.on('disconnect', async () => {
-		await User.update({ connected: false }, { where: { ID: user.ID } });
-		console.log(`User ID:${user.ID} disconnected!`);
-	});
+		socket.on('join-channel-voice', (user, channelID) => {
+			socket.join(channelID);
+			socket.broadcast.to(channelID).emit('new-user-connected', user);
+			console.log(`voice-channel-${voiceChannelID}: new user connected!`);
+			socket.on('disconnect', () => {
+				socket.broadcast.to(channelID).emit('user-disconnected', user.ID);
+			});
+		});
+
+		socket.on('disconnect', async () => {
+			console.log(`voice-channel-${voiceChannelID}: user disconnected!`);
+		});
+	}
 });
 
 server.use((req, res, next) => {

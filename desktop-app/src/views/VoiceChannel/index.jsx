@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 import avatar from '../../assets/avatar/avatar.gif';
 import Nav from '../../components/Nav';
-//import Nav from '../../components/Nav';
-//import { useSelector } from 'react-redux';
 import "./index.css"
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 		padding: theme.spacing(0),
 		margin: theme.spacing(0),
 		marginLeft: '300px !important',
-		width: 'calc(100% - 290px)',
+		width: 'calc(100% - 310px)',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

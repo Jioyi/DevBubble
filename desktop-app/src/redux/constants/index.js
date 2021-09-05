@@ -17,6 +17,8 @@ export const SET_CHANNELS = 'SET_CHANNELS';
 export const SET_MAIN_SOCKET = 'SET_MAIN_SOCKET';
 export const ADD_USER_STREAM = 'ADD_USER_STREAM';
 export const REMOVE_USER_STREAM = 'REMOVE_USER_STREAM';
+export const SET_VOICE_SOCKET = 'SET_VOICE_SOCKET';
+
 
 
 

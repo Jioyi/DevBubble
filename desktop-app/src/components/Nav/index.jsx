@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
+import clsx from 'clsx';
+
+import Divider from '@material-ui/core/Divider';
 //components
 import UserState from './components/UserState';
 import CreateOrAddGroup from './components/CreateOrAddGroup';
 import GroupList from './components/GroupList';
 import ChannelsList from './components/ChannelList';
+import MenuOpenCall from './components/MenuOpenCall';
 
 const drawerWidth = 300;
 
@@ -65,8 +69,35 @@ const useStyles = makeStyles((theme) => ({
 		},
 		'overflowX': 'hidden',
 	},
+	drawerMiddleCall: {
+		'padding': '0px',
+		'paddingBottom': '240px',
+		'overflowY': 'auto',
+		'&::-webkit-scrollbar': {
+			width: '0.4em',
+		},
+		'&::-webkit-scrollbar-track': {
+			height: '0.4em',
+			boxShadow: 'inset 0 0 5px rgba(0,0,0,0.00)',
+			webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.04)',
+		},
+		'&::-webkit-scrollbar-thumb': {
+			backgroundColor: 'rgba(0,0,0,.4)',
+			outline: '0px solid slategrey',
+		},
+		'&::-webkit-scrollbar-track-piece:end': {
+			background: 'transparent',
+			marginBottom: '240px',
+		},
+		'&::-webkit-scrollbar-track-piece:start': {
+			background: 'transparent',
+		},
+		'overflowX': 'hidden',
+	},
 	groupsToolbar: {
 		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
 		padding: theme.spacing(0),
 		margin: theme.spacing(0),
 		backgroundColor: '#2f3136',
@@ -74,10 +105,11 @@ const useStyles = makeStyles((theme) => ({
 		height: '100%',
 	},
 	drawerEnd: {
+		display: 'flex',
 		position: 'fixed',
 		backgroundColor: '#292b2f',
-		display: 'flex',
 		alignItems: 'center',
+		flexDirection: 'column',
 		zIndex: theme.zIndex.drawer + 1,
 		padding: theme.spacing(0, 1),
 		left: 0,
@@ -85,11 +117,28 @@ const useStyles = makeStyles((theme) => ({
 		width: `${drawerWidth}px`,
 		...theme.mixins.toolbar,
 	},
+	divider: {
+		background: "#35383e",
+		marginTop: theme.spacing(0),
+		marginBottom: theme.spacing(0),
+		width: "280px",
+		height: "2px",
+	},
 }));
 
 const Nav = () => {
 	const classes = useStyles();
+	const [openCall, setOpenCall] = useState(false);
 	const { user } = useSelector((state) => state.auth);
+	const { voiceSocket } = useSelector((state) => state.socket);
+
+	useEffect(() => {
+		if (voiceSocket) {
+			setOpenCall(true);
+		} else {
+			setOpenCall(false);
+		}
+	}, [voiceSocket]);
 
 	return (
 		<div className={classes.root}>
@@ -109,10 +158,20 @@ const Nav = () => {
 					paper: classes.drawer,
 				}}
 			>
-				<div className={classes.drawerMiddle}>
-					<ChannelsList/>
+				<div
+					className={clsx(classes.drawerMiddle, {
+						[classes.drawerMiddleCall]: openCall,
+					})}
+				>
+					<ChannelsList />
 				</div>
 				<div className={classes.drawerEnd}>
+					{openCall && (
+						<>
+							<MenuOpenCall />
+							<Divider className={classes.divider} />
+						</>
+					)}
 					<UserState user={user} />
 				</div>
 			</Drawer>

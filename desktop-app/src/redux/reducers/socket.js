@@ -2,10 +2,12 @@ import {
 	SET_MAIN_SOCKET,
 	ADD_USER_STREAM,
 	REMOVE_USER_STREAM,
+	SET_VOICE_SOCKET
 } from '../constants';
 
 const initialState = {
-	mainSocket: undefined,
+	mainSocket: null,
+	voiceSocket: null,
 	videoContainer: [],
 };
 
@@ -28,6 +30,11 @@ const socket = (state = initialState, action) => {
 				videoContainer: {
 					...state.videoContainer.filter((user) => user.ID !== payload),
 				},
+			};
+		case SET_VOICE_SOCKET:
+			return {
+				...state,
+				voiceSocket: payload,
 			};
 		default:
 			return state;
