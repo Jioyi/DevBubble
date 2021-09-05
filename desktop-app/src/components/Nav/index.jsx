@@ -118,11 +118,11 @@ const useStyles = makeStyles((theme) => ({
 		...theme.mixins.toolbar,
 	},
 	divider: {
-		background: "#35383e",
+		background: '#35383e',
 		marginTop: theme.spacing(0),
 		marginBottom: theme.spacing(0),
-		width: "280px",
-		height: "2px",
+		width: '280px',
+		height: '2px',
 	},
 }));
 
@@ -130,15 +130,15 @@ const Nav = () => {
 	const classes = useStyles();
 	const [openCall, setOpenCall] = useState(false);
 	const { user } = useSelector((state) => state.auth);
-	const { voiceSocket } = useSelector((state) => state.socket);
+	const { streaming } = useSelector((state) => state.voice);
 
 	useEffect(() => {
-		if (voiceSocket) {
+		if (streaming) {
 			setOpenCall(true);
 		} else {
 			setOpenCall(false);
 		}
-	}, [voiceSocket]);
+	}, [streaming]);
 
 	return (
 		<div className={classes.root}>

@@ -9,4 +9,5 @@ export {
 } from './ui';
 export { login, logOut, setLoading, checkToken } from './auth';
 export { createGroup, setGroupSelectedID, getChannels } from './group';
-export { ConnectVoiceChannel, DisconnectVoiceChannel } from './socket';
+//export {  } from './socket';
+export { createSocketVoice, disconnectVoiceChannel } from './voice';

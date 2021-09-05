@@ -31,20 +31,16 @@ socket.on('connection', async (socket) => {
 		});
 	}
 	//conexion a un voice channel
-	if (socket.handshake.query.voiceChannelID) {
-		const voiceChannelID = socket.handshake.query.voiceChannelID;
-
-		socket.on('join-channel-voice', (user, channelID) => {
+	if (socket.handshake.query.voice) {
+		socket.on('join-channel-voice', (data) => {
+			const { channelID, user } = data;
 			socket.join(channelID);
-			socket.broadcast.to(channelID).emit('new-user-connected', user);
-			console.log(`voice-channel-${voiceChannelID}: new user connected!`);
+			socket.broadcast.to(channelID).emit('new-user-connect', user);
+			console.log(`voice-channel-${channelID}: new user connected!`);
 			socket.on('disconnect', () => {
 				socket.broadcast.to(channelID).emit('user-disconnected', user.ID);
+				console.log(`voice-channel-${channelID}: user disconnected!`);
 			});
-		});
-
-		socket.on('disconnect', async () => {
-			console.log(`voice-channel-${voiceChannelID}: user disconnected!`);
 		});
 	}
 });

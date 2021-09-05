@@ -15,7 +15,7 @@ import TextFieldsIcon from '@material-ui/icons/TextFields';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 //actions
-import { ConnectVoiceChannel, getChannels } from '../../../redux/actions';
+import { createSocketVoice, getChannels } from '../../../redux/actions';
 import PanelEditGroup from './PanelEditGroup';
 
 const useStyles = makeStyles((theme) => ({
@@ -48,7 +48,7 @@ const ChannelsList = () => {
 	};
 
 	const handleConnectVoiceChannel = (channelID) => {
-		dispatch(ConnectVoiceChannel(channelID));
+		dispatch(createSocketVoice(channelID));
 		history.push("/voice_channel");		
 	};
 

@@ -9,7 +9,7 @@ import ScreenShareIcon from '@material-ui/icons/ScreenShare';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import CallIcon from '@material-ui/icons/Call';
 //actions
-import { DisconnectVoiceChannel } from '../../../redux/actions';
+import { disconnectVoiceChannel } from '../../../redux/actions';
 
 const TextTooltip = withStyles({
 	tooltip: {
@@ -64,7 +64,7 @@ const MenuOpenCall = () => {
 	const classes = useStyles();
 
 	const handleDisconect = () => {
-		dispatch(DisconnectVoiceChannel());
+		dispatch(disconnectVoiceChannel());
 	};
 
 	return (

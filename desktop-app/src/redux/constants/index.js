@@ -15,9 +15,16 @@ export const ADD_GROUP = 'ADD_GROUP';
 export const SET_CHANNELS = 'SET_CHANNELS';
 // constants socket
 export const SET_MAIN_SOCKET = 'SET_MAIN_SOCKET';
-export const ADD_USER_STREAM = 'ADD_USER_STREAM';
-export const REMOVE_USER_STREAM = 'REMOVE_USER_STREAM';
+// constants socketVoice
+export const SET_VOICE_CHANNEL_ID = 'SET_VOICE_CHANNEL_ID';
 export const SET_VOICE_SOCKET = 'SET_VOICE_SOCKET';
+export const SET_PEER = 'SET_PEER';
+export const SET_STREAMING = 'SET_STREAMING';
+export const SET_STREAMINGS = 'SET_STREAMINGS';
+export const ADD_STREAMING = 'ADD_STREAMING';
+
+
+
 
 
 

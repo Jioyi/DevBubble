@@ -2,11 +2,9 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import CardMedia from '@material-ui/core/CardMedia';
-import avatar from '../../assets/avatar/avatar.gif';
 import Nav from '../../components/Nav';
-import "./index.css"
+import './index.css';
+import VideoStream from './VideoStream.jsx';
 
 const useStyles = makeStyles((theme) => ({
 	offset: theme.mixins.toolbar,
@@ -38,25 +36,25 @@ const useStyles = makeStyles((theme) => ({
 const VoiceChannel = () => {
 	const classes = useStyles();
 	const roomContainer = document.getElementById('room-container');
-	const { videoContainer } = useSelector((state) => state.socket);
+	const { streamings } = useSelector((state) => state.voice);
 	const myID = useSelector((state) => state.auth.user.ID);
+
 	return (
 		<Paper className={classes.paper}>
 			<div className={classes.offset}></div>
 			<Nav />
 			<Paper className={classes.page}>
-				<div id="room-container">
-				</div>
-				{videoContainer.map((user) => {
-					const video = document.createElement('video');
+				<div id="room-container"></div>
+				{streamings.map((user) => {
+					/*const video = document.createElement('video');
 					if (user.ID === myID) video.muted = true;
-					video.srcObject = user.src;
+					video.srcObject = user.stream;
 					video.id = user.ID;
 					video.autoplay = true;
 					video.style.width = '100%';
 					video.style.height = 'auto';
-					roomContainer.appendChild(video);
-					return null;
+					roomContainer.appendChild(video);*/
+					return <VideoStream key={user.ID} myID={myID} user={user} />;
 				})}
 			</Paper>
 		</Paper>
