@@ -25,10 +25,8 @@ export const createSocketVoice = (channelID) => {
 				reconnectionAttempts: 15,
 			});
 			dispatch(setVoiceSocket(socket));
-
 			const peer = new Peer();
 			dispatch(setPeer(peer));
-
 			dispatch(initializeSocketEvents());
 			dispatch(initializePeersEvents());
 		} catch (error) {
@@ -146,7 +144,6 @@ export const setStreaming = (boolean) => {
 };
 
 export const setStreamings = (streamings) => {
-	console.log('super ño');
 	return {
 		type: SET_STREAMINGS,
 		payload: streamings,

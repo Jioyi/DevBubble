@@ -13,6 +13,7 @@ import CreateOrAddGroup from './components/CreateOrAddGroup';
 import GroupList from './components/GroupList';
 import ChannelsList from './components/ChannelList';
 import MenuOpenCall from './components/MenuOpenCall';
+import DirectMessagesList from './components/DirectMessagesList';
 
 const drawerWidth = 300;
 
@@ -128,9 +129,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Nav = () => {
 	const classes = useStyles();
+	const [group, setGroup] = useState(null);
 	const [openCall, setOpenCall] = useState(false);
 	const { user } = useSelector((state) => state.auth);
 	const { streaming } = useSelector((state) => state.voice);
+	const { groups, groupSelectedID } = useSelector((state) => state.group);
 
 	useEffect(() => {
 		if (streaming) {
@@ -140,12 +143,16 @@ const Nav = () => {
 		}
 	}, [streaming]);
 
+	useEffect(() => {
+		setGroup(groups.find((group) => group.ID === groupSelectedID));
+	}, [groupSelectedID, groups]);
+
 	return (
 		<div className={classes.root}>
 			<AppBar position="fixed" className={classes.appBar}>
 				<Toolbar className={classes.toolbar}>
 					<div className={classes.groupsToolbar}>
-						<GroupList />
+						<GroupList group={group} groups={groups} />
 						<div className={classes.maxWidth}></div>
 						<CreateOrAddGroup />
 					</div>
@@ -164,6 +171,7 @@ const Nav = () => {
 					})}
 				>
 					<ChannelsList />
+					<DirectMessagesList />					
 				</div>
 				<div className={classes.drawerEnd}>
 					{openCall && (

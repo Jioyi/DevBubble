@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 			color: '#ffffff',
 		},
 	},
-	iconButton: {		
+	iconButton: {
 		'padding': theme.spacing(0),
 		'margin': '6px',
 		'&:hover': {
@@ -69,12 +69,11 @@ const useStyles = makeStyles((theme) => ({
 		marginLeft: '20px',
 	},
 }));
-const GroupList = () => {
+const GroupList = ({ group, groups }) => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
-	const [group, setGroup] = useState(null);
+
 	const [open, setOpen] = useState(null);
-	const { groups, groupSelectedID } = useSelector((state) => state.group);
 
 	const handleMenuGroupsOpen = (event) => {
 		setOpen(event.currentTarget);
@@ -88,10 +87,6 @@ const GroupList = () => {
 		dispatch(setGroupSelectedID(ID));
 		setOpen(null);
 	};
-
-	useEffect(() => {
-		setGroup(groups.find((group) => group.ID === groupSelectedID));
-	}, [groupSelectedID, groups]);
 
 	return (
 		<div className={classes.root}>

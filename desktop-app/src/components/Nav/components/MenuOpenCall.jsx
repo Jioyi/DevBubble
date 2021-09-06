@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import useSound from 'use-sound';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -8,6 +9,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ScreenShareIcon from '@material-ui/icons/ScreenShare';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import CallIcon from '@material-ui/icons/Call';
+//sounds
+import SoundCancel from './../../../assets/sounds/cancel.wav';
 //actions
 import { disconnectVoiceChannel } from '../../../redux/actions';
 
@@ -62,9 +65,11 @@ const useStyles = makeStyles((theme) => ({
 const MenuOpenCall = () => {
 	const dispatch = useDispatch();
 	const classes = useStyles();
+	const [playCancelConfirm] = useSound(SoundCancel);
 
 	const handleDisconect = () => {
 		dispatch(disconnectVoiceChannel());
+		playCancelConfirm();
 	};
 
 	return (

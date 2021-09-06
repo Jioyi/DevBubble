@@ -11,6 +11,7 @@ const VideoStream = ({ user, myID }) => {
 		video.style.width = '100%';
 		video.style.height = 'auto';
 		container.appendChild(video);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return <div id={`container-${user.ID}`}></div>;

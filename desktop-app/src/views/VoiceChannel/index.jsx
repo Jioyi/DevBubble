@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
 
 const VoiceChannel = () => {
 	const classes = useStyles();
-	const roomContainer = document.getElementById('room-container');
 	const { streamings } = useSelector((state) => state.voice);
 	const myID = useSelector((state) => state.auth.user.ID);
 
@@ -44,16 +43,7 @@ const VoiceChannel = () => {
 			<div className={classes.offset}></div>
 			<Nav />
 			<Paper className={classes.page}>
-				<div id="room-container"></div>
 				{streamings.map((user) => {
-					/*const video = document.createElement('video');
-					if (user.ID === myID) video.muted = true;
-					video.srcObject = user.stream;
-					video.id = user.ID;
-					video.autoplay = true;
-					video.style.width = '100%';
-					video.style.height = 'auto';
-					roomContainer.appendChild(video);*/
 					return <VideoStream key={user.ID} myID={myID} user={user} />;
 				})}
 			</Paper>
