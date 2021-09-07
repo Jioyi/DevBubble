@@ -18,7 +18,7 @@ router.post('/login', async (req, res, next) => {
 			where: {
 				email: email,
 			},
-			attributes: ['ID', 'email', 'avatar', 'password'],
+			attributes: ['ID', 'email', 'avatar', 'password', 'username'],
 		});
 		if (!user) {
 			return res.status(400).json({
@@ -49,12 +49,12 @@ router.get('/check_token', checkToken, async (req, res, next) => {
 	try {
 		const user = await User.findOne({
 			where: { ID: req.user.ID },
-			attributes: ['ID', 'email', 'avatar', 'state'],
+			attributes: ['ID', 'email', 'avatar', 'state', 'username'],
 			include: [
 				{
 					model: Group,
 					as: 'groups',
-					attributes: ['ID', 'name', 'image',"ownerID"],
+					attributes: ['ID', 'name', 'image', 'ownerID'],
 					through: {
 						attributes: [],
 					},

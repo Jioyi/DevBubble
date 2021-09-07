@@ -10,4 +10,5 @@ router.use('/group', require('./group'));
 router.use('/images', require('./images'));
 router.use('/user', require('./user'));
 router.use('/channel', require('./channel'));
+router.use('/directMessage', require('./directMessage'));
 module.exports = router;

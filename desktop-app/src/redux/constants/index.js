@@ -22,6 +22,9 @@ export const SET_PEER = 'SET_PEER';
 export const SET_STREAMING = 'SET_STREAMING';
 export const SET_STREAMINGS = 'SET_STREAMINGS';
 export const ADD_STREAMING = 'ADD_STREAMING';
+// constants message
+export const SET_DIRECT_MESSAGES = 'SET_DIRECT_MESSAGES';
+
 
 
 

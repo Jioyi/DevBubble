@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useDispatch, useSelector } from 'react-redux';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -7,6 +8,8 @@ import Collapse from '@material-ui/core/Collapse';
 //icons
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+//actions
+import { getDirectMessages } from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -45,11 +48,19 @@ const useStyles = makeStyles((theme) => ({
 
 const DirectMessagesList = () => {
 	const classes = useStyles();
+	const dispatch = useDispatch();
 	const [open, setOpen] = useState(true);
+	const { directMessages } = useSelector((state) => state.message);
 
 	const handleOpen = () => {
 		setOpen(!open);
 	};
+
+	useEffect(() => {
+		if (open) {
+			dispatch(getDirectMessages());
+		}
+	}, [dispatch, open]);
 
 	return (
 		<div className={classes.root}>
@@ -66,9 +77,20 @@ const DirectMessagesList = () => {
 					/>
 				</ListItem>
 				<Collapse in={open} timeout="auto" unmountOnExit>
-					<ListItem className={classes.listItem} component="div" disablePadding>
-						ss
-					</ListItem>
+					{open &&
+						directMessages.map((DirectMessage) => {
+							return (
+								<ListItem
+									key={DirectMessage.ID}
+									className={classes.listItem}
+									component="div"
+								>
+									{DirectMessage.users.map((user) => {
+										return <div key={user.ID}>{user.username}</div>;
+									})}
+								</ListItem>
+							);
+						})}
 					{/*textChannels.map((channel) => {
 						return (
 							<List
