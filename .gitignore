@@ -2,6 +2,7 @@
 psd/
 # images upload directories
 imagesUpload/
+imagesAvatar/
 # Logs
 logs
 *.log
@@ -39,7 +40,7 @@ bower_components
 .lock-wscript
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
+build/release
 
 # Dependency directories
 node_modules/

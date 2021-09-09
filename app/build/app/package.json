@@ -1,0 +1,19 @@
+{
+  "name": "app",
+  "productName": "DevBubble",
+  "version": "1.0.0",
+  "description": "DevBubble is an application based on Webpack, Electron, React, JS, TS, Redux, Socket io to be able to create workgroups and join other existing groups within the network.",
+  "main": "./dist/main/main.js",
+  "author": {
+    "name": "Carlos Alberto Agreda Anchaise",
+    "email": "karlosagreda@hotmail.com",
+    "url": "https://github.com/Jioyi/DevBubble"
+  },
+  "scripts": {
+    "electron-rebuild": "node -r ../../.configs/scripts/babel-register.js ../../.configs/scripts/electron-rebuild.js",
+    "link-modules": "node -r ../../.configs/scripts/babel-register.js ../../.configs/scripts/link-modules.js",
+    "postinstall": "yarn electron-rebuild && yarn link-modules"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}
