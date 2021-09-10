@@ -16,6 +16,8 @@ import MenuOpenCall from './components/MenuOpenCall';
 import DirectMessagesList from './components/DirectMessagesList';
 
 const drawerWidth = 300;
+const isElectron = require('is-electron');
+const electron = isElectron();
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   appBar: {
     boxShadow: 'none',
-    marginTop: '28px',
+    marginTop: electron ? '28px' : '0px',
     backgroundColor: '#36393f',
     zIndex: theme.zIndex.drawer + 1,
   },
@@ -39,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   drawer: {
-    marginTop: '92px',
+    flexShrink: 0,
+    marginTop: electron ? '92px' : '64px',
     backgroundColor: '#2f3136',
     width: drawerWidth,
     overflowY: 'hidden',
@@ -47,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerMiddle: {
     padding: '0px',
-    paddingBottom: '156px',
+    paddingBottom: electron ? '156px' : '128px',
     overflowY: 'auto',
     '&::-webkit-scrollbar': {
       width: '0.4em',
@@ -63,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     },
     '&::-webkit-scrollbar-track-piece:end': {
       background: 'transparent',
-      marginBottom: '156px',
+      marginBottom: electron ? '156px' : '128px',
     },
     '&::-webkit-scrollbar-track-piece:start': {
       background: 'transparent',
@@ -71,8 +74,7 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'hidden',
   },
   drawerMiddleCall: {
-    padding: '0px',
-    paddingBottom: '240px',
+    paddingBottom: electron ? '214px' : '186px',
     overflowY: 'auto',
     '&::-webkit-scrollbar': {
       width: '0.4em',
@@ -88,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     },
     '&::-webkit-scrollbar-track-piece:end': {
       background: 'transparent',
-      marginBottom: '240px',
+      marginBottom: electron ? '214px' : '186px',
     },
     '&::-webkit-scrollbar-track-piece:start': {
       background: 'transparent',
@@ -180,7 +182,7 @@ const Nav = () => {
               <Divider className={classes.divider} />
             </>
           )}
-          {<UserState user={user} />}
+          <UserState user={user} />
         </div>
       </Drawer>
     </>

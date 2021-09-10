@@ -12,9 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './views/Login';
 import Home from './views/Home';
 import VoiceChannel from './views/VoiceChannel';
-/*
-
-import DirectMessage from './views/DirectMessage';*/
+import DirectMessage from './views/DirectMessage';
 //actions
 import { setLoading, checkToken } from './redux/actions';
 const isElectron = require('is-electron');
@@ -64,11 +62,7 @@ const App = () => {
         <GuestRoute path="/" exact component={Login} />
         <ProtectedRoute path="/home" exact component={Home} />
         <ProtectedRoute path="/voice_channel" exact component={VoiceChannel} />
-        {/* 
-				
-				
-				<ProtectedRoute path="/direct_message/:ID" exact component={DirectMessage} />
-				*/}
+        <ProtectedRoute path="/direct_message/:ID" exact component={DirectMessage} />
         <Route path="*" render={() => <Redirect to="/" />} />
       </Switch>
     </div>

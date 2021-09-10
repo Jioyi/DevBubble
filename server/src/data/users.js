@@ -8,7 +8,7 @@ const users = [
 		password: Bcrypt.hashSync('123456', 10),
 	},
 	{
-		ID: uuidv4(),
+		ID: '5aabf741-481b-498e-ae96-62a643a12d82',
 		username: "karlos198",
 		email: 'karlosagreda2@hotmail.com',
 		password: Bcrypt.hashSync('123456', 10),

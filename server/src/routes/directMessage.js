@@ -27,7 +27,7 @@ router.get('/', checkToken, async (req, res, next) => {
 		});
 		return res.json({
 			message: 'successful',
-			direct_messages: user.direct_messages,
+			direct_messages: user.direct_messages ? user.direct_messages : [],
 		});
 	} catch (error) {
 		next(error);

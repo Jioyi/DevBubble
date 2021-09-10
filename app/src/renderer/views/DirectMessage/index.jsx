@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     backgroundColor: '#36393f',
     overflowY: 'scroll',    
-    paddingTop: electron ? '234px' : '362px',
+    paddingTop: electron ? '262px' : '234px',
     height: electron ? 'calc(100% - 92px)' : 'calc(100% - 64px)',
     width: 'calc(100% - 300px)',
     alignItems: 'center',
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = () => {
+const DirectMessage = () => {
   const classes = useStyles();
   return (
     <Paper className={classes.paper}>
@@ -87,4 +87,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default DirectMessage;
