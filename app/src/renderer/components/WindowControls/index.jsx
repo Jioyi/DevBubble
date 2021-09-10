@@ -1,14 +1,13 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
-
-//import { minimize, maximize, close } from '../../redux/actions';
-
 import Typography from '@material-ui/core/Typography';
 //icons
 import CloseIcon from '@material-ui/icons/Close';
 import MinimizeIcon from '@material-ui/icons/Minimize';
 import WebAssetIcon from '@material-ui/icons/WebAsset';
+//actions
+import { minimize, maximize, close } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,28 +65,29 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     fontSize: '0.8rem',
     color: '#747f8d',
-    fontWeight: 600,
+    fontWeight: 'bold',
   },
 }));
 
 const WindowControls = () => {
+  const { TITTLE } = process.env;
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const handleOnMinimize = () => {
-    //dispatch(minimize());
+    dispatch(minimize());
   };
 
   const handleOnMaximize = () => {
-    //dispatch(maximize());
+    dispatch(maximize());
   };
   const handleOnClose = () => {
-    //dispatch(close());
+    dispatch(close());
   };
-  
+
   return (
     <div className={classes.root}>
-      <Typography className={classes.tittle}>Dev Bubble</Typography>
+      <Typography className={classes.tittle}>{TITTLE}</Typography>
       <div id="drag-region" className={classes.max}></div>
       <div onClick={handleOnMinimize} className={classes.button}>
         <MinimizeIcon className={classes.icon} />

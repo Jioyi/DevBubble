@@ -7,7 +7,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-//import { login } from '../../redux/actions';
+import { login } from '../../redux/actions';
 import imageLogin from './../../assets/images/login.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -131,17 +131,17 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = () => {
 	const dispatch = useDispatch();
-	const [stateAuth, setStateAuth] = React.useState('login');
-	const [inputLogin, setInputLogin] = React.useState({
+	const [stateAuth, setStateAuth] = useState('login');
+	const [inputLogin, setInputLogin] = useState({
 		email: 'karlosagreda@hotmail.com',
 		password: '123456',
 	});
-	const [inputRegister, setInputRegister] = React.useState({
+	const [inputRegister, setInputRegister] = useState({
 		username: '',
 		email: '',
 		password: '',
 	});
-	const [inputRecoveryPassword, setInputRecoveryPassword] = React.useState({
+	const [inputRecoveryPassword, setInputRecoveryPassword] = useState({
 		email: '',
 	});
 	const classes = useStyles();
@@ -165,7 +165,7 @@ const Login = () => {
 	};
 
 	const handleOnSubmitLogin = () => {
-		//dispatch(login(inputLogin.email, inputLogin.password));
+		dispatch(login(inputLogin.email, inputLogin.password));
 	};
 	const handleOnSubmitRegister = () => {};
 	const handleOnSubmitRecoveryPassword = () => {};

@@ -2,18 +2,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Dev Bubble</title>
+    <title>DevBubble</title>
   </head>
   <body>
     <div id="root"></div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
   </body>
   <script>
-    window.electron.ipcRenderer.once('ipc-example', (arg) => {
-      // eslint-disable-next-line no-console
-      console.log(arg);
+    /*window.api.receive('fromMain', (data) => {
+      console.log(`Received ${data} from main process`);
     });
-
-    window.electron.ipcRenderer.myPing();
+    window.api.send('toMain', 'some data');*/
   </script>
 </html>

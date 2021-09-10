@@ -35,12 +35,18 @@ export default {
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     modules: [webpackPaths.srcPath, 'node_modules'],
+    /*fallback: {
+      fs: false,
+    },*/
   },
-
   plugins: [
     new Dotenv(),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production',
     }),
+    new webpack.ExternalsPlugin('commonjs', ['electron']),
   ],
+  externals: {
+    electron: 'electron',
+  },
 };
