@@ -198,6 +198,11 @@ export default merge(baseConfig, {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
         use: 'file-loader',
       },
+      // WAV Sound
+      {
+        test: /\.wav$/,
+        use: 'file-loader',
+      },
       // SVG Font
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,

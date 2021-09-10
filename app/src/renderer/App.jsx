@@ -7,13 +7,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Loading from './components/Loading';
 import WindowControls from './components/WindowControls';
 import GuestRoute from './components/GuestRoute';
-/*
 import ProtectedRoute from './components/ProtectedRoute';
-*/
 //views
 import Login from './views/Login';
-/*import Home from './views/Home';
+import Home from './views/Home';
 import VoiceChannel from './views/VoiceChannel';
+/*
+
 import DirectMessage from './views/DirectMessage';*/
 //actions
 import { setLoading, checkToken } from './redux/actions';
@@ -61,10 +61,12 @@ const App = () => {
       <CssBaseline />
       {electron && <WindowControls />}
       <Switch>
-        <GuestRoute path="*" exact component={Login} />
+        <GuestRoute path="/" exact component={Login} />
+        <ProtectedRoute path="/home" exact component={Home} />
+        <ProtectedRoute path="/voice_channel" exact component={VoiceChannel} />
         {/* 
-				<ProtectedRoute path="/home" exact component={Home} />
-				<ProtectedRoute path="/voice_channel" exact component={VoiceChannel} />
+				
+				
 				<ProtectedRoute path="/direct_message/:ID" exact component={DirectMessage} />
 				*/}
         <Route path="*" render={() => <Redirect to="/" />} />

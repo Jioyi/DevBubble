@@ -1,3 +1,4 @@
+import store from '../store/myStore';
 import * as API from '../API';
 import {
   SET_TOKEN,
@@ -5,9 +6,9 @@ import {
   SET_AUTHENTICATE,
   SET_LOADING,
 } from '../constants';
-//import { setGroups } from './group';
-//import { ConnectServerIO } from './socket';
-//import { setUserState } from './ui';
+import { ConnectServerIO } from './socket';
+import { setUserState } from './ui';
+import { setGroups } from './group';
 
 export const checkToken = () => {
   return async (dispatch) => {
@@ -15,11 +16,11 @@ export const checkToken = () => {
       const response = await API.checkToken();
       if (response.data?.message === 'successful') {
         console.log('check', response.data);
-        dispatch(setUser(response.data.user));
+        dispatch(setUser(response.data.user)); 
         dispatch(setToken(response.data.token));
-        //dispatch(setUserState(response.data.user.state));
-        //dispatch(setGroups(response.data.groups));
-        //dispatch(ConnectServerIO(response.data.token));
+        dispatch(setUserState(response.data.user.state));
+        dispatch(setGroups(response.data.groups));
+        dispatch(ConnectServerIO(response.data.token));
       } else {
         dispatch(logOut());
         dispatch(setLoading(false));
@@ -52,8 +53,8 @@ export const login = (email, password) => {
 
 export const logOut = () => {
   return (dispatch) => {
-    window.localStorage.removeItem('user');
-    window.localStorage.removeItem('access_token');
+    store.removeItem('user');
+    store.removeItem('access_token');
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setAuthenticate(false));
@@ -61,7 +62,7 @@ export const logOut = () => {
 };
 
 export const setUser = (user) => {
-  window.localStorage.setItem('user', JSON.stringify(user));
+  store.setItem('user', JSON.stringify(user));
   return {
     type: SET_USER,
     payload: user,
@@ -69,7 +70,7 @@ export const setUser = (user) => {
 };
 
 export const setToken = (token) => {
-  window.localStorage.setItem('access_token', token);
+  store.setItem('access_token', token);
   return {
     type: SET_TOKEN,
     payload: token,

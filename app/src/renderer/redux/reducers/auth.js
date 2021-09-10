@@ -4,9 +4,10 @@ import {
   SET_AUTHENTICATE,
   SET_LOADING,
 } from '../constants';
+import store from '../store/myStore';
 
-const user = JSON.parse(window.localStorage.getItem('user'));
-const token = window.localStorage.getItem('access_token');
+const user = JSON.parse(store.getItem('user'));
+const token = store.getItem('access_token');
 
 const initialState = {
   user: user ? user : null,

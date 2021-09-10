@@ -3,7 +3,10 @@ module.exports = {
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
-    'no-use-before-define': [2, { functions: false, classes: true }],
+    'no-use-before-define': [
+      2,
+      { functions: false, classes: false, variables: false },
+    ],
   },
   parserOptions: {
     ecmaVersion: 2020,
