@@ -1,8 +1,9 @@
-const { User, Group, Channel, DirectMessage } = require('../db.js');
+const { User, Group, Channel, DirectMessage, Message } = require('../db.js');
 const users = require('./users');
 const groups = require('./groups');
 const channels = require('./channels');
 const directMessages = require('./directMessages');
+const messages = require('./messages');
 const preload = async () => {
 	try {
 		const usersCreated = await User.bulkCreate(users);
@@ -24,6 +25,7 @@ const preload = async () => {
 		);
 		await directMessagesCreated[0].addUser(usersCreated[0]);
 		await directMessagesCreated[0].addUser(usersCreated[1]);
+		const messagesCreadted = await Message.bulkCreate(messages);
 		//await usersCreated[0].addDirect_message(directMessagesCreated[0]);
 
 		/*const use = await User.findByPk(usersCreated[0].ID, {

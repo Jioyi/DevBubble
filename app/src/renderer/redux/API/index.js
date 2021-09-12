@@ -35,4 +35,7 @@ export const createGroup = (data) =>
 //channel route
 export const getChannels = (groupID) => API.get(`/channel/${groupID}`);
 //directMessage route
+export const getMessages = (DirectMessageID) => API.get(`/directMessage/find/${DirectMessageID}`);
 export const getDirectMessages = () => API.get(`/directMessage/`);
+export const sendMessage = (data) => API.post(`/directMessage/`, data);
+

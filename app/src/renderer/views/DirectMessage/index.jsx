@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { MentionsInput, Mention } from 'react-mentions';
 import Paper from '@material-ui/core/Paper';
@@ -14,6 +16,11 @@ import SendIcon from '@material-ui/icons/Send';
 import defaultStyle from './defaultStyle.js';
 import classNames from './style.css';
 import useValue from './useValue.jsx';
+import {
+  sendMessage,
+  getMessages,
+  clearMessages,
+} from 'renderer/redux/actions';
 
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
@@ -121,9 +128,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectMessage = () => {
+  const { messages } = useSelector((state) => state.message);
+  const { ID } = useParams();
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
+  const [emojis, setEmojis] = useState([]);
   const [value, onChange, onAdd] = useValue('');
+  const neverMatchingRegex = /($a)/;
 
   const getUsers = async () => {
     const response = await axios.get(`${SERVER_API_URL}/user`);
@@ -137,57 +149,44 @@ const DirectMessage = () => {
     }
   };
 
+  const getEmojis = async () => {
+    const response = await axios.get(`${SERVER_API_URL}/emojis`);
+    if (response?.data?.message === 'successful') {
+      setEmojis(response.data.emojis);
+    }
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const searchEmoji = (query, callback) => {
+    if (query.length === 0) return;
+    const matches = emojis
+      .filter((emoji) => {
+        return emoji.name.indexOf(query.toLowerCase()) > -1;
+      })
+      .slice(0, 10);
+    return matches.map(({ emoji }) => ({ id: emoji }));
+  };
+
   const handleOnSubmitMessage = () => {
-    console.log(value);
+    const data = { ID: ID, message: value };
+    dispatch(sendMessage(data));
   };
 
   useEffect(() => {
+    dispatch(getMessages(ID));
     getUsers();
+    getEmojis();
+    return () => dispatch(clearMessages());
   }, []);
 
   return (
     <Paper className={classes.paper}>
       <Nav />
       <Box className={classes.page}>
-        <Box
-          className={classes.single}
-          style={{ maxHeight: '100vh', overflow: 'auto' }}
-        >
-          <div>aaa</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>ssss</div>
-          <div>sss</div>
-          <div>kkkk</div>
+        <Box className={classes.single}>
+          {messages.map((message) => {
+            return <div key={message.ID}>{message.user.username} : {message.content}s</div>;
+          })}
         </Box>
       </Box>
       <div className={classes.end}>
@@ -231,6 +230,12 @@ const DirectMessage = () => {
                 {highlightedDisplay}
               </div>
             )}
+          />
+          <Mention
+            trigger=":"
+            markup="__id__"
+            regex={neverMatchingRegex}
+            data={searchEmoji}
           />
         </MentionsInput>
         <div className={classes.endSend}>

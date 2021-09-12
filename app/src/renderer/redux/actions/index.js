@@ -10,4 +10,4 @@ export {
 } from './ui';
 export { createGroup, setGroupSelectedID, getChannels } from './group';
 export { createSocketVoice, disconnectVoiceChannel } from './voice';
-export { getDirectMessages } from './message';
+export { getDirectMessages, sendMessage, getMessages, clearMessages } from './message';

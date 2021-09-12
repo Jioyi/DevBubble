@@ -20,12 +20,11 @@ models.push(require('./models/User'));
 models.push(require('./models/Group'));
 models.push(require('./models/Channel'));
 models.push(require('./models/DirectMessage'));
-models.push(require('./models/UserToDirectMessage'));
 models.push(require('./models/Message'));
 
 models.forEach((model) => model(sequelize));
 
-const { User, Group, Channel, DirectMessage, UserToDirectMessage, Message } =
+const { User, Group, Channel, DirectMessage, Message } =
 	sequelize.models;
 
 //relacion user a grupos como creador del grupo
@@ -61,11 +60,11 @@ DirectMessage.belongsToMany(User, {
 	otherKey: 'UserID',
 });
 
-DirectMessage.hasMany(Message);
-Message.belongsTo(DirectMessage);
+DirectMessage.hasMany(Message, { as: 'messages', foreignKey: 'DirectMessageID' });
+Message.belongsTo(DirectMessage, { as: 'messages', foreignKey: 'DirectMessageID' });
 
-User.hasMany(Message);
-Message.belongsTo(User);
+User.hasMany(Message, { as: 'user', foreignKey: 'UserID' });
+Message.belongsTo(User, { as: 'user', foreignKey: 'UserID' });
 
 module.exports = {
 	...sequelize.models,
