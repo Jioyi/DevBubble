@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import axios from 'axios';
+import { MentionsInput, Mention } from 'react-mentions';
 import Paper from '@material-ui/core/Paper';
 import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
-//components
-import CustomEditorText from 'renderer/components/CustomEditorText';
 //icons
 import AddIcon from '@material-ui/icons/Add';
 import SendIcon from '@material-ui/icons/Send';
+//internal files
+import defaultStyle from './defaultStyle.js';
+import classNames from './style.css';
+import useValue from './useValue.jsx';
 
+const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
 const electron = isElectron();
 
@@ -26,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
   },
   paper: {
-    
     backgroundColor: '#36393f',
     padding: theme.spacing(0),
     margin: theme.spacing(0),
@@ -118,6 +122,29 @@ const useStyles = makeStyles((theme) => ({
 
 const DirectMessage = () => {
   const classes = useStyles();
+  const [users, setUsers] = useState([]);
+  const [value, onChange, onAdd] = useValue('');
+
+  const getUsers = async () => {
+    const response = await axios.get(`${SERVER_API_URL}/user`);
+    if (response?.data?.message === 'successful') {
+      const usersOdered = response.data.users.map((user) => ({
+        display: user.username,
+        id: user.ID,
+        avatar: user.avatar,
+      }));
+      setUsers(usersOdered);
+    }
+  };
+
+  const handleOnSubmitMessage = () => {
+    console.log(value);
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   return (
     <Paper className={classes.paper}>
       <Nav />
@@ -171,10 +198,48 @@ const DirectMessage = () => {
             </IconButton>
           </TextTooltip>
         </div>
-        <CustomEditorText />
+        <MentionsInput
+          id="my-textarea"
+          value={value}
+          onChange={onChange}
+          style={defaultStyle}
+          placeholder={'Enviar mensaje!'}
+          className="mentions"
+          classNames={classNames}
+          allowSuggestionsAboveCursor={true}
+          a11ySuggestionsListLabel={'mensiones sugeridas!'}
+        >
+          <Mention
+            suggestionsPosition={'top'}
+            trigger="@"
+            data={users}
+            markup="@@@____id__^^^____display__@@@^^^"
+            displayTransform={(userID) => {
+              const userTarget = users.find((user) => user.id === userID);
+              return `@${userTarget.display}`;
+            }}
+            onAdd={onAdd}
+            className={classNames.mentions__mention}
+            renderSuggestion={(
+              suggestion,
+              search,
+              highlightedDisplay,
+              index,
+              focused
+            ) => (
+              <div className={`user ${focused ? 'focused' : ''}`}>
+                {highlightedDisplay}
+              </div>
+            )}
+          />
+        </MentionsInput>
         <div className={classes.endSend}>
           <TextTooltip title="Enviar mensaje" placement="top">
-            <IconButton color="inherit" className={classes.iconButton}>
+            <IconButton
+              onClick={handleOnSubmitMessage}
+              color="inherit"
+              className={classes.iconButton}
+            >
               <SendIcon className={classes.sendIcon} />
             </IconButton>
           </TextTooltip>

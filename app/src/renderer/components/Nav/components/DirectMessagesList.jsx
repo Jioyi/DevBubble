@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 		width: '14px',
 		color: '#faa81a',
 	},
-	iconDoNotDisturb: {
+	iconDoNotDisturbStroke: {
 		stroke: '#292b2f',
 		strokeWidth: 2,
 		height: '14px',
@@ -198,29 +198,6 @@ const DirectMessagesList = () => {
 								</ListItem>
 							);
 						})}
-					{/*textChannels.map((channel) => {
-						return (
-							<List
-								className={classes.subList}
-								key={channel.ID}
-								component="div"
-								disablePadding
-							>
-								<ListItem>
-									<TextFieldsIcon className={classes.listItemIconChannel} />
-									<ListItemText
-										classes={{ primary: classes.listItemTextChannel }}
-										primary={channel.name}
-									/>
-								</ListItem>
-								<TextTooltip title="Editar canal" placement="top">
-									<IconButton color="inherit" className={classes.iconButton}>
-										<SettingsIcon className={classes.listItemIconChannel} />
-									</IconButton>
-								</TextTooltip>
-							</List>
-						);
-					})*/}
 				</Collapse>
 			</List>
 		</div>
