@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
   },
   toolbar: {
+    minHeight: '64px',
     flexGrow: 1,
     borderRight: '2px solid #202225',
     borderBottom: '2px solid #202225',

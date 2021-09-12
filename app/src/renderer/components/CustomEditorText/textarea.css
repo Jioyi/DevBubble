@@ -1,0 +1,13 @@
+textarea:focus {
+  outline: none;
+}
+
+textarea::-webkit-scrollbar {
+  background-color: #40444b;
+  width: 6px;
+}
+textarea::-webkit-scrollbar-thumb {
+  background-color: #202226;
+  outline: '0px solid slategrey';
+  border-radius: 3px;
+}
