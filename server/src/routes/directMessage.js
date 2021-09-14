@@ -62,12 +62,12 @@ router.get('/find/:ID', checkToken, async (req, res, next) => {
 				{
 					model: Message,
 					as: 'messages',
-					attributes: ['ID', 'content'],
+					attributes: ['ID', 'content', 'createdAt'],
 					include: [
 						{
 							model: User,
 							as: 'user',
-							attributes: ['ID', 'username', "avatar"],
+							attributes: ['ID', 'username', 'avatar'],
 						},
 					],
 				},

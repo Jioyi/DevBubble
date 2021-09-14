@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { MentionsInput, Mention } from 'react-mentions';
+import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
@@ -101,9 +103,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   single: {
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
+    display: 'inline-block',
+    alignSelf: 'flex-end',
     overflowY: 'auto',
     overflowX: 'hidden',
     '&::-webkit-scrollbar': {
@@ -124,6 +125,41 @@ const useStyles = makeStyles((theme) => ({
     '&::-webkit-scrollbar-track-piece:start': {
       background: 'transparent',
     },
+  },
+  chatBox: {
+    display: 'flex',
+    marginBottom: '15px',
+  },
+  chatBoxAvatar: {
+    display: 'flex',
+    height: '40px',
+    width: '40px',
+    marginLeft: '15px',
+    marginRight: '15px',
+  },
+  chatBoxUsername: {
+    display: 'flex',
+  },
+  chatBoxContent: {
+    display: 'flex',
+    color: '#fff',
+  },
+  chatBoxTypoUsername: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#fff',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    paddingRight: '6px',
+  },
+  chatBoxTypoDate: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#5f6a79',
+    fontSize: '0.7rem',
+    fontWeight: 'normal',
   },
 }));
 
@@ -169,7 +205,38 @@ const DirectMessage = () => {
 
   const handleOnSubmitMessage = () => {
     const data = { ID: ID, message: value };
+    onChange('');
     dispatch(sendMessage(data));
+  };
+
+  const filterContent = (content) => {
+    let newContent = content;
+    newContent = newContent.split('@@@__').join('<a href="/user/');
+    newContent = newContent.split('^^^__').join(`">@`);
+    newContent = newContent.split('@@@^^^').join('</a>');
+    return newContent;
+  };
+
+  const calculateDate = (time) => {
+    let date = new Date(time);
+    let minutes = date.getMinutes().toString();
+    minutes = minutes.length < 2 ? `0${minutes}` : minutes;
+    let hours = date.getHours().toString();
+    hours = hours.length < 2 ? `0${hours}` : hours;
+    let day = date.getDate().toString();
+    let month = (date.getMonth() + 1).toString();
+    let year = date.getFullYear();
+    let diff = (new Date().getTime() - date.getTime()) / 1000;
+    let day_diff = Math.floor(diff / 86400);
+    if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31) return;
+
+    if (day_diff === 0) {
+      return `hoy a las ${hours}:${minutes}`;
+    } else if (day_diff === 1) {
+      return `ayer a las ${hours}:${minutes}`;
+    } else {
+      return `${day}/${month}/${year}`;
+    }
   };
 
   useEffect(() => {
@@ -185,7 +252,31 @@ const DirectMessage = () => {
       <Box className={classes.page}>
         <Box className={classes.single}>
           {messages.map((message) => {
-            return <div key={message.ID}>{message.user.username} : {message.content}s</div>;
+            return (
+              <Box key={message.ID} className={classes.chatBox}>
+                <Avatar
+                  className={classes.chatBoxAvatar}
+                  alt="user-picture"
+                  src={`${SERVER_API_URL}/avatars/${message.user.avatar}`}
+                />
+                <Box>
+                  <Box className={classes.chatBoxUsername}>
+                    <Typography className={classes.chatBoxTypoUsername}>
+                      {message.user.username}
+                    </Typography>
+                    <Typography className={classes.chatBoxTypoDate}>
+                      {calculateDate(message.createdAt)}
+                    </Typography>
+                  </Box>
+                  <Box
+                    className={classes.chatBoxContent}
+                    dangerouslySetInnerHTML={{
+                      __html: filterContent(message.content),
+                    }}
+                  />
+                </Box>
+              </Box>
+            );
           })}
         </Box>
       </Box>
