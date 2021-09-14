@@ -5,14 +5,13 @@ const { User, Group } = require('../db.js');
 const middlewareUploadFile = require('../utils/middlewareUploadFile');
 const { v4: uuidv4 } = require('uuid');
 const sharp = require('sharp');
+const path = require('path');
 
 router.post('/', checkToken, middlewareUploadFile, async (req, res, next) => {
 	try {
 		const { name } = req.body;
 		if (req.file === undefined) {
-			return res
-				.status(400)
-				.send({ message: 'invalid image type!' });
+			return res.status(400).send({ message: 'invalid image type!' });
 		}
 		if (!name || name === '') {
 			return res
@@ -23,7 +22,7 @@ router.post('/', checkToken, middlewareUploadFile, async (req, res, next) => {
 			sharp(req.file.path)
 				.resize(250)
 				.toFile(
-					`${__dirname}../../imagesUpload/resize/${req.file.filename}`,
+					path.join(__dirname, `/../imagesUpload/resize/${req.file.filename}`),
 					(error, info) => {
 						if (error) {
 							next(error);

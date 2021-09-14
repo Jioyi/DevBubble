@@ -6,10 +6,10 @@ const path = require('path');
 
 let storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		if (file.mimetype == 'image/gif') {
-			cb(null, __dirname + '../../imagesUpload/animated/');
+		if (file.mimetype == 'image/gif') {			
+			cb(null, path.join(__dirname, '/../imagesUpload/animated/'));
 		} else {
-			cb(null, __dirname + '../../imagesUpload/original/');
+			cb(null, path.join(__dirname, '/../imagesUpload/original/'));
 		}
 	},
 	filename: (req, file, cb) => {
