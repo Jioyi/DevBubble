@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const fs = require('fs');
+const path = require('path');
 
 router.get('/:image', async (req, res, next) => {
 	try {
