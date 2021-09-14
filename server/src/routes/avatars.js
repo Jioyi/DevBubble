@@ -7,10 +7,12 @@ router.get('/:image', async (req, res, next) => {
 		const { image } = req.params;
 		const extension = image.substring(image.lastIndexOf('.') + 1).toLowerCase();
 		fs.readFile(
-			__dirname +
-				`../../imagesAvatar/${
+			path.join(
+				__dirname,
+				`/../imagesAvatar/${
 					extension === 'gif' ? 'animated' : 'resize'
-				}/${image}`,
+				}/${image}`
+			),
 			(err, content) => {
 				if (err) {
 					res.writeHead(400, { 'Content-type': 'text/html' });
