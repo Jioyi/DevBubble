@@ -1,16 +1,19 @@
 const { Router } = require('express');
 const router = Router();
 const fs = require('fs');
+const path = require('path');
 
 router.get('/:image', async (req, res, next) => {
 	try {
 		const { image } = req.params;
 		const extension = image.substring(image.lastIndexOf('.') + 1).toLowerCase();
 		fs.readFile(
-			__dirname +
-				`../../imagesUpload/${
+			path.join(
+				__dirname,
+				`/../imagesUpload/${
 					extension === 'gif' ? 'animated' : 'resize'
-				}/${image}`,
+				}/${image}`
+			),
 			(err, content) => {
 				if (err) {
 					res.writeHead(400, { 'Content-type': 'text/html' });
