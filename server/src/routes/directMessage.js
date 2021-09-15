@@ -66,6 +66,7 @@ router.post('/', checkToken, async (req, res, next) => {
 	}
 });
 
+//no usada
 router.get('/find/:ID', checkToken, async (req, res, next) => {
 	try {
 		const { ID } = req.params;
@@ -90,6 +91,36 @@ router.get('/find/:ID', checkToken, async (req, res, next) => {
 		return res.json({
 			message: 'successful',
 			messages: directMessage.messages,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+router.post('/find/:ID', checkToken, async (req, res, next) => {
+	try {
+		const { ID } = req.params;
+		const { limit, offset } = req.body;
+		console.log(`test: limit-${limit} offset-${offset}`);
+		const messages = await Message.findAndCountAll({
+			where: { DirectMessageID: ID },
+			attributes: ['ID', 'content', 'createdAt'],
+			order: [['createdAt', 'DESC']],
+			include: [
+				{
+					model: User,
+					as: 'user',
+					attributes: ['ID', 'username', 'avatar'],
+				},
+			],
+			offset,
+			limit,
+		});
+		const has_more = messages.rows.length === limit ? true : false;
+		return res.json({
+			message: 'successful',
+			items: messages.rows,
+			has_more: has_more,
 		});
 	} catch (error) {
 		next(error);

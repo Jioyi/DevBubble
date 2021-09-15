@@ -1,7 +1,11 @@
 import ClientSocketIO from 'socket.io-client';
 import { SET_MAIN_SOCKET } from '../constants';
 import { setLoading } from './auth';
-import { addMessage, updateCurrentDirectMessage, updateDirectMessage } from './message';
+import {
+  addMessage,
+  updateCurrentDirectMessage,
+  updateDirectMessage,
+} from './message';
 
 const { SERVER_API_URL } = process.env;
 
@@ -24,11 +28,11 @@ export const ConnectServerIO = (token) => {
       socket.on('ALERT_NEW_MESSAGE', async (data) => {
         const location = window.location.href;
         if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
-			dispatch(addMessage(data.messageInfo));
-			dispatch(updateCurrentDirectMessage(data.directMessageInfo));
+          dispatch(addMessage(data.messageInfo));
+          dispatch(updateCurrentDirectMessage(data.directMessageInfo));
         } else {
-			dispatch(updateDirectMessage(data.directMessageInfo));
-		}
+          dispatch(updateDirectMessage(data.directMessageInfo));
+        }
       });
       dispatch(setMainSocket(socket));
     } catch (error) {

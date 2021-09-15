@@ -14,6 +14,7 @@ import GroupList from './components/GroupList';
 import ChannelsList from './components/ChannelList';
 import MenuOpenCall from './components/MenuOpenCall';
 import DirectMessagesList from './components/DirectMessagesList';
+import TopBar from '../TopBar';
 
 const drawerWidth = 300;
 const isElectron = require('is-electron');
@@ -32,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     minHeight: '64px',
     flexGrow: 1,
-    borderRight: '2px solid #202225',
-    borderBottom: '2px solid #202225',
+    borderRight: '1px solid #202225',
+    borderBottom: '1px solid #202225',
     padding: theme.spacing(0),
     margin: theme.spacing(0),
     height: '50px',
@@ -46,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: electron ? '92px' : '64px',
     backgroundColor: '#2f3136',
     width: drawerWidth,
+    minWidth: drawerWidth,
     overflowY: 'hidden',
     overflowX: 'hidden',
   },
@@ -106,6 +108,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0),
     backgroundColor: '#2f3136',
     width: `${drawerWidth}px`,
+    minWidth: `${drawerWidth}px`,
     height: '100%',
   },
   drawerEnd: {
@@ -159,7 +162,7 @@ const Nav = () => {
             <div className={classes.maxWidth}></div>
             <CreateOrAddGroup />
           </div>
-          <div className={classes.maxWidth}>max</div>
+          <TopBar />
         </Toolbar>
       </AppBar>
       <Drawer
