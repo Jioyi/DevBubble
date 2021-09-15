@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -17,7 +17,6 @@ import SendIcon from '@material-ui/icons/Send';
 //internal files
 import defaultStyle from './defaultStyle.js';
 import classNames from './style.css';
-import useValue from './useValue.jsx';
 //actions
 import {
   sendMessage,
@@ -106,6 +105,8 @@ const useStyles = makeStyles((theme) => ({
   single: {
     display: 'inline-block',
     alignSelf: 'flex-end',
+    height: "100%",
+    width: "100%",
     overflowY: 'auto',
     overflowX: 'hidden',
     '&::-webkit-scrollbar': {
@@ -166,12 +167,16 @@ const useStyles = makeStyles((theme) => ({
 
 const DirectMessage = () => {
   const { messages } = useSelector((state) => state.message);
+  const [messagesOrdered, setMessagesOrdered] = useState([]);
+  const [users, setUsers] = useState([]);
   const { ID } = useParams();
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [users, setUsers] = useState([]);
   const [emojis, setEmojis] = useState([]);
-  const [value, onChange, onAdd] = useValue('');
+  const [value, setValue] = useState({
+    content: '',
+  });
+  const onAdd = useCallback(() => {}, []);
   const neverMatchingRegex = /($a)/;
 
   const getUsers = async () => {
@@ -205,9 +210,30 @@ const DirectMessage = () => {
   };
 
   const handleOnSubmitMessage = () => {
-    const data = { ID: ID, message: value };
-    onChange('');
-    dispatch(sendMessage(data));
+    if (value.content !== '') {
+      const data = { ID: ID, message: value.content };
+      dispatch(sendMessage(data));
+      setValue({
+        content: '',
+      });
+    }
+  };
+
+  const onChange = (e, newValue) => {
+    setValue({
+      ...value,
+      content: newValue,
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.shiftKey && e.keyCode === 13) {
+      return;
+    }
+    if (e.which == 13) {
+      e.preventDefault();
+      handleOnSubmitMessage();
+    }
   };
 
   const filterContent = (content) => {
@@ -247,12 +273,16 @@ const DirectMessage = () => {
     return () => dispatch(clearMessages());
   }, []);
 
+  useEffect(() => {
+    setMessagesOrdered(messages);
+  }, [messages]);
+
   return (
     <Paper className={classes.paper}>
       <Nav />
       <Box className={classes.page}>
         <Box className={classes.single}>
-          {messages.map((message) => {
+          {messagesOrdered.map((message) => {
             return (
               <Box key={message.ID} className={classes.chatBox}>
                 <Avatar
@@ -290,10 +320,11 @@ const DirectMessage = () => {
           </TextTooltip>
         </div>
         <MentionsInput
-          id="my-textarea"
-          value={value}
+          name="content"
+          value={value.content}
           onChange={onChange}
           style={defaultStyle}
+          onKeyDown={handleKeyDown}
           placeholder={'Enviar mensaje!'}
           className="mentions"
           classNames={classNames}

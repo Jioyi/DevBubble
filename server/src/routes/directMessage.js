@@ -2,6 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const { v4: uuidv4 } = require('uuid');
 const { checkToken } = require('../security');
+const { sendAlertMessage } = require('./../alerts');
 const { User, DirectMessage, Message } = require('../db.js');
 
 router.get('/', checkToken, async (req, res, next) => {
@@ -38,14 +39,27 @@ router.get('/', checkToken, async (req, res, next) => {
 router.post('/', checkToken, async (req, res, next) => {
 	try {
 		const { ID, message } = req.body;
-		await Message.create({
+		const messageCreated = await Message.create({
 			ID: uuidv4(),
 			content: message,
 			DirectMessageID: ID,
 			UserID: req.user.ID,
 		});
+		const messageInfo = await Message.findOne({
+			where: { ID: messageCreated.ID },
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+			include: [
+				{
+					model: User,
+					as: 'user',
+					attributes: ['ID', 'username', 'avatar'],
+				},
+			],
+		});
+		sendAlertMessage(req, messageInfo);
 		return res.json({
 			message: 'successful',
+			data: messageInfo,
 		});
 	} catch (error) {
 		next(error);

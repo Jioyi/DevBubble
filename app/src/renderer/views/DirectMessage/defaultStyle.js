@@ -17,15 +17,8 @@ export default {
     control: {
       fontFamily: 'monospace',
       minHeight: 40,
-      //color: '#b9bbbe',
-      //maxHeight: 200,
-      //border: '0px',
     },
     highlighter: {
-      // boxSizing: 'border-box',
-      // overflow: 'hidden',
-      //color: '#b9bbbe',
-      // border: '0px',
     },
     input: {
       margin: 5,
@@ -34,11 +27,6 @@ export default {
       overflow: 'auto',
       padding: 8,
       color: '#b9bbbe',
-      /*padding: 9,
-      border: '1px solid silver',
-      '&:focus': {
-        color: red;
-      }*/
     },
   },
 
@@ -74,8 +62,6 @@ export default {
       border: '1px solid rgba(0,0,0,0.15)',
       fontSize: 14,
       left: 0,
-      //bottom: '100%',
-      //width: '90%',
     },
     item: {
       color: '#b9bbbe',
@@ -83,7 +69,7 @@ export default {
       borderBottom: '1px solid rgba(0,0,0,0.15)',
       '&focused': {
         color: '#fff',
-        backgroundColor: '#40444b',
+        backgroundColor: '#5865f2',
       },
     },
   },
