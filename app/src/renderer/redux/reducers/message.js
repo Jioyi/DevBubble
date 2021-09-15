@@ -1,4 +1,9 @@
-import { SET_DIRECT_MESSAGES, SET_MESSAGES } from '../constants';
+import {
+  SET_DIRECT_MESSAGES,
+  SET_MESSAGES,
+  ADD_MESSAGE,
+  UPDATE_DIRECT_MESSAGE,
+} from '../constants';
 
 const initialState = {
   directMessages: [],
@@ -13,10 +18,20 @@ const message = (state = initialState, action) => {
         ...state,
         directMessages: payload,
       };
+    case UPDATE_DIRECT_MESSAGE:
+      return {
+        ...state,
+        directMessages: payload,
+      };
     case SET_MESSAGES:
       return {
         ...state,
         messages: payload,
+      };
+    case ADD_MESSAGE:
+      return {
+        ...state,
+        messages: [...state.messages, payload],
       };
     default:
       return state;
