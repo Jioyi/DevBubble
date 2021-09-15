@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -107,6 +108,12 @@ const useStyles = makeStyles((theme) => ({
     height: '24px',
     width: '24px',
   },
+  noSelect: {
+    '-moz-user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-ms-user-select': 'none',
+    'user-select': 'none',
+  },
 }));
 
 const DirectMessagesList = () => {
@@ -194,7 +201,12 @@ const DirectMessagesList = () => {
                     );
                   })}
                   <ListItemText
-                    classes={{ primary: classes.listDirectMessageText }}
+                    classes={{
+                      primary: clsx(
+                        classes.listDirectMessageText,
+                        classes.noSelect
+                      ),
+                    }}
                     primary={
                       DirectMessage.users.length === 1
                         ? 'Tú'

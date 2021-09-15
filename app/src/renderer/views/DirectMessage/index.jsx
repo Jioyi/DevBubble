@@ -17,12 +17,16 @@ import SendIcon from '@material-ui/icons/Send';
 //internal files
 import defaultStyle from './defaultStyle.js';
 import classNames from './style.css';
+//components
+import useScroll from 'renderer/components/useScroll';
 //actions
 import {
   sendMessage,
-  getMessages,
   clearMessages,
+  setMessages,
 } from 'renderer/redux/actions';
+//utils
+import { sortDate, calculateDate, formatContent } from 'renderer/utils';
 
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
@@ -38,6 +42,8 @@ const TextTooltip = withStyles({
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+
+    borderRight: '2px solid #202225',
   },
   paper: {
     backgroundColor: '#36393f',
@@ -47,9 +53,10 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
   },
   page: {
+    borderRight: '1px solid #202225',
     display: 'flex',
     backgroundColor: '#36393f',
-    height: electron ? 'calc(100% - 92px)' : 'calc(100% - 64px)',
+    height: electron ? 'calc(100% - 86px)' : 'calc(100% - 58px)',
     width: 'calc(100% - 300px)',
     position: 'fixed',
     paddingTop: 64,
@@ -58,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '58px',
   },
   end: {
+    borderRight: '1px solid #202225',
     display: 'flex',
     position: 'fixed',
     alignItems: 'top',
@@ -103,14 +111,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   single: {
-    display: 'inline-block',
-    alignSelf: 'flex-end',
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
     '&::-webkit-scrollbar': {
-      width: '0.4em',
+      width: '0.6em',
     },
     '&::-webkit-scrollbar-track': {
       height: '0.4em',
@@ -166,10 +172,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectMessage = () => {
-  const { messages } = useSelector((state) => state.message);
-  const [messagesOrdered, setMessagesOrdered] = useState([]);
   const [users, setUsers] = useState([]);
   const { ID } = useParams();
+  const { messages } = useSelector((state) => state.message);
+  const [messagesOrdered, setMessagesOrdered] = useState([]);
+  const [handleGetMore, setHandleGetMore] = useState(1);
+  const { loading, error, hasMore } = useScroll({
+    setData: setMessages,
+    data: messages,
+    handleGetMore: handleGetMore,
+    limit: 20,
+    serverPath: `/directMessage/find/${ID}`,
+  });
   const classes = useStyles();
   const dispatch = useDispatch();
   const [emojis, setEmojis] = useState([]);
@@ -236,55 +250,41 @@ const DirectMessage = () => {
     }
   };
 
-  const filterContent = (content) => {
-    let newContent = content;
-    newContent = newContent.split('@@@__').join('<a href="/user/');
-    newContent = newContent.split('^^^__').join(`">@`);
-    newContent = newContent.split('@@@^^^').join('</a>');
-    return newContent;
-  };
-
-  const calculateDate = (time) => {
-    let date = new Date(time);
-    let minutes = date.getMinutes().toString();
-    minutes = minutes.length < 2 ? `0${minutes}` : minutes;
-    let hours = date.getHours().toString();
-    hours = hours.length < 2 ? `0${hours}` : hours;
-    let day = date.getDate().toString();
-    let month = (date.getMonth() + 1).toString();
-    let year = date.getFullYear();
-    let diff = (new Date().getTime() - date.getTime()) / 1000;
-    let day_diff = Math.floor(diff / 86400);
-    if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31) return;
-
-    if (day_diff === 0) {
-      return `hoy a las ${hours}:${minutes}`;
-    } else if (day_diff === 1) {
-      return `ayer a las ${hours}:${minutes}`;
-    } else {
-      return `${day}/${month}/${year}`;
+  const HandlerScroll = (event) => {
+    let { scrollTop, clientHeight } = event.currentTarget;
+    if (
+      scrollTop + clientHeight === clientHeight &&
+      loading === false &&
+      hasMore === true
+    ) {
+      setHandleGetMore((prevHandleGetMore) => prevHandleGetMore + 1);
     }
   };
 
   useEffect(() => {
-    dispatch(getMessages(ID));
     getUsers();
     getEmojis();
     return () => dispatch(clearMessages());
   }, []);
 
   useEffect(() => {
-    setMessagesOrdered(messages);
+    setMessagesOrdered(messages.sort(sortDate));
   }, [messages]);
 
   return (
     <Paper className={classes.paper}>
       <Nav />
       <Box className={classes.page}>
-        <Box className={classes.single}>
-          {messagesOrdered.map((message) => {
+        <div
+          id={'box-scroll'}
+          className={classes.single}
+          onScroll={HandlerScroll}
+        >
+          {loading && <Box className={classes.chatBox}>Cargando..</Box>}
+          {error && <Box className={classes.chatBox}>Error</Box>}
+          {messagesOrdered.map((message, key) => {
             return (
-              <Box key={message.ID} className={classes.chatBox}>
+              <Box key={key} className={classes.chatBox}>
                 <Avatar
                   className={classes.chatBoxAvatar}
                   alt="user-picture"
@@ -302,14 +302,14 @@ const DirectMessage = () => {
                   <Box
                     className={classes.chatBoxContent}
                     dangerouslySetInnerHTML={{
-                      __html: filterContent(message.content),
+                      __html: formatContent(message.content),
                     }}
                   />
                 </Box>
               </Box>
             );
           })}
-        </Box>
+        </div>
       </Box>
       <div className={classes.end}>
         <div className={classes.endAdd}>
@@ -320,6 +320,7 @@ const DirectMessage = () => {
           </TextTooltip>
         </div>
         <MentionsInput
+          spellCheck={false}
           name="content"
           value={value.content}
           onChange={onChange}

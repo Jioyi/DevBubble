@@ -1,3 +1,7 @@
+#box-scroll {
+  scroll-behavior: smooth;
+}
+
 textarea:focus {
   outline: none;
 }

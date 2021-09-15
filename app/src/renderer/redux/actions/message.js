@@ -7,15 +7,16 @@ import {
 } from '../constants';
 import store from '../store';
 
-export const getMessages = (ID) => {
+//no usada
+export const getMessages = (DirectMessageID) => {
   return async (dispatch) => {
     try {
-      const response = await API.getMessages(ID);
+      const response = await API.getMessages(DirectMessageID);
       if (response.data?.message === 'successful') {
         dispatch(setMessages(response.data.messages));
       }
     } catch (error) {
-      console.log('error getDirectMessages', error);
+      console.log('error getMessages', error);
     }
   };
 };
