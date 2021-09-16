@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { checkToken } = require('../security');
 const Sequelize = require('sequelize');
-const { User } = require('../db');
+const { User, SocialNetwork } = require('../db');
 const router = Router();
 const Op = Sequelize.Op;
 
@@ -47,20 +47,13 @@ router.get('/target/:userID', checkToken, async (req, res, next) => {
 		const user = await User.findOne({
 			where: { ID: userID },
 			attributes: ['ID', 'connected', 'state', 'username', 'avatar'],
-			/*include: [
+			include: [
 				{
-					model: Message,
-					as: 'messages',
-					attributes: ['ID', 'content', 'createdAt'],
-					include: [
-						{
-							model: User,
-							as: 'user',
-							attributes: ['ID', 'username', 'avatar'],
-						},
-					],
+					model: SocialNetwork,
+					as: 'social_networks',
+					attributes: ['ID', 'link'],
 				},
-			],*/
+			],
 		});
 		if (user) {
 			return res.json({

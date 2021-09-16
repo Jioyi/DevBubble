@@ -20,6 +20,8 @@ import { setInputSearchMessage } from './../../../redux/actions';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     flexGrow: 1,
   },
   search: {
@@ -27,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 6,
     backgroundColor: alpha('#202225', 1),
     marginRight: theme.spacing(2),
-    marginLeft: 0,
+    marginLeft: 0,    
     width: '100%',
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(3),
@@ -49,12 +51,6 @@ const useStyles = makeStyles((theme) => ({
   },
   inputRoot: {
     color: '#b9bbbe',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    top: '50%',
-    left: '50%',
-    '-ms-transform': 'translate(-50%, -50%)',
-    transform: 'translate(-50%, -50%)',
   },
   inputInput: {
     display: 'flex',

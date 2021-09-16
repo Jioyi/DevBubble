@@ -19,13 +19,14 @@ const useStyles = makeStyles(() => ({
     whiteSpace: 'nowrap',
     padding: '2px',
     borderRadius: '5px',
-    cursor: 'pointer',
+    cursor: 'pointer',margin:"0px",
   },
   p: {
+    margin:"0px",
     color: '#fff',
     fontSize: '0.9rem',
     fontWeight: 'normal',
-    lineHeight: 0,
+    lineHeight: 1.5,
   },
 }));
 
