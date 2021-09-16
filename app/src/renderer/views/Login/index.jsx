@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+
+import Register from './components/Register'
+import Recovery from './components/Recovery'
+import SignIn from './components/SignIn'
+
 import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -10,7 +15,7 @@ import Button from '@material-ui/core/Button';
 import { login } from '../../redux/actions';
 import imageLogin from './../../assets/images/login.png';
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
   paper: {
     backgroundColor: '#2f3136',
     padding: theme.spacing(0),
@@ -131,48 +136,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = () => {
   const dispatch = useDispatch();
-  const [stateAuth, setStateAuth] = useState('login');
-  const [inputLogin, setInputLogin] = useState({
-    email: 'karlosagreda@hotmail.com',
-    password: '123456',
-  });
-  const [inputRegister, setInputRegister] = useState({
-    username: '',
-    email: '',
-    password: '',
-  });
-  const [inputRecoveryPassword, setInputRecoveryPassword] = useState({
-    email: '',
-  });
+  const [ stateAuth, setStateAuth ] = useState('login');
+    
   const classes = useStyles();
 
-  const handleOnChangeLogin = (e) => {
-    setInputLogin({ ...inputLogin, [e.target.name]: e.target.value });
-  };
-
-  const handleOnChangeRecoveryPassword = (e) => {
-    setInputRecoveryPassword({
-      ...inputRecoveryPassword,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleOnChangeRegister = (e) => {
-    setInputRegister({
-      ...inputRegister,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleOnSubmitLogin = () => {
-    if (inputLogin.email !== '' && inputLogin.password !== '') {
-      dispatch(login(inputLogin.email, inputLogin.password));
-    }
-  };
   
-  const handleOnSubmitRegister = () => {};
-  const handleOnSubmitRecoveryPassword = () => {};
-
   const showRecoveryPassword = (e) => {
     e.preventDefault();
     setStateAuth('recoveryPassword');
@@ -199,202 +167,19 @@ const Login = () => {
         Una única plataforma para tu equipo y tu trabajo
       </Typography>
       {stateAuth === 'login' ? (
-        <Box>
-          <Box className={classes.boxCenter}>
-            <Typography className={classes.h1}>Inicio de sesion</Typography>
-          </Box>
-          <Box className={classes.boxCenter}>
-            <TextField
-              label="Correo electrónico"
-              name="email"
-              type="email"
-              value={inputLogin.email}
-              className={classes.textField}
-              helperText={'helperText'}
-              error={false}
-              InputProps={{
-                className: classes.input,
-              }}
-              InputLabelProps={{
-                className: classes.input,
-              }}
-              onChange={handleOnChangeLogin}
-              margin="dense"
-              variant="outlined"
-            />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <TextField
-              label="Contraseña"
-              name="password"
-              type="password"
-              value={inputLogin.password}
-              className={classes.textField}
-              helperText={'helperText'}
-              error={false}
-              InputProps={{
-                className: classes.input,
-              }}
-              InputLabelProps={{
-                className: classes.input,
-              }}
-              onChange={handleOnChangeLogin}
-              margin="dense"
-              variant="outlined"
-            />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Button className={classes.button} onClick={handleOnSubmitLogin}>
-              INGRESAR
-            </Button>
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Typography className={classes.text}>
-              ¿Primera ves en Dev Bubble?{' '}
-              <a href="/" onClick={showRegister} className={classes.text2}>
-                Crear una cuenta
-              </a>
-            </Typography>
-            <Typography className={classes.text}>
-              ¿Olvidaste Tu contraseña?{' '}
-              <a
-                href="/"
-                onClick={showRecoveryPassword}
-                className={classes.text2}
-              >
-                Recuperar mi contraseña!
-              </a>
-            </Typography>
-          </Box>
-        </Box>
+        <SignIn 
+          showRegister={showRegister}
+          showRecoveryPassword={showRecoveryPassword}
+        />
       ) : stateAuth === 'register' ? (
-        <Box>
-          <Box className={classes.boxCenter}>
-            <Typography className={classes.h1}>Registro de usuario</Typography>
-          </Box>
-          <Box className={classes.boxCenter}>
-            <TextField
-              label="Correo electrónico"
-              name="email"
-              type="email"
-              value={inputRegister.email}
-              className={classes.textField}
-              helperText={'helperText'}
-              error={false}
-              InputProps={{
-                className: classes.input,
-              }}
-              InputLabelProps={{
-                className: classes.input,
-              }}
-              onChange={handleOnChangeRegister}
-              margin="dense"
-              variant="outlined"
-            />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <TextField
-              label="Usuario"
-              name="username"
-              type="text"
-              value={inputRegister.username}
-              className={classes.textField}
-              helperText={'helperText'}
-              error={false}
-              InputProps={{
-                className: classes.input,
-              }}
-              InputLabelProps={{
-                className: classes.input,
-              }}
-              onChange={handleOnChangeRegister}
-              margin="dense"
-              variant="outlined"
-            />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <TextField
-              label="Contraseña"
-              name="password"
-              type="password"
-              value={inputRegister.password}
-              className={classes.textField}
-              helperText={'helperText'}
-              error={false}
-              InputProps={{
-                className: classes.input,
-              }}
-              InputLabelProps={{
-                className: classes.input,
-              }}
-              onChange={handleOnChangeRegister}
-              margin="dense"
-              variant="outlined"
-            />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Button className={classes.button} onClick={handleOnSubmitRegister}>
-              registrase
-            </Button>
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Typography className={classes.text}>
-              ¿Ya tienes una Cuenta en Dev Bubble?{' '}
-              <a href="/" onClick={showLogin} className={classes.text2}>
-                Iniciar sesión
-              </a>
-            </Typography>
-          </Box>
-        </Box>
+        <Register 
+          showLogin={showLogin}
+        />
       ) : (
-        <Box>
-          <Box className={classes.boxCenter}>
-            <Typography className={classes.h1}>
-              Recuperación de contraseña
-            </Typography>
-          </Box>
-          <Box className={classes.boxCenter}>
-            <TextField
-              label="Correo electrónico"
-              name="email"
-              value={inputRecoveryPassword.email}
-              className={classes.textField}
-              helperText={'helperText'}
-              error={false}
-              InputProps={{
-                className: classes.input,
-              }}
-              InputLabelProps={{
-                className: classes.input,
-              }}
-              onChange={handleOnChangeRecoveryPassword}
-              margin="dense"
-              variant="outlined"
-            />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Button
-              className={classes.button}
-              onClick={handleOnSubmitRecoveryPassword}
-            >
-              recuperar
-            </Button>
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Typography className={classes.text}>
-              ¿No nesecitas recuperar tu contraseña?{' '}
-              <a href="/" onClick={showLogin} className={classes.text2}>
-                Iniciar sesión
-              </a>
-            </Typography>
-            <Typography className={classes.text}>
-              ¿Primera ves en Dev bubble?{' '}
-              <a href="/" onClick={showRegister} className={classes.text2}>
-                Crear una cuenta
-              </a>
-            </Typography>
-          </Box>
-        </Box>
+        <Recovery
+          showLogin={showLogin}
+          showRegister={showRegister}
+        />
       )}
     </Paper>
   );
