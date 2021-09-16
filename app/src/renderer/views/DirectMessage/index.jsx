@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -9,7 +9,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 //icons
 import AddIcon from '@material-ui/icons/Add';
@@ -18,26 +17,16 @@ import SendIcon from '@material-ui/icons/Send';
 import defaultStyle from './defaultStyle.js';
 import classNames from './style.css';
 //components
-import useScroll from 'renderer/components/useScroll';
+import useScroll from './../../components/useScroll';
+import TextTooltip from './../../components/TextTooltip';
 //actions
-import {
-  sendMessage,
-  clearMessages,
-  setMessages,
-} from 'renderer/redux/actions';
+import { sendMessage, clearMessages, setMessages } from './../../redux/actions';
 //utils
-import { sortDate, calculateDate, formatContent } from 'renderer/utils';
+import { sortDate, calculateDate, formatContent } from './../../utils';
 
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
 const electron = isElectron();
-
-const TextTooltip = withStyles({
-  tooltip: {
-    backgroundColor: '#18191c',
-    color: '#fff',
-  },
-})(Tooltip);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -174,7 +163,7 @@ const useStyles = makeStyles((theme) => ({
 const DirectMessage = () => {
   const [users, setUsers] = useState([]);
   const { ID } = useParams();
-  const { messages } = useSelector((state) => state.message);
+  const { messages, inputSearch } = useSelector((state) => state.message);
   const [messagesOrdered, setMessagesOrdered] = useState([]);
   const [handleGetMore, setHandleGetMore] = useState(1);
   const { loading, error, hasMore } = useScroll({
@@ -268,8 +257,20 @@ const DirectMessage = () => {
   }, []);
 
   useEffect(() => {
-    setMessagesOrdered(messages.sort(sortDate));
-  }, [messages]);
+    if (inputSearch !== '') {
+      setMessagesOrdered(
+        messages
+          .filter(
+            (message) =>
+              message.content.toLowerCase().indexOf(inputSearch.toLowerCase()) >
+              -1
+          )
+          .sort(sortDate)
+      );
+    } else {
+      setMessagesOrdered(messages.sort(sortDate));
+    }
+  }, [messages, inputSearch]);
 
   return (
     <Paper className={classes.paper}>

@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import useSound from 'use-sound';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
-
 //components
 import PanelEditGroup from './PanelEditGroup';
+import TextTooltip from './../../TextTooltip';
 //icons
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import TextFieldsIcon from '@material-ui/icons/TextFields';
@@ -25,12 +24,6 @@ import SoundConfirm from './../../../assets/sounds/confirm.wav';
 import { createSocketVoice, getChannels } from '../../../redux/actions';
 import { disconnectVoiceChannel } from '../../../redux/actions';
 
-const TextTooltip = withStyles({
-	tooltip: {
-		backgroundColor: '#18191c',
-		color: '#fff',
-	},
-})(Tooltip);
 
 const useStyles = makeStyles((theme) => ({
 	root: {

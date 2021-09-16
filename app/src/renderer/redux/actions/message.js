@@ -4,6 +4,7 @@ import {
   SET_MESSAGES,
   ADD_MESSAGE,
   UPDATE_DIRECT_MESSAGE,
+  SET_INPUT_SEARCH_MESSAGE
 } from '../constants';
 import store from '../store';
 
@@ -94,5 +95,12 @@ export const updateDirectMessage = (directMessage) => {
   return {
     type: UPDATE_DIRECT_MESSAGE,
     payload: newDirectMessages,
+  };
+};
+
+export const setInputSearchMessage = (string) => {
+  return {
+    type: SET_INPUT_SEARCH_MESSAGE,
+    payload: string,
   };
 };
