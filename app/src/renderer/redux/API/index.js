@@ -23,6 +23,7 @@ API.interceptors.request.use((req) => {
 export const login = (data) => API.post(`/auth/login`, data);
 export const checkToken = () => API.get(`/auth/check_token`);
 //user route
+export const getUserInfo = (userID) => API.get(`/user/target/${userID}`);
 export const ChangeUserState = (state) =>
   API.put(`/user/change_state/${state}`);
 //group route
@@ -35,7 +36,7 @@ export const createGroup = (data) =>
 //channel route
 export const getChannels = (groupID) => API.get(`/channel/${groupID}`);
 //directMessage route
-export const getMessages = (DirectMessageID) => API.get(`/directMessage/find/${DirectMessageID}`); //no usada
+export const getMessages = (DirectMessageID) =>
+  API.get(`/directMessage/find/${DirectMessageID}`); //no usada
 export const getDirectMessages = () => API.get(`/directMessage/`);
 export const sendMessage = (data) => API.post(`/directMessage/`, data);
-

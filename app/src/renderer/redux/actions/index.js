@@ -7,6 +7,7 @@ export {
   changeMicState,
   setOpenAddGroup,
   ChangeUserState,
+  getUserInfo
 } from './ui';
 export { createGroup, setGroupSelectedID, getChannels } from './group';
 export { createSocketVoice, disconnectVoiceChannel } from './voice';

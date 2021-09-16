@@ -41,4 +41,40 @@ router.get('/', async (req, res, next) => {
 	}
 });
 
+router.get('/target/:userID', checkToken, async (req, res, next) => {
+	try {
+		const { userID } = req.params;
+		const user = await User.findOne({
+			where: { ID: userID },
+			attributes: ['ID', 'connected', 'state', 'username', 'avatar'],
+			/*include: [
+				{
+					model: Message,
+					as: 'messages',
+					attributes: ['ID', 'content', 'createdAt'],
+					include: [
+						{
+							model: User,
+							as: 'user',
+							attributes: ['ID', 'username', 'avatar'],
+						},
+					],
+				},
+			],*/
+		});
+		if (user) {
+			return res.json({
+				message: 'successful',
+				user: user,
+			});
+		}
+		return res.json({
+			message: 'bad request',
+		});
+	} catch (error) {
+		console.log(error);
+		next(error);
+	}
+});
+
 module.exports = router;

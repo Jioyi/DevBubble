@@ -20,9 +20,11 @@ import classNames from './style.css';
 import useScroll from './../../components/useScroll';
 import TextTooltip from './../../components/TextTooltip';
 //actions
-import { sendMessage, clearMessages, setMessages } from './../../redux/actions';
+import { sendMessage, clearMessages, setMessages, getUserInfo } from './../../redux/actions';
 //utils
-import { sortDate, calculateDate, formatContent } from './../../utils';
+import { sortDate, calculateDate } from './../../utils';
+import ParserHtmlToComponents from '../../utils/ParserHtmlToComponents';
+import UserProfilePopover from './../../components/UserProfilePopover';
 
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
@@ -31,7 +33,6 @@ const electron = isElectron();
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-
     borderRight: '2px solid #202225',
   },
   paper: {
@@ -161,6 +162,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectMessage = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
   const [users, setUsers] = useState([]);
   const { ID } = useParams();
   const { messages, inputSearch } = useSelector((state) => state.message);
@@ -250,6 +252,15 @@ const DirectMessage = () => {
     }
   };
 
+  const handleOpenUserProfile = (spanRef, userID) => {
+    dispatch(getUserInfo(userID))
+    setAnchorEl(spanRef);
+  };
+
+  const handleCloseUserProfile = () => {
+    setAnchorEl(null);
+  };
+
   useEffect(() => {
     getUsers();
     getEmojis();
@@ -276,6 +287,12 @@ const DirectMessage = () => {
     <Paper className={classes.paper}>
       <Nav />
       <Box className={classes.page}>
+        <UserProfilePopover
+          id="show-user-profile"
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={handleCloseUserProfile}
+        />
         <div
           id={'box-scroll'}
           className={classes.single}
@@ -300,11 +317,9 @@ const DirectMessage = () => {
                       {calculateDate(message.createdAt)}
                     </Typography>
                   </Box>
-                  <Box
-                    className={classes.chatBoxContent}
-                    dangerouslySetInnerHTML={{
-                      __html: formatContent(message.content),
-                    }}
+                  <ParserHtmlToComponents
+                    htmlValue={message.content}
+                    handleOpen={handleOpenUserProfile}
                   />
                 </Box>
               </Box>
