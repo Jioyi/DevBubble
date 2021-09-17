@@ -121,6 +121,7 @@ const DirectMessagesList = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [open, setOpen] = useState(true);
+  const { user } = useSelector((state) => state.auth);
   const { directMessages } = useSelector((state) => state.message);
 
   const handleOpen = () => {
@@ -154,6 +155,17 @@ const DirectMessagesList = () => {
         <Collapse in={open} timeout="auto" unmountOnExit>
           {open &&
             directMessages.map((DirectMessage) => {
+              let primary = '';
+              if (DirectMessage.users.length === 1) {
+                primary = 'Tú';
+              } else if (DirectMessage.users.length === 2) {
+                const usersPrimaery = DirectMessage.users.filter(
+                  (userP) => userP.ID !== user.ID
+                );
+                primary = `${usersPrimaery[0].username}`;
+              } else {
+                primary = `Tú y ${DirectMessage.users.length - 1} personas`;
+              }
               return (
                 <ListItem
                   onClick={() => {
@@ -207,13 +219,7 @@ const DirectMessagesList = () => {
                         classes.noSelect
                       ),
                     }}
-                    primary={
-                      DirectMessage.users.length === 1
-                        ? 'Tú'
-                        : DirectMessage.users.length === 2
-                        ? `Tú y ${DirectMessage.users.length - 1} persona`
-                        : `Tú y ${DirectMessage.users.length - 1} personas`
-                    }
+                    primary={primary}
                   />
                   {DirectMessage?.new && (
                     <FiberNewIcon className={classes.iconNew} />

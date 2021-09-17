@@ -2,9 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import useSound from 'use-sound';
 import clsx from 'clsx';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 //actions
 import { changeMicState, changeVolumeState } from '../../../redux/actions';
 //icons
@@ -16,13 +15,7 @@ import SoundConfirm from './../../../assets/sounds/confirm.wav';
 import SoundCancel from './../../../assets/sounds/cancel.wav';
 //components
 import MenuUserState from './MenuUserState';
-
-const TextTooltip = withStyles({
-	tooltip: {
-		backgroundColor: '#18191c',
-		color: '#fff',
-	},
-})(Tooltip);
+import TextTooltip from '../../TextTooltip';
 
 const useStyles = makeStyles(() => ({
 	root: {

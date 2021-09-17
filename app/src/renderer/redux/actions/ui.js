@@ -4,6 +4,7 @@ import {
   CHANGE_VOLUME_STATE,
   SET_OPEN_ADD_GROUP,
   SET_USER_STATE,
+  SET_USER_TARGET_INFO
 } from '../constants';
 const isElectron = require('is-electron');
 const electron = isElectron();
@@ -84,5 +85,25 @@ export const setUserState = (payload) => {
   return {
     type: SET_USER_STATE,
     payload: payload,
+  };
+};
+
+export const getUserInfo = (userID) => {
+  return async (dispatch) => {
+    try {
+      const response = await API.getUserInfo(userID);
+      if (response.data?.message === 'successful') {
+        dispatch(setUserTargetInfo(response.data.user));
+      }
+    } catch (error) {
+      console.log('error getUserInfo', error);
+    }
+  };
+};
+
+export const setUserTargetInfo = (user) => {
+  return {
+    type: SET_USER_TARGET_INFO,
+    payload: user,
   };
 };

@@ -4,6 +4,8 @@ const { v4: uuidv4 } = require('uuid');
 const { checkToken } = require('../security');
 const { sendAlertMessage } = require('./../alerts');
 const { User, DirectMessage, Message } = require('../db.js');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 router.get('/', checkToken, async (req, res, next) => {
 	try {
@@ -121,6 +123,62 @@ router.post('/find/:ID', checkToken, async (req, res, next) => {
 			message: 'successful',
 			items: messages.rows,
 			has_more: has_more,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
+	try {
+		const { UserID, message } = req.body;
+		const user = await User.findOne({
+			where: {
+				ID: req.user.ID,
+			},
+			attributes: ['ID'],
+			include: [
+				{
+					model: DirectMessage,
+					as: 'direct_messages',
+					attributes: ['ID'],
+					through: { attributes: [] },
+					include: [
+						{
+							model: User,
+							as: 'users',
+							attributes: ['ID', 'connected', 'state', 'username', 'avatar'],
+							through: { attributes: [] },
+						},
+					],
+				},
+			],
+		});
+		//filtra los DirectMessage del user para ver si ya tiene un MD con el usuario a donde envia un mensaje
+		const filtered = user.direct_messages.filter((directMessage) => {
+			if (directMessage.users.length > 2 || directMessage.users.length < 2) {
+				return false;
+			}
+			let count = 0;
+			for (let i in directMessage.users) {
+				if (
+					directMessage.users[i].ID === UserID ||
+					directMessage.users[i].ID === req.user.ID
+				) {
+					count++;
+				}
+			}
+			if (count === 2) return true;
+			return false;
+		});
+		if(filtered.length > 0){
+			//usar MD existente con los dos usuarios
+		} else {
+			//crear nuevo MD
+		}
+		return res.json({
+			message: 'successful',
+			data: filtered,
 		});
 	} catch (error) {
 		next(error);

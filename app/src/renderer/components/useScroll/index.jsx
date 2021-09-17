@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
 const electron = isElectron();
 const store = electron ? window.localStorage : localStorage;
-
+//////////// no se usa
 const useScroll = ({ handleGetMore, limit, serverPath, data, setData }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -31,6 +30,7 @@ const useScroll = ({ handleGetMore, limit, serverPath, data, setData }) => {
       };
       const response = await axios(config);
       const responseData = response.data;
+      console.log(responseData);
       dispatch(setData([...data, ...responseData.items]));
       setHasMore(responseData.has_more);
       setLoading(false);
@@ -47,6 +47,10 @@ const useScroll = ({ handleGetMore, limit, serverPath, data, setData }) => {
 
   useEffect(() => {
     GetData();
+    return () => {
+      console.log('ño1');
+      dispatch(setData([]));
+    };
   }, [GetData]);
 
   return { loading, error, hasMore };

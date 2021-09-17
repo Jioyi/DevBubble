@@ -142,6 +142,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-draft-wysiwyg": "^1.14.7",
+    "react-html-parser": "^2.0.2",
     "react-input-trigger": "^1.1.2",
     "react-mentions": "^4.3.0",
     "react-redux": "^7.2.5",
