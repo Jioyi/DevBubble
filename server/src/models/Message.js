@@ -13,6 +13,10 @@ module.exports = (sequelize) => {
 				type: DataTypes.TEXT,
 				allowNull: false,
 			},
+			edited: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
+			},
 		},
 		{ timestamps: true }
 	);

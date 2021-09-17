@@ -19,10 +19,11 @@ const useStyles = makeStyles(() => ({
     whiteSpace: 'nowrap',
     padding: '2px',
     borderRadius: '5px',
-    cursor: 'pointer',margin:"0px",
+    cursor: 'pointer',
+    margin: '0px',
   },
   p: {
-    margin:"0px",
+    margin: '0px',
     color: '#fff',
     fontSize: '0.9rem',
     fontWeight: 'normal',
@@ -32,6 +33,7 @@ const useStyles = makeStyles(() => ({
 
 const ParserHtmlToComponents = ({ htmlValue, handleOpen }) => {
   const spanRef = React.useRef();
+  const classes = useStyles();
   let content = htmlValue;
   content = content.split('@@@__').join('<component user="');
   content = content.split('^^^__').join(`">@`);
@@ -39,7 +41,7 @@ const ParserHtmlToComponents = ({ htmlValue, handleOpen }) => {
   content = '<p>' + content + '</p>';
   content = content.replace(/\n/g, '</p><p>');
   //console.log(content);
-  const classes = useStyles();
+
   const transform = (node, index) => {
     if (node.type === 'tag' && node.name === 'p') {
       return (

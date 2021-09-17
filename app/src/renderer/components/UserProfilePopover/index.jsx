@@ -9,7 +9,10 @@ import Avatar from '@material-ui/core/Avatar';
 import TextField from '@material-ui/core/TextField';
 
 //components
-import SocialNetworkIcon from '../SocialNetworkIcon';
+import SocialNetworkIcon from './../SocialNetworkIcon';
+//actions
+import { sendMessageToUser } from './../../redux/actions';
+
 const { SERVER_API_URL } = process.env;
 
 const CustomPopover = withStyles({
@@ -139,6 +142,7 @@ const useStyles = makeStyles(() => ({
 }));
 const UserProfilePopover = ({ id, open, anchorEl, onClose }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { userTarget } = useSelector((state) => state.ui);
   const { user } = useSelector((state) => state.auth);
   const [message, setMessage] = useState('');
@@ -156,7 +160,9 @@ const UserProfilePopover = ({ id, open, anchorEl, onClose }) => {
 
   const handleOnSubmitMessage = () => {
     if (message !== '') {
-      onClose()
+      const data = { UserID: userTarget.ID, message: message };
+      dispatch(sendMessageToUser(data));
+      onClose();
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import clsx from 'clsx';
 import axios from 'axios';
 import { MentionsInput, Mention } from 'react-mentions';
 import Typography from '@material-ui/core/Typography';
@@ -20,7 +21,12 @@ import classNames from './style.css';
 import useScroll from './../../components/useScroll';
 import TextTooltip from './../../components/TextTooltip';
 //actions
-import { sendMessage, clearMessages, setMessages, getUserInfo } from './../../redux/actions';
+import {
+  sendMessage,
+  clearMessages,
+  setMessages,
+  getUserInfo,
+} from './../../redux/actions';
 //utils
 import { sortDate, calculateDate } from './../../utils';
 import ParserHtmlToComponents from '../../utils/ParserHtmlToComponents';
@@ -126,7 +132,15 @@ const useStyles = makeStyles((theme) => ({
   },
   chatBox: {
     display: 'flex',
-    marginBottom: '15px',
+    margin: '0px',
+    padding: '5px',
+  },
+  chatBoxMention: {
+    display: 'flex',
+    margin: '0px',
+    padding: '5px',
+    backgroundColor: '#49443c',
+    borderLeft: '3px solid #faa81a',
   },
   chatBoxAvatar: {
     display: 'flex',
@@ -166,8 +180,11 @@ const DirectMessage = () => {
   const [users, setUsers] = useState([]);
   const { ID } = useParams();
   const { messages, inputSearch } = useSelector((state) => state.message);
+  const { user } = useSelector((state) => state.auth);
   const [messagesOrdered, setMessagesOrdered] = useState([]);
   const [handleGetMore, setHandleGetMore] = useState(1);
+
+  
   const { loading, error, hasMore } = useScroll({
     setData: setMessages,
     data: messages,
@@ -175,6 +192,8 @@ const DirectMessage = () => {
     limit: 20,
     serverPath: `/directMessage/find/${ID}`,
   });
+
+
   const classes = useStyles();
   const dispatch = useDispatch();
   const [emojis, setEmojis] = useState([]);
@@ -253,7 +272,7 @@ const DirectMessage = () => {
   };
 
   const handleOpenUserProfile = (spanRef, userID) => {
-    dispatch(getUserInfo(userID))
+    dispatch(getUserInfo(userID));
     setAnchorEl(spanRef);
   };
 
@@ -262,9 +281,17 @@ const DirectMessage = () => {
   };
 
   useEffect(() => {
+    console.log("ño5", messagesOrdered);
+    return () => {
+      console.log("ño3");
+      setMessagesOrdered([]);
+      dispatch(clearMessages([]));
+    };
+  }, [ID]);
+
+  useEffect(() => {
     getUsers();
     getEmojis();
-    return () => dispatch(clearMessages());
   }, []);
 
   useEffect(() => {
@@ -300,9 +327,17 @@ const DirectMessage = () => {
         >
           {loading && <Box className={classes.chatBox}>Cargando..</Box>}
           {error && <Box className={classes.chatBox}>Error</Box>}
-          {messagesOrdered.map((message, key) => {
+          {messagesOrdered && messagesOrdered.map((message, key) => {
+            const isMention = message.content.includes(`@@@__${user.ID}^^^__`)
+              ? true
+              : false;
             return (
-              <Box key={key} className={classes.chatBox}>
+              <Box
+                key={key}
+                className={clsx(classes.chatBox, {
+                  [classes.chatBoxMention]: isMention,
+                })}
+              >
                 <Avatar
                   className={classes.chatBoxAvatar}
                   alt="user-picture"
@@ -318,6 +353,7 @@ const DirectMessage = () => {
                     </Typography>
                   </Box>
                   <ParserHtmlToComponents
+                    user={user}
                     htmlValue={message.content}
                     handleOpen={handleOpenUserProfile}
                   />

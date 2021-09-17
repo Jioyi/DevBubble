@@ -18,4 +18,5 @@ export {
   clearMessages,
   setMessages,
   setInputSearchMessage,
+  sendMessageToUser
 } from './message';

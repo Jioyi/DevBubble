@@ -15,6 +15,7 @@ import VoiceChannel from './views/VoiceChannel';
 import DirectMessage from './views/DirectMessage';
 //actions
 import { setLoading, checkToken } from './redux/actions';
+import './App.css';
 const isElectron = require('is-electron');
 
 const useStyles = makeStyles(() => ({
@@ -62,7 +63,11 @@ const App = () => {
         <GuestRoute path="/" exact component={Login} />
         <ProtectedRoute path="/home" exact component={Home} />
         <ProtectedRoute path="/voice_channel" exact component={VoiceChannel} />
-        <ProtectedRoute path="/direct_message/:ID" exact component={DirectMessage} />
+        <ProtectedRoute
+          path="/direct_message/:ID"
+          exact
+          component={DirectMessage}
+        />
         <Route path="*" render={() => <Redirect to="/" />} />
       </Switch>
     </div>

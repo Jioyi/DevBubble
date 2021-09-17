@@ -38,6 +38,11 @@ const preload = async () => {
 		await directMessagesCreated[0].addUser(usersCreated[0]);
 		await directMessagesCreated[0].addUser(usersCreated[1]);
 
+		//test
+		await directMessagesCreated[1].addUser(usersCreated[0]);
+		await directMessagesCreated[2].addUser(usersCreated[0]);
+		await directMessagesCreated[2].addUser(usersCreated[1]);
+		await directMessagesCreated[2].addUser(usersCreated[2]);
 		//creating Messages
 		const messagesCreadted = await Message.bulkCreate(messages);
 

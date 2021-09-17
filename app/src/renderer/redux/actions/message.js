@@ -4,7 +4,7 @@ import {
   SET_MESSAGES,
   ADD_MESSAGE,
   UPDATE_DIRECT_MESSAGE,
-  SET_INPUT_SEARCH_MESSAGE
+  SET_INPUT_SEARCH_MESSAGE,
 } from '../constants';
 import store from '../store';
 
@@ -18,6 +18,18 @@ export const getMessages = (DirectMessageID) => {
       }
     } catch (error) {
       console.log('error getMessages', error);
+    }
+  };
+};
+
+export const sendMessageToUser = (data) => {
+  // eslint-disable-next-line no-unused-vars
+  return async (dispatch) => {
+    try {
+      const response = await API.sendMessageToUser(data);
+      console.log(response.data);
+    } catch (error) {
+      console.log('error sendMessageToUser', error);
     }
   };
 };
@@ -48,10 +60,15 @@ export const sendMessage = (data) => {
   };
 };
 
-export const clearMessages = () => {
+export const clearMessages = (payload) => {
+  return async (dispatch) => {
+    dispatch(clearMessages2(payload));
+  };
+};
+export const clearMessages2 = (payload) => {
   return {
     type: SET_MESSAGES,
-    payload: [],
+    payload: payload,
   };
 };
 
