@@ -5,7 +5,7 @@ const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
 const electron = isElectron();
 const store = electron ? window.localStorage : localStorage;
-
+//////////// no se usa
 const useScroll = ({ handleGetMore, limit, serverPath, data, setData }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

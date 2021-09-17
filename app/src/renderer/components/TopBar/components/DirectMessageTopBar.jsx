@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 6,
     backgroundColor: alpha('#202225', 1),
     marginRight: theme.spacing(2),
-    marginLeft: 0,    
+    marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(3),
@@ -166,6 +166,10 @@ const DirectMessageTopBar = () => {
   };
 
   useEffect(() => {
+    dispatch(setInputSearchMessage(input));
+  }, [input]);
+
+  useEffect(() => {
     const index = directMessages.findIndex((DM) => DM.ID === ID);
     if (directMessages[index]) {
       const usersFiltered = directMessages[index].users.filter(
@@ -173,20 +177,18 @@ const DirectMessageTopBar = () => {
       );
       setData(usersFiltered);
     }
-    return () => setData(null);
-  }, [directMessages]);
-
-  useEffect(() => {
-    dispatch(setInputSearchMessage(input));
-    return () => dispatch(setInputSearchMessage(""));
-  }, [input]);
+    return () => {
+      setData(null);
+      dispatch(setInputSearchMessage(''));
+    };
+  }, [ID]);
 
   const classes = useStyles();
   return (
     <div className={classes.root}>
       {data && (
         <>
-          {data?.length === 1 ? (
+          {data?.length === 1 && (
             <>
               <Typography className={clsx(classes.at, classes.noSelect)}>
                 @
@@ -212,8 +214,6 @@ const DirectMessageTopBar = () => {
                 )}
               </Box>
             </>
-          ) : (
-            <div>mas de una persona agregar avatar y demas</div>
           )}
         </>
       )}
@@ -233,8 +233,10 @@ const DirectMessageTopBar = () => {
                 </IconButton>
               </TextTooltip>
             </>
+          ) : data?.length > 1 ? (
+            <>avatares del grupo</>
           ) : (
-            <div>mas de una persona agregar avatar y demas</div>
+            <>solo yo</>
           )}
         </>
       )}

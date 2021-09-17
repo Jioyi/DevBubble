@@ -154,6 +154,7 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 				},
 			],
 		});
+		//filtra los DirectMessage del user para ver si ya tiene un MD con el usuario a donde envia un mensaje
 		const filtered = user.direct_messages.filter((directMessage) => {
 			if (directMessage.users.length > 2 || directMessage.users.length < 2) {
 				return false;
@@ -170,7 +171,11 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 			if (count === 2) return true;
 			return false;
 		});
-		console.log('2 ', filtered);
+		if(filtered.length > 0){
+			//usar MD existente con los dos usuarios
+		} else {
+			//crear nuevo MD
+		}
 		return res.json({
 			message: 'successful',
 			data: filtered,

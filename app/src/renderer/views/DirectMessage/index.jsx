@@ -18,7 +18,7 @@ import SendIcon from '@material-ui/icons/Send';
 import defaultStyle from './defaultStyle.js';
 import classNames from './style.css';
 //components
-import useScroll from './../../components/useScroll';
+//import useScroll from './../../components/useScroll';
 import TextTooltip from './../../components/TextTooltip';
 //actions
 import {
@@ -35,6 +35,7 @@ import UserProfilePopover from './../../components/UserProfilePopover';
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
 const electron = isElectron();
+const store = electron ? window.localStorage : localStorage;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -176,25 +177,67 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectMessage = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [users, setUsers] = useState([]);
+  //styles
+  const classes = useStyles();
+
   const { ID } = useParams();
   const { messages, inputSearch } = useSelector((state) => state.message);
   const { user } = useSelector((state) => state.auth);
+
+  //state open UserProfilePopover
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const [users, setUsers] = useState([]);
+
   const [messagesOrdered, setMessagesOrdered] = useState([]);
+
+  //get more mesagges
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [handleGetMore, setHandleGetMore] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  
-  const { loading, error, hasMore } = useScroll({
-    setData: setMessages,
-    data: messages,
-    handleGetMore: handleGetMore,
-    limit: 20,
-    serverPath: `/directMessage/find/${ID}`,
-  });
+  const GetData = async (DirectMessage, clean = false) => {
+    try {
+      const token = store.getItem('access_token');
+      let cancel;
+      let config = {
+        method: 'POST',
+        url: `${SERVER_API_URL}/directMessage/find/${DirectMessage}`,
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          offset: clean ? 0 : messages.length,
+          limit: 20,
+        },
+        cancelToken: new axios.CancelToken((c) => (cancel = c)),
+      };
+      const response = await axios(config);
+      const responseData = response.data;
+      if (clean) {
+        dispatch(setMessages(responseData.items));
+      } else {
+        dispatch(setMessages([...messages, ...responseData.items]));
+      }
+      setHasMore(responseData.has_more);
+      setLoading(false);
+      return () => cancel();
+    } catch (error) {
+      console.log(error);
+      setError(true);
+      setLoading(false);
+      if (axios.isCancel(error)) {
+        return;
+      }
+    }
+  };
 
+  useEffect(() => {
+    GetData(ID);
+  }, [handleGetMore]);
 
-  const classes = useStyles();
   const dispatch = useDispatch();
   const [emojis, setEmojis] = useState([]);
   const [value, setValue] = useState({
@@ -281,9 +324,9 @@ const DirectMessage = () => {
   };
 
   useEffect(() => {
-    console.log("ño5", messagesOrdered);
+    GetData(ID, true);
     return () => {
-      console.log("ño3");
+      setHandleGetMore(1);
       setMessagesOrdered([]);
       dispatch(clearMessages([]));
     };
@@ -327,40 +370,41 @@ const DirectMessage = () => {
         >
           {loading && <Box className={classes.chatBox}>Cargando..</Box>}
           {error && <Box className={classes.chatBox}>Error</Box>}
-          {messagesOrdered && messagesOrdered.map((message, key) => {
-            const isMention = message.content.includes(`@@@__${user.ID}^^^__`)
-              ? true
-              : false;
-            return (
-              <Box
-                key={key}
-                className={clsx(classes.chatBox, {
-                  [classes.chatBoxMention]: isMention,
-                })}
-              >
-                <Avatar
-                  className={classes.chatBoxAvatar}
-                  alt="user-picture"
-                  src={`${SERVER_API_URL}/avatars/${message.user.avatar}`}
-                />
-                <Box>
-                  <Box className={classes.chatBoxUsername}>
-                    <Typography className={classes.chatBoxTypoUsername}>
-                      {message.user.username}
-                    </Typography>
-                    <Typography className={classes.chatBoxTypoDate}>
-                      {calculateDate(message.createdAt)}
-                    </Typography>
-                  </Box>
-                  <ParserHtmlToComponents
-                    user={user}
-                    htmlValue={message.content}
-                    handleOpen={handleOpenUserProfile}
+          {messagesOrdered &&
+            messagesOrdered.map((message, key) => {
+              const isMention = message.content.includes(`@@@__${user.ID}^^^__`)
+                ? true
+                : false;
+              return (
+                <Box
+                  key={key}
+                  className={clsx(classes.chatBox, {
+                    [classes.chatBoxMention]: isMention,
+                  })}
+                >
+                  <Avatar
+                    className={classes.chatBoxAvatar}
+                    alt="user-picture"
+                    src={`${SERVER_API_URL}/avatars/${message.user.avatar}`}
                   />
+                  <Box>
+                    <Box className={classes.chatBoxUsername}>
+                      <Typography className={classes.chatBoxTypoUsername}>
+                        {message.user.username}
+                      </Typography>
+                      <Typography className={classes.chatBoxTypoDate}>
+                        {calculateDate(message.createdAt)}
+                      </Typography>
+                    </Box>
+                    <ParserHtmlToComponents
+                      user={user}
+                      htmlValue={message.content}
+                      handleOpen={handleOpenUserProfile}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-            );
-          })}
+              );
+            })}
         </div>
       </Box>
       <div className={classes.end}>
