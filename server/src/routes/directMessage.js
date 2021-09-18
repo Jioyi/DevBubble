@@ -171,15 +171,59 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 			if (count === 2) return true;
 			return false;
 		});
-		if(filtered.length > 0){
+		if (filtered.length > 0) {
 			//usar MD existente con los dos usuarios
+			const messageCreated = await Message.create({
+				ID: uuidv4(),
+				content: message,
+				DirectMessageID: filtered[0].ID,
+				UserID: req.user.ID,
+			});
+			const messageInfo = await Message.findOne({
+				where: { ID: messageCreated.ID },
+				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+				include: [
+					{
+						model: User,
+						as: 'user',
+						attributes: ['ID', 'username', 'avatar'],
+					},
+				],
+			});
+			sendAlertMessage(req, messageInfo);
+			return res.json({
+				message: 'successful',
+				data: messageInfo,
+			});
 		} else {
 			//crear nuevo MD
+			const directMessageCreated = await DirectMessage.create({
+				ID: uuidv4(),
+			});
+			await directMessageCreated.addUsers([UserID, req.user.ID]);
+			const messageCreated = await Message.create({
+				ID: uuidv4(),
+				content: message,
+				DirectMessageID: directMessageCreated.ID,
+				UserID: req.user.ID,
+			});
+			const messageInfo = await Message.findOne({
+				where: { ID: messageCreated.ID },
+				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+				include: [
+					{
+						model: User,
+						as: 'user',
+						attributes: ['ID', 'username', 'avatar'],
+					},
+				],
+			});
+			sendAlertMessage(req, messageInfo);
+			return res.json({
+				message: 'successful',
+				data: messageInfo,
+			});
 		}
-		return res.json({
-			message: 'successful',
-			data: filtered,
-		});
 	} catch (error) {
 		next(error);
 	}

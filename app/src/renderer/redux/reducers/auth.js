@@ -1,6 +1,8 @@
 import {
   SET_TOKEN,
   SET_USER,
+  SET_HIDDEN_LIST,
+  ADD_HIDDEN_ITEM,
   SET_AUTHENTICATE,
   SET_LOADING,
 } from '../constants';
@@ -11,6 +13,7 @@ const token = store.getItem('access_token');
 
 const initialState = {
   user: user ? user : null,
+  hidden_list: [],
   token: token ? token : null,
   isAuthenticated: user && token ? true : false,
   isLoading: true,
@@ -28,6 +31,16 @@ const auth = (state = initialState, action) => {
       return {
         ...state,
         user: payload,
+      };
+    case SET_HIDDEN_LIST:
+      return {
+        ...state,
+        hidden_list: payload,
+      };
+    case ADD_HIDDEN_ITEM:
+      return {
+        ...state,
+        hidden_list: [...state.hidden_list, payload],
       };
     case SET_AUTHENTICATE:
       return {

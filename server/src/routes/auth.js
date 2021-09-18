@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const jwt = require('jsonwebtoken');
-const { User, Group } = require('../db.js');
+const { User, Group, Hidden } = require('../db.js');
 const Bcrypt = require('bcrypt');
 const { checkToken } = require('../security');
 const { SERVER_SECRET_KEY } = process.env;
@@ -59,10 +59,20 @@ router.get('/check_token', checkToken, async (req, res, next) => {
 						attributes: [],
 					},
 				},
+				{
+					model: Hidden,
+					as: 'hidden_list',
+					attributes: ['ID', 'DirectMessageID'],
+				},
 			],
+		});
+		let hidden_list = [];
+		user.hidden_list.forEach((item) => {
+			hidden_list.push(item.DirectMessageID);
 		});
 		let auxUser = user.toJSON();
 		delete auxUser.groups;
+		delete auxUser.hidden_list;
 		const token = jwt.sign(auxUser, SERVER_SECRET_KEY, {
 			expiresIn: 604800,
 		});
@@ -70,6 +80,7 @@ router.get('/check_token', checkToken, async (req, res, next) => {
 			message: 'successful',
 			user: auxUser,
 			groups: user.groups,
+			hidden_list: hidden_list,
 			token: token,
 		});
 	} catch (error) {

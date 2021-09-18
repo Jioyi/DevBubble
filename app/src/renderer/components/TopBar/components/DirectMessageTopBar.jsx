@@ -177,8 +177,12 @@ const DirectMessageTopBar = () => {
       );
       setData(usersFiltered);
     }
+  }, [ID, directMessages]);
+
+  useEffect(() => {
     return () => {
       setData(null);
+      setInput('');
       dispatch(setInputSearchMessage(''));
     };
   }, [ID]);

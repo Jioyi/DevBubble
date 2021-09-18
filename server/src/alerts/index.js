@@ -18,11 +18,9 @@ const sendAlertMessage = async (req, messageInfo) => {
 			],
 		});
 		for (let i in directMessageInfo.users) {
-			if (directMessageInfo.users[i].ID !== req.user.ID) {
-				req.socket
-					.to(directMessageInfo.users[i].ID)
-					.emit('ALERT_NEW_MESSAGE', { messageInfo, directMessageInfo });
-			}
+			req.socket
+				.to(directMessageInfo.users[i].ID)
+				.emit('ALERT_NEW_MESSAGE', { messageInfo, directMessageInfo });
 		}
 	} catch (error) {
 		console.log(error);

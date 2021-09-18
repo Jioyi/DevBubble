@@ -8,11 +8,15 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 //icons
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import FiberNewIcon from '@material-ui/icons/FiberNew';
+import CloseIcon from '@material-ui/icons/Close';
+//components
+import TextTooltip from './../../TextTooltip';
 //actions
 import { getDirectMessages } from '../../../redux/actions';
 
@@ -24,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  colapse: {
+    margin: '0px',
+    padding: '0px',
+  },
   list: {
     width: '100%',
   },
@@ -34,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   listItemIcon: {
-    margin: '2px',
+    margin: '0px',
     padding: '4px',
     color: '#747f8d',
     '&:hover': {
@@ -101,18 +109,18 @@ const useStyles = makeStyles((theme) => ({
   relative: {
     position: 'relative',
   },
-  iconNew: {
-    margin: '0px',
-    padding: '0px',
-    color: '#ed4245',
-    height: '24px',
-    width: '24px',
-  },
   noSelect: {
     '-moz-user-select': 'none',
     '-webkit-user-select': 'none',
     '-ms-user-select': 'none',
     'user-select': 'none',
+  },
+  iconButton: {
+    padding: theme.spacing(0),
+    margin: '0px',
+    '&:hover': {
+      backgroundColor: '#292b2f',
+    },
   },
 }));
 
@@ -138,6 +146,10 @@ const DirectMessagesList = () => {
     history.push(`/direct_message/${ID}`);
   };
 
+  const handleHiddenDirectMessage = (ID) => {
+    console.log('ño2');
+  };
+
   return (
     <div className={classes.root}>
       <List component="div" disablePadding className={classes.list}>
@@ -152,19 +164,29 @@ const DirectMessagesList = () => {
             primary="Mensajes directos"
           />
         </ListItem>
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <Collapse
+          in={open}
+          timeout="auto"
+          unmountOnExit
+          className={classes.collapse}
+        >
           {open &&
             directMessages.map((DirectMessage) => {
               let primary = '';
+              let usersFiltered;
               if (DirectMessage.users.length === 1) {
                 primary = 'Tú';
+                usersFiltered = DirectMessage.users;
               } else if (DirectMessage.users.length === 2) {
-                const usersPrimaery = DirectMessage.users.filter(
+                usersFiltered = DirectMessage.users.filter(
                   (userP) => userP.ID !== user.ID
                 );
-                primary = `${usersPrimaery[0].username}`;
+                primary = `${usersFiltered[0].username}`;
               } else {
                 primary = `Tú y ${DirectMessage.users.length - 1} personas`;
+                usersFiltered = DirectMessage.users
+                  .filter((userP) => userP.ID !== user.ID)
+                  .slice(0, 5);
               }
               return (
                 <ListItem
@@ -175,7 +197,7 @@ const DirectMessagesList = () => {
                   className={classes.listItem}
                   component="div"
                 >
-                  {DirectMessage.users.slice(0, 5).map((user) => {
+                  {usersFiltered.map((user) => {
                     return (
                       <div key={user.ID} className={classes.relative}>
                         <Avatar
@@ -221,9 +243,20 @@ const DirectMessagesList = () => {
                     }}
                     primary={primary}
                   />
-                  {DirectMessage?.new && (
-                    <FiberNewIcon className={classes.iconNew} />
-                  )}
+                  <ListItemSecondaryAction>
+                    <TextTooltip title="Ocultar" placement="top">
+                      <IconButton
+                        color="inherit"
+                        className={classes.iconButton}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleHiddenDirectMessage(DirectMessage.ID);
+                        }}
+                      >
+                        <CloseIcon className={classes.listItemIcon} />
+                      </IconButton>
+                    </TextTooltip>
+                  </ListItemSecondaryAction>
                 </ListItem>
               );
             })}

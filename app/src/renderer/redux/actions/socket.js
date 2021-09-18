@@ -3,7 +3,6 @@ import { SET_MAIN_SOCKET } from '../constants';
 import { setLoading } from './auth';
 import {
   addMessage,
-  updateCurrentDirectMessage,
   updateDirectMessage,
 } from './message';
 
@@ -29,10 +28,8 @@ export const ConnectServerIO = (token) => {
         const location = window.location.href;
         if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
           dispatch(addMessage(data.messageInfo));
-          dispatch(updateCurrentDirectMessage(data.directMessageInfo));
-        } else {
-          dispatch(updateDirectMessage(data.directMessageInfo));
         }
+        dispatch(updateDirectMessage(data.directMessageInfo));
       });
       dispatch(setMainSocket(socket));
     } catch (error) {

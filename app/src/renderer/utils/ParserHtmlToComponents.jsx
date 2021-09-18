@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import ReactHtmlParser, {
@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ParserHtmlToComponents = ({ htmlValue, handleOpen }) => {
-  const spanRef = React.useRef();
+  const spanRef = useRef();
   const classes = useStyles();
   let content = htmlValue;
   content = content.split('@@@__').join('<component user="');

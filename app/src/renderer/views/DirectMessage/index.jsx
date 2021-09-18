@@ -1,12 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import clsx from 'clsx';
 import axios from 'axios';
 import { MentionsInput, Mention } from 'react-mentions';
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
@@ -18,6 +15,7 @@ import SendIcon from '@material-ui/icons/Send';
 import defaultStyle from './defaultStyle.js';
 import classNames from './style.css';
 //components
+import Message from './../../components/Message';
 //import useScroll from './../../components/useScroll';
 import TextTooltip from './../../components/TextTooltip';
 //actions
@@ -28,8 +26,7 @@ import {
   getUserInfo,
 } from './../../redux/actions';
 //utils
-import { sortDate, calculateDate } from './../../utils';
-import ParserHtmlToComponents from '../../utils/ParserHtmlToComponents';
+import { sortDate } from './../../utils';
 import UserProfilePopover from './../../components/UserProfilePopover';
 
 const { SERVER_API_URL } = process.env;
@@ -108,10 +105,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   single: {
+    display: 'flex',
+    flexDirection: 'column-reverse',
     height: '100%',
     width: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
+    ScreenOrientation: 'end',
     '&::-webkit-scrollbar': {
       width: '0.6em',
     },
@@ -131,49 +131,6 @@ const useStyles = makeStyles((theme) => ({
       background: 'transparent',
     },
   },
-  chatBox: {
-    display: 'flex',
-    margin: '0px',
-    padding: '5px',
-  },
-  chatBoxMention: {
-    display: 'flex',
-    margin: '0px',
-    padding: '5px',
-    backgroundColor: '#49443c',
-    borderLeft: '3px solid #faa81a',
-  },
-  chatBoxAvatar: {
-    display: 'flex',
-    height: '40px',
-    width: '40px',
-    marginLeft: '15px',
-    marginRight: '15px',
-  },
-  chatBoxUsername: {
-    display: 'flex',
-  },
-  chatBoxContent: {
-    display: 'flex',
-    color: '#fff',
-  },
-  chatBoxTypoUsername: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    paddingRight: '6px',
-  },
-  chatBoxTypoDate: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#5f6a79',
-    fontSize: '0.7rem',
-    fontWeight: 'normal',
-  },
 }));
 
 const DirectMessage = () => {
@@ -191,12 +148,33 @@ const DirectMessage = () => {
 
   const [messagesOrdered, setMessagesOrdered] = useState([]);
 
-  //get more mesagges
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [handleGetMore, setHandleGetMore] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
+  const lastElementRef = useRef();
+  const firstElementRef = useCallback(
+    (node) => {
+      if (loading) {
+        return;
+      }
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setHandleGetMore((prevHandleGetMore) => prevHandleGetMore + 1);
+        }
+      });
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [loading, hasMore]
+  );
 
+  //get more mesagges
   const GetData = async (DirectMessage, clean = false) => {
     try {
       const token = store.getItem('access_token');
@@ -303,17 +281,6 @@ const DirectMessage = () => {
     }
   };
 
-  const HandlerScroll = (event) => {
-    let { scrollTop, clientHeight } = event.currentTarget;
-    if (
-      scrollTop + clientHeight === clientHeight &&
-      loading === false &&
-      hasMore === true
-    ) {
-      setHandleGetMore((prevHandleGetMore) => prevHandleGetMore + 1);
-    }
-  };
-
   const handleOpenUserProfile = (spanRef, userID) => {
     dispatch(getUserInfo(userID));
     setAnchorEl(spanRef);
@@ -325,6 +292,7 @@ const DirectMessage = () => {
 
   useEffect(() => {
     GetData(ID, true);
+
     return () => {
       setHandleGetMore(1);
       setMessagesOrdered([]);
@@ -363,48 +331,33 @@ const DirectMessage = () => {
           anchorEl={anchorEl}
           onClose={handleCloseUserProfile}
         />
-        <div
-          id={'box-scroll'}
-          className={classes.single}
-          onScroll={HandlerScroll}
-        >
-          {loading && <Box className={classes.chatBox}>Cargando..</Box>}
-          {error && <Box className={classes.chatBox}>Error</Box>}
+        <div className={classes.single}>
+          {<Box ref={lastElementRef} className={classes.chatBox}></Box>}
           {messagesOrdered &&
             messagesOrdered.map((message, key) => {
-              const isMention = message.content.includes(`@@@__${user.ID}^^^__`)
-                ? true
-                : false;
-              return (
-                <Box
-                  key={key}
-                  className={clsx(classes.chatBox, {
-                    [classes.chatBoxMention]: isMention,
-                  })}
-                >
-                  <Avatar
-                    className={classes.chatBoxAvatar}
-                    alt="user-picture"
-                    src={`${SERVER_API_URL}/avatars/${message.user.avatar}`}
+              if (key === messagesOrdered.length - 1) {
+                return (
+                  <Message
+                    key={key}
+                    refer={firstElementRef}
+                    message={message}
+                    user={user}
+                    handleOpenUserProfile={handleOpenUserProfile}
                   />
-                  <Box>
-                    <Box className={classes.chatBoxUsername}>
-                      <Typography className={classes.chatBoxTypoUsername}>
-                        {message.user.username}
-                      </Typography>
-                      <Typography className={classes.chatBoxTypoDate}>
-                        {calculateDate(message.createdAt)}
-                      </Typography>
-                    </Box>
-                    <ParserHtmlToComponents
-                      user={user}
-                      htmlValue={message.content}
-                      handleOpen={handleOpenUserProfile}
-                    />
-                  </Box>
-                </Box>
-              );
+                );
+              } else {
+                return (
+                  <Message
+                    key={key}
+                    message={message}
+                    user={user}
+                    handleOpenUserProfile={handleOpenUserProfile}
+                  />
+                );
+              }
             })}
+          {loading && <Box className={classes.chatBox}>Cargando..</Box>}
+          {error && <Box className={classes.chatBox}>Error</Box>}
         </div>
       </Box>
       <div className={classes.end}>

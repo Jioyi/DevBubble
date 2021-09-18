@@ -1,12 +1,22 @@
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-const { SERVER_API_URL } = process.env;
+
 const isElectron = require('is-electron');
 const electron = isElectron();
 const store = electron ? window.localStorage : localStorage;
-//////////// no se usa
-const useScroll = ({ handleGetMore, limit, serverPath, data, setData }) => {
+
+const { SERVER_API_URL } = process.env;
+
+const useScroll = ({
+  handleGetMore,
+  limit,
+  serverPath,
+  data,
+  setData,
+  clean,
+  setClean,
+}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
@@ -23,15 +33,21 @@ const useScroll = ({ handleGetMore, limit, serverPath, data, setData }) => {
           Authorization: `Bearer ${token}`,
         },
         data: {
-          offset: data.length,
+          offset: clean ? 0 : data.length,
           limit: limit ? limit : 10,
         },
         cancelToken: new axios.CancelToken((c) => (cancel = c)),
       };
       const response = await axios(config);
       const responseData = response.data;
-      console.log(responseData);
-      dispatch(setData([...data, ...responseData.items]));
+      console.log('clean1:', clean);
+      if (clean) {
+        dispatch(setData(responseData.items));
+        setClean(false);
+      } else {
+        dispatch(setData([...data, ...responseData.items]));
+      }
+      console.log('clean2:', clean);
       setHasMore(responseData.has_more);
       setLoading(false);
       return () => cancel();
@@ -47,10 +63,6 @@ const useScroll = ({ handleGetMore, limit, serverPath, data, setData }) => {
 
   useEffect(() => {
     GetData();
-    return () => {
-      console.log('ño1');
-      dispatch(setData([]));
-    };
   }, [GetData]);
 
   return { loading, error, hasMore };

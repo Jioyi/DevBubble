@@ -27,7 +27,9 @@ export const sendMessageToUser = (data) => {
   return async (dispatch) => {
     try {
       const response = await API.sendMessageToUser(data);
-      console.log(response.data);
+      if (response.data?.message === 'successful') {
+        //dispatch(addMessage(response.data.data));
+      }
     } catch (error) {
       console.log('error sendMessageToUser', error);
     }
@@ -48,11 +50,12 @@ export const getDirectMessages = () => {
 };
 
 export const sendMessage = (data) => {
+  // eslint-disable-next-line no-unused-vars
   return async (dispatch) => {
     try {
       const response = await API.sendMessage(data);
+      // eslint-disable-next-line no-empty
       if (response.data?.message === 'successful') {
-        dispatch(addMessage(response.data.data));
       }
     } catch (error) {
       console.log('error sendMessage', error);
@@ -92,7 +95,21 @@ export const addMessage = (message) => {
     payload: message,
   };
 };
-
+export const updateDirectMessage = (directMessage) => {
+  const { directMessages } = store.getState().message;
+  let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
+  let newDirectMessages = [...directMessages];
+  if (index !== -1) {
+    newDirectMessages[index] = { ...directMessage };
+  } else {
+    newDirectMessages.push(directMessage);
+  }
+  return {
+    type: UPDATE_DIRECT_MESSAGE,
+    payload: newDirectMessages,
+  };
+};
+/*
 export const updateCurrentDirectMessage = (directMessage) => {
   const { directMessages } = store.getState().message;
   let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
@@ -108,12 +125,12 @@ export const updateDirectMessage = (directMessage) => {
   const { directMessages } = store.getState().message;
   let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
   let newDirectMessages = [...directMessages];
-  newDirectMessages[index] = { ...directMessage, new: true };
+  newDirectMessages[index] = { ...directMessage };
   return {
     type: UPDATE_DIRECT_MESSAGE,
     payload: newDirectMessages,
   };
-};
+};*/
 
 export const setInputSearchMessage = (string) => {
   return {
