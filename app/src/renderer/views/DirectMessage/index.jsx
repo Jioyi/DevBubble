@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { MentionsInput, Mention } from 'react-mentions';
 import Paper from '@material-ui/core/Paper';
 import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
@@ -11,10 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 //icons
 import AddIcon from '@material-ui/icons/Add';
 import SendIcon from '@material-ui/icons/Send';
-//internal files
-import defaultStyle from './defaultStyle.js';
-import classNames from './style.css';
 //components
+import InputMentions from './../../components/InputMentions';
 import Message from './../../components/Message';
 import UserProfilePopover from './../../components/UserProfilePopover';
 //import useScroll from './../../components/useScroll';
@@ -28,7 +25,6 @@ import {
 } from './../../redux/actions';
 //utils
 import { sortDate } from './../../utils';
-
 
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
@@ -135,17 +131,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectMessage = () => {
-  //styles
   const classes = useStyles();
-
   const { ID } = useParams();
+  const dispatch = useDispatch();
+
   const { messages, inputSearch } = useSelector((state) => state.message);
   const { user } = useSelector((state) => state.auth);
 
   //state open UserProfilePopover
   const [anchorEl, setAnchorEl] = useState(null);
-
-  const [users, setUsers] = useState([]);
 
   const [messagesOrdered, setMessagesOrdered] = useState([]);
 
@@ -217,59 +211,18 @@ const DirectMessage = () => {
     GetData(ID);
   }, [handleGetMore]);
 
-  const dispatch = useDispatch();
-  const [emojis, setEmojis] = useState([]);
-  const [value, setValue] = useState({
-    content: '',
-  });
-  const onAdd = useCallback(() => {}, []);
-  const neverMatchingRegex = /($a)/;
-
-  const getUsers = async () => {
-    const response = await axios.get(`${SERVER_API_URL}/user`);
-    if (response?.data?.message === 'successful') {
-      const usersOdered = response.data.users.map((user) => ({
-        display: user.username,
-        id: user.ID,
-        avatar: user.avatar,
-      }));
-      setUsers(usersOdered);
-    }
-  };
-
-  const getEmojis = async () => {
-    const response = await axios.get(`${SERVER_API_URL}/emojis`);
-    if (response?.data?.message === 'successful') {
-      setEmojis(response.data.emojis);
-    }
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const searchEmoji = (query, callback) => {
-    if (query.length === 0) return;
-    const matches = emojis
-      .filter((emoji) => {
-        return emoji.name.indexOf(query.toLowerCase()) > -1;
-      })
-      .slice(0, 10);
-    return matches.map(({ emoji }) => ({ id: emoji }));
-  };
+  const [inputValue, setInputValue] = useState('');
 
   const handleOnSubmitMessage = () => {
-    if (value.content !== '') {
-      const data = { ID: ID, message: value.content };
+    if (inputValue !== '') {
+      const data = { ID: ID, message: inputValue };
       dispatch(sendMessage(data));
-      setValue({
-        content: '',
-      });
+      setInputValue('');
     }
   };
 
   const onChange = (e, newValue) => {
-    setValue({
-      ...value,
-      content: newValue,
-    });
+    setInputValue(newValue);
   };
 
   const handleKeyDown = (e) => {
@@ -302,11 +255,6 @@ const DirectMessage = () => {
   }, [ID]);
 
   useEffect(() => {
-    getUsers();
-    getEmojis();
-  }, []);
-
-  useEffect(() => {
     if (inputSearch !== '') {
       setMessagesOrdered(
         messages
@@ -334,29 +282,19 @@ const DirectMessage = () => {
         />
         <div className={classes.single}>
           {<Box ref={lastElementRef} className={classes.chatBox}></Box>}
-          {messagesOrdered &&
-            messagesOrdered.map((message, key) => {
-              if (key === messagesOrdered.length - 1) {
-                return (
-                  <Message
-                    key={key}
-                    refer={firstElementRef}
-                    message={message}
-                    user={user}
-                    handleOpenUserProfile={handleOpenUserProfile}
-                  />
-                );
-              } else {
-                return (
-                  <Message
-                    key={key}
-                    message={message}
-                    user={user}
-                    handleOpenUserProfile={handleOpenUserProfile}
-                  />
-                );
-              }
-            })}
+          {messagesOrdered?.map((message, key) => {
+            return (
+              <Message
+                key={key}
+                refer={
+                  key === messagesOrdered.length - 1 ? firstElementRef : null
+                }
+                message={message}
+                user={user}
+                handleOpenUserProfile={handleOpenUserProfile}
+              />
+            );
+          })}
           {loading && <Box className={classes.chatBox}>Cargando..</Box>}
           {error && <Box className={classes.chatBox}>Error</Box>}
         </div>
@@ -369,49 +307,11 @@ const DirectMessage = () => {
             </IconButton>
           </TextTooltip>
         </div>
-        <MentionsInput
-          spellCheck={false}
-          name="content"
-          value={value.content}
+        <InputMentions
+          value={inputValue}
           onChange={onChange}
-          style={defaultStyle}
-          onKeyDown={handleKeyDown}
-          placeholder={'Enviar mensaje!'}
-          className="mentions"
-          classNames={classNames}
-          allowSuggestionsAboveCursor={true}
-          a11ySuggestionsListLabel={'mensiones sugeridas!'}
-        >
-          <Mention
-            suggestionsPosition={'top'}
-            trigger="@"
-            data={users}
-            markup="@@@____id__^^^____display__@@@^^^"
-            displayTransform={(userID) => {
-              const userTarget = users.find((user) => user.id === userID);
-              return `@${userTarget.display}`;
-            }}
-            onAdd={onAdd}
-            className={classNames.mentions__mention}
-            renderSuggestion={(
-              suggestion,
-              search,
-              highlightedDisplay,
-              index,
-              focused
-            ) => (
-              <div className={`user ${focused ? 'focused' : ''}`}>
-                {highlightedDisplay}
-              </div>
-            )}
-          />
-          <Mention
-            trigger=":"
-            markup="__id__"
-            regex={neverMatchingRegex}
-            data={searchEmoji}
-          />
-        </MentionsInput>
+          handleKeyDown={handleKeyDown}
+        />
         <div className={classes.endSend}>
           <TextTooltip title="Enviar mensaje" placement="top">
             <IconButton

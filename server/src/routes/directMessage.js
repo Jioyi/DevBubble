@@ -154,7 +154,7 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 				},
 			],
 		});
-		//filtra los DirectMessage del user para ver si ya tiene un MD con el usuario a donde envia un mensaje
+		//filtra los DirectMessage del user para ver si ya tiene un MD con el usuario al que le envia un mensaje
 		const filtered = user.direct_messages.filter((directMessage) => {
 			if (directMessage.users.length > 2 || directMessage.users.length < 2) {
 				return false;
