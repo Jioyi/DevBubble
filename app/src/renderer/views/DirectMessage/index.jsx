@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
 import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
@@ -14,7 +13,7 @@ import SendIcon from '@material-ui/icons/Send';
 import InputMentions from './../../components/InputMentions';
 import Message from './../../components/Message';
 import UserProfilePopover from './../../components/UserProfilePopover';
-//import useScroll from './../../components/useScroll';
+import useScroll from './../../components/useScroll';
 import TextTooltip from './../../components/TextTooltip';
 //actions
 import {
@@ -26,10 +25,8 @@ import {
 //utils
 import { sortDate } from './../../utils';
 
-const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
 const electron = isElectron();
-const store = electron ? window.localStorage : localStorage;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -138,79 +135,18 @@ const DirectMessage = () => {
   const { messages, inputSearch } = useSelector((state) => state.message);
   const { user } = useSelector((state) => state.auth);
 
-  //state open UserProfilePopover
+  const { loading, error, firstElementRef } = useScroll({
+    limit: 20,
+    ID: ID,
+    serverPath: `/directMessage/find/${ID}`,
+    data: messages,
+    setData: setMessages,
+    cleanData: clearMessages,
+  });
+
   const [anchorEl, setAnchorEl] = useState(null);
-
   const [messagesOrdered, setMessagesOrdered] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [handleGetMore, setHandleGetMore] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const observer = useRef();
   const lastElementRef = useRef();
-  const firstElementRef = useCallback(
-    (node) => {
-      if (loading) {
-        return;
-      }
-      if (observer.current) {
-        observer.current.disconnect();
-      }
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setHandleGetMore((prevHandleGetMore) => prevHandleGetMore + 1);
-        }
-      });
-      if (node) {
-        observer.current.observe(node);
-      }
-    },
-    [loading, hasMore]
-  );
-
-  //get more mesagges
-  const GetData = async (DirectMessage, clean = false) => {
-    try {
-      const token = store.getItem('access_token');
-      let cancel;
-      let config = {
-        method: 'POST',
-        url: `${SERVER_API_URL}/directMessage/find/${DirectMessage}`,
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          offset: clean ? 0 : messages.length,
-          limit: 20,
-        },
-        cancelToken: new axios.CancelToken((c) => (cancel = c)),
-      };
-      const response = await axios(config);
-      const responseData = response.data;
-      if (clean) {
-        dispatch(setMessages(responseData.items));
-      } else {
-        dispatch(setMessages([...messages, ...responseData.items]));
-      }
-      setHasMore(responseData.has_more);
-      setLoading(false);
-      return () => cancel();
-    } catch (error) {
-      console.log(error);
-      setError(true);
-      setLoading(false);
-      if (axios.isCancel(error)) {
-        return;
-      }
-    }
-  };
-
-  useEffect(() => {
-    GetData(ID);
-  }, [handleGetMore]);
-
   const [inputValue, setInputValue] = useState('');
 
   const handleOnSubmitMessage = () => {
@@ -245,12 +181,8 @@ const DirectMessage = () => {
   };
 
   useEffect(() => {
-    GetData(ID, true);
-
     return () => {
-      setHandleGetMore(1);
       setMessagesOrdered([]);
-      dispatch(clearMessages([]));
     };
   }, [ID]);
 
@@ -268,6 +200,9 @@ const DirectMessage = () => {
     } else {
       setMessagesOrdered(messages.sort(sortDate));
     }
+    return () => {
+      setMessagesOrdered([]);
+    };
   }, [messages, inputSearch]);
 
   return (
@@ -286,7 +221,7 @@ const DirectMessage = () => {
             return (
               <Message
                 key={key}
-                refer={
+                reference={
                   key === messagesOrdered.length - 1 ? firstElementRef : null
                 }
                 message={message}

@@ -59,7 +59,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Message = ({ message, user, handleOpenUserProfile, refer }) => {
+const Message = ({ message, user, handleOpenUserProfile, reference }) => {
   const classes = useStyles();
   const avatarRef = useRef();
   const usernameRef = useRef();
@@ -68,7 +68,7 @@ const Message = ({ message, user, handleOpenUserProfile, refer }) => {
     : false;
   return (
     <Box
-      ref={refer}
+      ref={reference}
       className={clsx(classes.chatBox, {
         [classes.chatBoxMention]: isMention,
       })}

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 const isElectron = require('is-electron');
@@ -8,19 +8,14 @@ const store = electron ? window.localStorage : localStorage;
 
 const { SERVER_API_URL } = process.env;
 
-const useScroll = ({
-  handleGetMore,
-  limit,
-  serverPath,
-  data,
-  setData,
-  clean,
-  setClean,
-}) => {
+const useScroll = ({ limit, serverPath, data, setData, ID, cleanData }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [handleGetMore, setHandleGetMore] = useState(1);
   const dispatch = useDispatch();
   const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
+
   const GetData = useCallback(async () => {
     try {
       const token = store.getItem('access_token');
@@ -33,26 +28,24 @@ const useScroll = ({
           Authorization: `Bearer ${token}`,
         },
         data: {
-          offset: clean ? 0 : data.length,
+          offset: handleGetMore === 1 ? 0 : data.length,
           limit: limit ? limit : 10,
         },
         cancelToken: new axios.CancelToken((c) => (cancel = c)),
       };
       const response = await axios(config);
       const responseData = response.data;
-      console.log('clean1:', clean);
-      if (clean) {
+      console.log('GetMore:', handleGetMore);
+      if (handleGetMore === 1) {
         dispatch(setData(responseData.items));
-        setClean(false);
       } else {
         dispatch(setData([...data, ...responseData.items]));
       }
-      console.log('clean2:', clean);
       setHasMore(responseData.has_more);
       setLoading(false);
       return () => cancel();
     } catch (error) {
-      console.log(error);
+      console.log('error useScroll', error);
       setError(true);
       setLoading(false);
       if (axios.isCancel(error)) {
@@ -61,11 +54,38 @@ const useScroll = ({
     }
   }, [handleGetMore, serverPath, limit]);
 
+  const firstElementRef = useCallback(
+    (node) => {
+      if (loading) {
+        return;
+      }
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setHandleGetMore((prevHandleGetMore) => prevHandleGetMore + 1);
+        }
+      });
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [loading, hasMore]
+  );
+
   useEffect(() => {
     GetData();
   }, [GetData]);
 
-  return { loading, error, hasMore };
+  useEffect(() => {
+    return () => {
+      dispatch(cleanData([]));
+      setHandleGetMore(1);
+    };
+  }, [ID]);
+
+  return { loading, error, hasMore, firstElementRef };
 };
 
 export default useScroll;
