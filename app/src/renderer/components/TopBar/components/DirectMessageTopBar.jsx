@@ -9,6 +9,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 //components
 import TextTooltip from './../../TextTooltip';
+import AvatarRef from './../../AvatarRef';
+import UserProfilePopover from './../../UserProfilePopover';
 //icons
 import SearchIcon from '@material-ui/icons/Search';
 import CallIcon from '@material-ui/icons/Call';
@@ -16,6 +18,7 @@ import VideocamIcon from '@material-ui/icons/Videocam';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 //actions
 import { setInputSearchMessage } from './../../../redux/actions';
+import { getUserInfo } from './../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -151,6 +154,14 @@ const useStyles = makeStyles((theme) => ({
     padding: '0px',
     paddingLeft: '6px',
   },
+  avatar: {
+    margin: '4px',
+    height: '40px',
+    width: '40px',
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  },
 }));
 
 const DirectMessageTopBar = () => {
@@ -159,10 +170,20 @@ const DirectMessageTopBar = () => {
   const [data, setData] = useState(null);
   const { directMessages } = useSelector((state) => state.message);
   const { user } = useSelector((state) => state.auth);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [input, setInput] = useState('');
 
   const onChange = (e) => {
     setInput(e.target.value);
+  };
+
+  const handleOpenUserProfile = (spanRef, userID) => {
+    dispatch(getUserInfo(userID));
+    setAnchorEl(spanRef);
+  };
+
+  const handleCloseUserProfile = () => {
+    setAnchorEl(null);
   };
 
   useEffect(() => {
@@ -190,6 +211,12 @@ const DirectMessageTopBar = () => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
+      <UserProfilePopover
+        id="show-user-profile"
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleCloseUserProfile}
+      />
       {data && (
         <>
           {data?.length === 1 && (
@@ -221,11 +248,11 @@ const DirectMessageTopBar = () => {
           )}
         </>
       )}
-      <div className={classes.maxWidth}></div>
       {data && (
         <>
           {data?.length === 1 ? (
             <>
+              <div className={classes.maxWidth}></div>
               <TextTooltip title="Iniciar llamada de voz" placement="bottom">
                 <IconButton color="inherit" className={classes.iconButton}>
                   <CallIcon className={classes.icon} />
@@ -238,9 +265,50 @@ const DirectMessageTopBar = () => {
               </TextTooltip>
             </>
           ) : data?.length > 1 ? (
-            <>avatares del grupo</>
+            <>
+              <Box className={classes.state}>
+                {data.slice(0, 5).map((userInDM, index) => {
+                  return (
+                    <AvatarRef
+                      key={index}
+                      user={userInDM}
+                      handlerOnClick={handleOpenUserProfile}
+                      variant="rounded"
+                      className={classes.avatar}
+                      alt="avatar"
+                    />
+                  );
+                })}
+              </Box>
+              <div className={classes.maxWidth}></div>
+            </>
           ) : (
-            <>solo yo</>
+            <>
+              <Typography className={clsx(classes.at, classes.noSelect)}>
+                @
+              </Typography>
+              <Typography className={clsx(classes.usernmae, classes.noSelect)}>
+                {user.username}
+              </Typography>
+              <Box className={classes.state}>
+                {user.connected ? (
+                  user.state === 'connected' ? (
+                    <Brightness1Icon className={classes.iconConnectStroke} />
+                  ) : user.state === 'absent' ? (
+                    <Brightness1Icon className={classes.iconAbsentStroke} />
+                  ) : user.state === 'doNotDisturb' ? (
+                    <Brightness1Icon
+                      className={classes.iconDoNotDisturbStroke}
+                    />
+                  ) : (
+                    <Brightness1Icon className={classes.iconDisconnectStroke} />
+                  )
+                ) : (
+                  <Brightness1Icon className={classes.iconDisconnectStroke} />
+                )}
+              </Box>
+              <div className={classes.maxWidth}></div>
+            </>
           )}
         </>
       )}

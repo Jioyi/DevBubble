@@ -16,6 +16,7 @@ import defaultStyle from './defaultStyle.js';
 import classNames from './style.css';
 //components
 import Message from './../../components/Message';
+import UserProfilePopover from './../../components/UserProfilePopover';
 //import useScroll from './../../components/useScroll';
 import TextTooltip from './../../components/TextTooltip';
 //actions
@@ -27,7 +28,7 @@ import {
 } from './../../redux/actions';
 //utils
 import { sortDate } from './../../utils';
-import UserProfilePopover from './../../components/UserProfilePopover';
+
 
 const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
