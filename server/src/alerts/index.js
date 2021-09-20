@@ -28,6 +28,33 @@ const sendAlertMessage = async (req, messageInfo) => {
 	}
 };
 
+const sendAlertMessageEdited = async (req, messageInfo) => {
+	try {
+		const directMessageInfo = await DirectMessage.findOne({
+			where: { ID: messageInfo.DirectMessageID },
+			attributes: ['ID'],
+			through: { attributes: [] },
+			include: [
+				{
+					model: User,
+					as: 'users',
+					attributes: ['ID', 'connected', 'state', 'username', 'avatar'],
+					through: { attributes: [] },
+				},
+			],
+		});
+		for (let i in directMessageInfo.users) {
+			req.socket
+				.to(directMessageInfo.users[i].ID)
+				.emit('ALERT_EDITED_MESSAGE', { messageInfo, directMessageInfo });
+		}
+	} catch (error) {
+		console.log(error);
+		return error;
+	}
+};
+
 module.exports = {
 	sendAlertMessage,
+	sendAlertMessageEdited
 };

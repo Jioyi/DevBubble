@@ -27,6 +27,7 @@ export const SET_STREAMINGS = 'SET_STREAMINGS';
 export const ADD_STREAMING = 'ADD_STREAMING';
 // constants message
 export const SET_DIRECT_MESSAGES = 'SET_DIRECT_MESSAGES';
+export const UPDATE_MESSAGE = 'UPDATE_MESSAGE';
 export const UPDATE_DIRECT_MESSAGE = 'UPDATE_DIRECT_MESSAGE';
 export const SET_MESSAGES = 'SET_MESSAGES';
 export const ADD_MESSAGE = 'ADD_MESSAGE';

@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const { v4: uuidv4 } = require('uuid');
 const { checkToken } = require('../security');
-const { sendAlertMessage } = require('./../alerts');
+const { sendAlertMessage, sendAlertMessageEdited } = require('./../alerts');
 const { User, DirectMessage, Message, Hidden } = require('../db.js');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
@@ -46,7 +46,7 @@ router.post('/', checkToken, async (req, res, next) => {
 			content: message,
 			DirectMessageID: ID,
 			UserID: req.user.ID,
-		});		
+		});
 		const messageInfo = await Message.findOne({
 			where: { ID: messageCreated.ID },
 			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
@@ -62,6 +62,35 @@ router.post('/', checkToken, async (req, res, next) => {
 		return res.json({
 			message: 'successful',
 			data: messageInfo,
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+router.put('/', checkToken, async (req, res, next) => {
+	try {
+		const { messageID, DirectMessageID, content } = req.body;
+		let message = await Message.findOne({
+			where: { ID: messageID, UserID: req.user.ID, DirectMessageID: DirectMessageID },
+		});
+		message.content = content;
+		message.edited = true;
+		await message.save();
+		const messageInfo = await Message.findOne({
+			where: { ID: message.ID },
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+			include: [
+				{
+					model: User,
+					as: 'user',
+					attributes: ['ID', 'username', 'avatar'],
+				},
+			],
+		});
+		sendAlertMessageEdited(req, messageInfo);
+		return res.json({
+			message: 'successful',
 		});
 	} catch (error) {
 		next(error);
@@ -95,7 +124,7 @@ router.post('/find/:ID', checkToken, async (req, res, next) => {
 		console.log(`test: limit-${limit} offset-${offset}`);
 		const messages = await Message.findAndCountAll({
 			where: { DirectMessageID: ID },
-			attributes: ['ID', 'content', 'createdAt'],
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
 			order: [['createdAt', 'DESC']],
 			include: [
 				{

@@ -13,7 +13,6 @@ import Nav from '../../components/Nav';
 import InputMentions from './../../components/InputMentions';
 import Message from './../../components/Message';
 import UserProfilePopover from './../../components/UserProfilePopover';
-import useFetch from '../../components/useFetch';
 import TextTooltip from './../../components/TextTooltip';
 //actions
 import {
@@ -24,6 +23,10 @@ import {
 } from './../../redux/actions';
 //utils
 import { sortDate } from './../../utils';
+import Loading from 'renderer/components/Loading';
+//hooks
+import useFetch from '../../components/hooks/useFetch';
+import useValue from './../../components/hooks/useValue';
 
 const isElectron = require('is-electron');
 const electron = isElectron();
@@ -140,26 +143,22 @@ const DirectMessage = () => {
     ID: ID,
     serverPath: `/directMessage/find/`,
     data: messages,
-    inputSearch: inputSearch,
-    inputSearchName: 'content',
     setData: setMessages,
     cleanData: clearMessages,
   });
 
   const [messagesOrdered, setMessagesOrdered] = useState([]);
   const lastElementRef = useRef();
-  const [inputValue, setInputValue] = useState('');
+
+  const [editable, setEditable] = useState('');
+  const [value, onChange, onAdd] = useValue('');
 
   const handleOnSubmitMessage = () => {
-    if (inputValue.trim().length !== 0) {
-      const data = { ID: ID, message: inputValue };
+    if (value.trim().length !== 0) {
+      const data = { ID: ID, message: value };
       dispatch(sendMessage(data));
-      setInputValue('');
+      onChange('');
     }
-  };
-
-  const onChange = (e, newValue) => {
-    setInputValue(newValue);
   };
 
   const handleKeyDown = (e) => {
@@ -180,30 +179,10 @@ const DirectMessage = () => {
   const handleCloseUserProfile = () => {
     setAnchorEl(null);
   };
-/*
-  const setEditable = (message) => {
-    return { ...message, isEditMode: false, isEditable: false };
-  };
-
-  const handleOpenMenuEdit = (event, userID) => {
-    dispatch(setMessages.map(messages.setEditable))
-    
-    setRowsCategories(() => {
-			return rowsCategories.map((category) =>
-				category.id === id
-					? { ...category, isEditMode: !category.isEditMode }
-					: category
-			);
-		});
-  };
-  const handleCloseMenuEdit = () => {
-    const addEditable = (message) => {
-      return { ...message, isEditMode: false, isEditable: false };
-    };
-  };*/
 
   useEffect(() => {
     return () => {
+      setEditable('');
       setMessagesOrdered([]);
     };
   }, [ID]);
@@ -215,7 +194,10 @@ const DirectMessage = () => {
   };
 
   const addEditable = (message) => {
-    return { ...message, isEditMode: false, isEditable: false };
+    if (message.ID === editable) {
+      return { ...message, isEditMode: true };
+    }
+    return { ...message, isEditMode: false };
   };
 
   useEffect(() => {
@@ -225,7 +207,7 @@ const DirectMessage = () => {
     } else {
       setMessagesOrdered(messageAux);
     }
-  }, [messages, inputSearch]);
+  }, [messages, inputSearch, editable]);
 
   return (
     <Paper className={classes.paper}>
@@ -249,10 +231,16 @@ const DirectMessage = () => {
                 message={message}
                 user={user}
                 handleOpenUserProfile={handleOpenUserProfile}
+                editable={editable}
+                setEditable={setEditable}
               />
             );
           })}
-          {loading && <Box className={classes.chatBox}>Cargando..</Box>}
+          {loading && (
+            <Box className={classes.chatBox}>
+              <Loading size={25} />
+            </Box>
+          )}
           {error && <Box className={classes.chatBox}>Error</Box>}
         </div>
       </Box>
@@ -265,9 +253,11 @@ const DirectMessage = () => {
           </TextTooltip>
         </div>
         <InputMentions
-          value={inputValue}
+          value={value}
           onChange={onChange}
+          onAdd={onAdd}
           handleKeyDown={handleKeyDown}
+          placeholder={'Enviar mensaje!'}
         />
         <div className={classes.endSend}>
           <TextTooltip title="Enviar mensaje" placement="top">

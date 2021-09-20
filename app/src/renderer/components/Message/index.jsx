@@ -12,9 +12,10 @@ import ParserHtmlToComponents from '../../utils/ParserHtmlToComponents';
 //icons
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import InsertEmoticonOutlinedIcon from '@material-ui/icons/InsertEmoticonOutlined'; //InsertEmoticonOutlined
+import InsertEmoticonOutlinedIcon from '@material-ui/icons/InsertEmoticonOutlined';
 //components
 import TextTooltip from '../TextTooltip';
+import EditableInputMentions from '../EditableInputMentions';
 
 const { SERVER_API_URL } = process.env;
 
@@ -97,16 +98,34 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#292b2f',
     },
   },
+  input: {
+    borderRadius: 8,
+    display: 'flex',
+    width: `calc((90%) -100px)`,
+  },
+  box: {
+    display: 'flex',
+    width: `calc(100% - 80px)`,
+    flexDirection: 'column',
+  },
 }));
 
-const Message = ({ message, user, handleOpenUserProfile, reference }) => {
+const Message = ({
+  message,
+  user,
+  handleOpenUserProfile,
+  reference,
+  setEditable,
+}) => {
   const classes = useStyles();
   const avatarRef = useRef();
   const usernameRef = useRef();
-  const [openMenuEdit, setOpenMenuEdit] = useState(false);
+  const [menuEdit, setMenuEdit] = useState(false);
+
   const isMention = message.content.includes(`@@@__${user.ID}^^^__`)
     ? true
     : false;
+
   return (
     <Box
       ref={reference}
@@ -114,10 +133,10 @@ const Message = ({ message, user, handleOpenUserProfile, reference }) => {
         [classes.chatBoxMention]: isMention,
       })}
       onMouseEnter={() => {
-        setOpenMenuEdit(true);
+        setMenuEdit(true);
       }}
       onMouseLeave={() => {
-        setOpenMenuEdit(false);
+        setMenuEdit(false);
       }}
     >
       <Avatar
@@ -129,7 +148,7 @@ const Message = ({ message, user, handleOpenUserProfile, reference }) => {
         alt="user-picture"
         src={`${SERVER_API_URL}/avatars/${message.user.avatar}`}
       />
-      <Box>
+      <Box className={classes.box}>
         <Box className={classes.chatBoxUsername}>
           <Typography
             ref={usernameRef}
@@ -142,16 +161,23 @@ const Message = ({ message, user, handleOpenUserProfile, reference }) => {
           </Typography>
           <Typography className={classes.chatBoxTypoDate}>
             {calculateDate(message.createdAt)}
+            {message.edited && ' (editado)'}
           </Typography>
         </Box>
-        <ParserHtmlToComponents
-          user={user}
-          htmlValue={message.content}
-          handleOpen={handleOpenUserProfile}
-        />
+        {message.isEditMode ? (
+          <Box className={classes.input}>
+            <EditableInputMentions message={message} setEditable={setEditable}/>
+          </Box>
+        ) : (
+          <ParserHtmlToComponents
+            user={user}
+            htmlValue={message.content}
+            handleOpen={handleOpenUserProfile}
+          />
+        )}
       </Box>
       <Box className={classes.chatBoxMenuEdit}>
-        {openMenuEdit && (
+        {menuEdit && (
           <>
             <TextTooltip title="Añadir reaccion" placement="bottom">
               <IconButton color="inherit" className={classes.iconButton}>
@@ -162,6 +188,9 @@ const Message = ({ message, user, handleOpenUserProfile, reference }) => {
               <>
                 <TextTooltip title="Editar" placement="bottom">
                   <IconButton
+                    onClick={() => {
+                      setEditable(message.ID);
+                    }}
                     color="inherit"
                     variant="rounded"
                     className={classes.iconButton}

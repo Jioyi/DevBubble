@@ -4,6 +4,7 @@ import { setLoading } from './auth';
 import {
   addMessage,
   updateDirectMessage,
+  updateMessageInStore,
 } from './message';
 
 const { SERVER_API_URL } = process.env;
@@ -28,6 +29,13 @@ export const ConnectServerIO = (token) => {
         const location = window.location.href;
         if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
           dispatch(addMessage(data.messageInfo));
+        }
+        dispatch(updateDirectMessage(data.directMessageInfo));
+      });
+      socket.on('ALERT_EDITED_MESSAGE', async (data) => {
+        const location = window.location.href;
+        if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
+          dispatch(updateMessageInStore(data.messageInfo));
         }
         dispatch(updateDirectMessage(data.directMessageInfo));
       });

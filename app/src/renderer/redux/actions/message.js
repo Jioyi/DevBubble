@@ -5,6 +5,7 @@ import {
   ADD_MESSAGE,
   UPDATE_DIRECT_MESSAGE,
   SET_INPUT_SEARCH_MESSAGE,
+  UPDATE_MESSAGE,
 } from '../constants';
 import store from '../store';
 import { addHiddenItem } from './auth';
@@ -63,6 +64,17 @@ export const sendMessage = (data) => {
   };
 };
 
+export const updateMessage = (data) => {
+  // eslint-disable-next-line no-unused-vars
+  return async (dispatch) => {
+    try {
+      await API.updateMessage(data);
+    } catch (error) {
+      console.log('error updateMessage', error);
+    }
+  };
+};
+
 export const clearMessages = (payload) => {
   return {
     type: SET_MESSAGES,
@@ -103,6 +115,22 @@ export const updateDirectMessage = (directMessage) => {
   return {
     type: UPDATE_DIRECT_MESSAGE,
     payload: newDirectMessages,
+  };
+};
+
+export const updateMessageInStore = (message) => {
+  message
+  const { messages } = store.getState().message;
+  let index = messages.findIndex(
+    (messageInStore) => messageInStore.ID === message.ID
+  );
+  let newMessages = [...messages];
+  if (index !== -1) {
+    newMessages[index] = { ...message };
+  }
+  return {
+    type: UPDATE_MESSAGE,
+    payload: newMessages,
   };
 };
 

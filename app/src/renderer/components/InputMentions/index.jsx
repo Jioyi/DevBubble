@@ -1,16 +1,26 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import axios from 'axios';
 //internal files
 import defaultStyle from './defaultStyle.js';
+import editStyle from './editStyle.js';
+
 import classNames from './style.css';
+import EditClassNames from './Editstyle.css';
 
 const { SERVER_API_URL } = process.env;
-
-const InputMentions = ({ value, onChange, handleKeyDown }) => {
+const InputMentions = ({
+  value,
+  onChange,
+  onAdd,
+  handleKeyDown,
+  type = 'default',
+  placeholder = '',
+  suggestionsPosition = 'top',
+}) => {
   const [users, setUsers] = useState([]);
   const [emojis, setEmojis] = useState([]);
-  const onAdd = useCallback(() => {}, []);
+
   const neverMatchingRegex = /($a)/;
 
   const getUsers = async () => {
@@ -53,23 +63,19 @@ const InputMentions = ({ value, onChange, handleKeyDown }) => {
       name="content"
       value={value}
       onChange={onChange}
-      style={defaultStyle}
+      style={type === 'edit' ? editStyle : defaultStyle}
       onKeyDown={handleKeyDown}
-      placeholder={'Enviar mensaje!'}
-      className="mentions"
-      classNames={classNames}
+      placeholder={placeholder}
+      className={'mentions'}
+      classNames={type === 'edit' ? EditClassNames : classNames}
       allowSuggestionsAboveCursor={true}
       a11ySuggestionsListLabel={'mensiones sugeridas!'}
     >
       <Mention
-        suggestionsPosition={'top'}
+        suggestionsPosition={suggestionsPosition}
         trigger="@"
         data={users}
         markup="@@@____id__^^^____display__@@@^^^"
-        displayTransform={(userID) => {
-          const userTarget = users.find((user) => user.id === userID);
-          return `@${userTarget.display}`;
-        }}
         onAdd={onAdd}
         className={classNames.mentions__mention}
         renderSuggestion={(

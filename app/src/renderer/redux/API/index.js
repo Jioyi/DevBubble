@@ -42,3 +42,4 @@ export const setHiddenDirectMessage = (DirectMessageID) =>
   API.post(`/directMessage/setHiddenDirectMessage/${DirectMessageID}`);
 export const getDirectMessages = () => API.get(`/directMessage/`);
 export const sendMessage = (data) => API.post(`/directMessage/`, data);
+export const updateMessage = (data) => API.put(`/directMessage/`, data);
