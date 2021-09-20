@@ -18,7 +18,10 @@ import CloseIcon from '@material-ui/icons/Close';
 //components
 import TextTooltip from './../../TextTooltip';
 //actions
-import { getDirectMessages } from '../../../redux/actions';
+import {
+  getDirectMessages,
+  setHiddenDirectMessage,
+} from '../../../redux/actions';
 
 const { SERVER_API_URL } = process.env;
 const useStyles = makeStyles((theme) => ({
@@ -129,7 +132,7 @@ const DirectMessagesList = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [open, setOpen] = useState(true);
-  const { user } = useSelector((state) => state.auth);
+  const { hidden_list, user } = useSelector((state) => state.auth);
   const { directMessages } = useSelector((state) => state.message);
 
   const handleOpen = () => {
@@ -147,7 +150,7 @@ const DirectMessagesList = () => {
   };
 
   const handleHiddenDirectMessage = (ID) => {
-    console.log('ño2');
+    dispatch(setHiddenDirectMessage(ID));
   };
 
   return (
@@ -172,6 +175,9 @@ const DirectMessagesList = () => {
         >
           {open &&
             directMessages.map((DirectMessage) => {
+              if (hidden_list.includes(DirectMessage.ID)) {
+                return null;
+              }
               let primary = '';
               let usersFiltered;
               if (DirectMessage.users.length === 1) {

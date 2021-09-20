@@ -8,9 +8,10 @@ const store = electron ? window.localStorage : localStorage;
 
 const { SERVER_API_URL } = process.env;
 
-const useScroll = ({ limit, serverPath, data, setData, ID, cleanData }) => {
+const useFetch = ({ limit, serverPath, data, setData, ID, cleanData }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [clear, setClear] = useState(0);
   const [handleGetMore, setHandleGetMore] = useState(1);
   const dispatch = useDispatch();
   const [hasMore, setHasMore] = useState(true);
@@ -22,7 +23,7 @@ const useScroll = ({ limit, serverPath, data, setData, ID, cleanData }) => {
       let cancel;
       let config = {
         method: 'POST',
-        url: `${SERVER_API_URL}${serverPath}`,
+        url: `${SERVER_API_URL}${serverPath}${ID}`,
         headers: {
           'Content-type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -35,15 +36,13 @@ const useScroll = ({ limit, serverPath, data, setData, ID, cleanData }) => {
       };
       const response = await axios(config);
       const responseData = response.data;
-      console.log('GetMore:', handleGetMore);
-      if (handleGetMore === 1) {
-        dispatch(setData(responseData.items));
-      } else {
-        dispatch(setData([...data, ...responseData.items]));
-      }
+      await dispatch(setData([...data, ...responseData.items]));
+      setClear(handleGetMore);
       setHasMore(responseData.has_more);
       setLoading(false);
-      return () => cancel();
+      return () => {
+        cancel();
+      };
     } catch (error) {
       console.log('error useScroll', error);
       setError(true);
@@ -52,7 +51,7 @@ const useScroll = ({ limit, serverPath, data, setData, ID, cleanData }) => {
         return;
       }
     }
-  }, [handleGetMore, serverPath, limit]);
+  });
 
   const firstElementRef = useCallback(
     (node) => {
@@ -75,17 +74,19 @@ const useScroll = ({ limit, serverPath, data, setData, ID, cleanData }) => {
   );
 
   useEffect(() => {
-    GetData();
-  }, [GetData]);
+    if (clear !== handleGetMore) {
+      GetData();
+    }
+  }, [handleGetMore, ID, limit, clear]);
 
   useEffect(() => {
-    return () => {
-      dispatch(cleanData([]));
-      setHandleGetMore(1);
+    return async () => {
+      await dispatch(cleanData([]));
+      setClear(0);
     };
   }, [ID]);
 
   return { loading, error, hasMore, firstElementRef };
 };
 
-export default useScroll;
+export default useFetch;

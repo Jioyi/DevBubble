@@ -3,7 +3,7 @@ const router = Router();
 const { v4: uuidv4 } = require('uuid');
 const { checkToken } = require('../security');
 const { sendAlertMessage } = require('./../alerts');
-const { User, DirectMessage, Message } = require('../db.js');
+const { User, DirectMessage, Message, Hidden } = require('../db.js');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -46,7 +46,7 @@ router.post('/', checkToken, async (req, res, next) => {
 			content: message,
 			DirectMessageID: ID,
 			UserID: req.user.ID,
-		});
+		});		
 		const messageInfo = await Message.findOne({
 			where: { ID: messageCreated.ID },
 			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
@@ -68,36 +68,25 @@ router.post('/', checkToken, async (req, res, next) => {
 	}
 });
 
-//no usada
-router.get('/find/:ID', checkToken, async (req, res, next) => {
-	try {
-		const { ID } = req.params;
-		const directMessage = await DirectMessage.findOne({
-			where: { ID: ID },
-			attributes: ['ID'],
-			include: [
-				{
-					model: Message,
-					as: 'messages',
-					attributes: ['ID', 'content', 'createdAt'],
-					include: [
-						{
-							model: User,
-							as: 'user',
-							attributes: ['ID', 'username', 'avatar'],
-						},
-					],
-				},
-			],
-		});
-		return res.json({
-			message: 'successful',
-			messages: directMessage.messages,
-		});
-	} catch (error) {
-		next(error);
+router.post(
+	'/setHiddenDirectMessage/:ID',
+	checkToken,
+	async (req, res, next) => {
+		try {
+			const { ID } = req.params;
+			await Hidden.create({
+				ID: uuidv4(),
+				DirectMessageID: ID,
+				UserID: req.user.ID,
+			});
+			return res.json({
+				message: 'successful',
+			});
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
 router.post('/find/:ID', checkToken, async (req, res, next) => {
 	try {

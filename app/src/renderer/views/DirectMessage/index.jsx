@@ -3,17 +3,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
-import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 //icons
 import AddIcon from '@material-ui/icons/Add';
 import SendIcon from '@material-ui/icons/Send';
 //components
+import Nav from '../../components/Nav';
 import InputMentions from './../../components/InputMentions';
 import Message from './../../components/Message';
 import UserProfilePopover from './../../components/UserProfilePopover';
-import useScroll from './../../components/useScroll';
+import useFetch from '../../components/useFetch';
 import TextTooltip from './../../components/TextTooltip';
 //actions
 import {
@@ -135,22 +135,23 @@ const DirectMessage = () => {
   const { messages, inputSearch } = useSelector((state) => state.message);
   const { user } = useSelector((state) => state.auth);
 
-  const { loading, error, firstElementRef } = useScroll({
+  const { loading, error, firstElementRef } = useFetch({
     limit: 20,
     ID: ID,
-    serverPath: `/directMessage/find/${ID}`,
+    serverPath: `/directMessage/find/`,
     data: messages,
+    inputSearch: inputSearch,
+    inputSearchName: 'content',
     setData: setMessages,
     cleanData: clearMessages,
   });
 
-  const [anchorEl, setAnchorEl] = useState(null);
   const [messagesOrdered, setMessagesOrdered] = useState([]);
   const lastElementRef = useRef();
   const [inputValue, setInputValue] = useState('');
 
   const handleOnSubmitMessage = () => {
-    if (inputValue !== '') {
+    if (inputValue.trim().length !== 0) {
       const data = { ID: ID, message: inputValue };
       dispatch(sendMessage(data));
       setInputValue('');
@@ -171,14 +172,35 @@ const DirectMessage = () => {
     }
   };
 
+  const [anchorEl, setAnchorEl] = useState(null);
   const handleOpenUserProfile = (spanRef, userID) => {
     dispatch(getUserInfo(userID));
     setAnchorEl(spanRef);
   };
-
   const handleCloseUserProfile = () => {
     setAnchorEl(null);
   };
+/*
+  const setEditable = (message) => {
+    return { ...message, isEditMode: false, isEditable: false };
+  };
+
+  const handleOpenMenuEdit = (event, userID) => {
+    dispatch(setMessages.map(messages.setEditable))
+    
+    setRowsCategories(() => {
+			return rowsCategories.map((category) =>
+				category.id === id
+					? { ...category, isEditMode: !category.isEditMode }
+					: category
+			);
+		});
+  };
+  const handleCloseMenuEdit = () => {
+    const addEditable = (message) => {
+      return { ...message, isEditMode: false, isEditable: false };
+    };
+  };*/
 
   useEffect(() => {
     return () => {
@@ -186,23 +208,23 @@ const DirectMessage = () => {
     };
   }, [ID]);
 
+  const filterForInputSearch = (message) => {
+    return (
+      message.content.toLowerCase().indexOf(inputSearch.toLowerCase()) > -1
+    );
+  };
+
+  const addEditable = (message) => {
+    return { ...message, isEditMode: false, isEditable: false };
+  };
+
   useEffect(() => {
+    const messageAux = messages.map(addEditable).sort(sortDate);
     if (inputSearch !== '') {
-      setMessagesOrdered(
-        messages
-          .filter(
-            (message) =>
-              message.content.toLowerCase().indexOf(inputSearch.toLowerCase()) >
-              -1
-          )
-          .sort(sortDate)
-      );
+      setMessagesOrdered(messageAux.filter(filterForInputSearch));
     } else {
-      setMessagesOrdered(messages.sort(sortDate));
+      setMessagesOrdered(messageAux);
     }
-    return () => {
-      setMessagesOrdered([]);
-    };
   }, [messages, inputSearch]);
 
   return (

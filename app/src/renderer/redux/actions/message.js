@@ -7,17 +7,17 @@ import {
   SET_INPUT_SEARCH_MESSAGE,
 } from '../constants';
 import store from '../store';
+import { addHiddenItem } from './auth';
 
-//no usada
-export const getMessages = (DirectMessageID) => {
+export const setHiddenDirectMessage = (DirectMessageID) => {
   return async (dispatch) => {
     try {
-      const response = await API.getMessages(DirectMessageID);
+      const response = await API.setHiddenDirectMessage(DirectMessageID);
       if (response.data?.message === 'successful') {
-        dispatch(setMessages(response.data.messages));
+        dispatch(addHiddenItem(DirectMessageID));
       }
     } catch (error) {
-      console.log('error getMessages', error);
+      console.log('error setHiddenDirectMessage', error);
     }
   };
 };
@@ -64,11 +64,6 @@ export const sendMessage = (data) => {
 };
 
 export const clearMessages = (payload) => {
-  return async (dispatch) => {
-    dispatch(clearMessages2(payload));
-  };
-};
-export const clearMessages2 = (payload) => {
   return {
     type: SET_MESSAGES,
     payload: payload,
@@ -95,6 +90,7 @@ export const addMessage = (message) => {
     payload: message,
   };
 };
+
 export const updateDirectMessage = (directMessage) => {
   const { directMessages } = store.getState().message;
   let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
@@ -109,28 +105,6 @@ export const updateDirectMessage = (directMessage) => {
     payload: newDirectMessages,
   };
 };
-/*
-export const updateCurrentDirectMessage = (directMessage) => {
-  const { directMessages } = store.getState().message;
-  let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
-  let newDirectMessages = [...directMessages];
-  newDirectMessages[index] = { ...directMessage };
-  return {
-    type: UPDATE_DIRECT_MESSAGE,
-    payload: newDirectMessages,
-  };
-};
-
-export const updateDirectMessage = (directMessage) => {
-  const { directMessages } = store.getState().message;
-  let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
-  let newDirectMessages = [...directMessages];
-  newDirectMessages[index] = { ...directMessage };
-  return {
-    type: UPDATE_DIRECT_MESSAGE,
-    payload: newDirectMessages,
-  };
-};*/
 
 export const setInputSearchMessage = (string) => {
   return {

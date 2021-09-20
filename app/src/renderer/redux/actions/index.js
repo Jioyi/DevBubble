@@ -14,9 +14,9 @@ export { createSocketVoice, disconnectVoiceChannel } from './voice';
 export {
   getDirectMessages,
   sendMessage,
-  getMessages,
   clearMessages,
   setMessages,
   setInputSearchMessage,
-  sendMessageToUser
+  sendMessageToUser,
+  setHiddenDirectMessage
 } from './message';

@@ -17,7 +17,6 @@ export const checkToken = () => {
     try {
       const response = await API.checkToken();
       if (response.data?.message === 'successful') {
-        console.log('check', response.data);
         dispatch(setUser(response.data.user));
         dispatch(setToken(response.data.token));
         dispatch(setHiddenList(response.data.hidden_list));
@@ -40,7 +39,6 @@ export const login = (email, password) => {
     try {
       const response = await API.login({ email, password });
       if (response.data?.message === 'successful') {
-        console.log('login', response.data);
         dispatch(setUser(response.data.user));
         dispatch(setToken(response.data.token));
         dispatch(setAuthenticate(true));
