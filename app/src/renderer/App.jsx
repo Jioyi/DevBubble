@@ -3,19 +3,22 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
+
 //components
 import Loading from './components/Loading';
 import WindowControls from './components/WindowControls';
 import GuestRoute from './components/GuestRoute';
 import ProtectedRoute from './components/ProtectedRoute';
+import DialogAlert from './components/DialogAlert';
 //views
 import Login from './views/Login';
 import Home from './views/Home';
 import VoiceChannel from './views/VoiceChannel';
 import DirectMessage from './views/DirectMessage';
 //actions
-import { setLoading, checkToken } from './redux/actions';
+import { setLoading, checkToken, setOpenAlert } from './redux/actions';
 import './App.css';
+
 const isElectron = require('is-electron');
 
 const useStyles = makeStyles(() => ({
@@ -36,6 +39,7 @@ const App = () => {
   const dispatch = useDispatch();
   const electron = isElectron();
   const { isLoading, isAuthenticated } = useSelector((state) => state.auth);
+  const { messageAlert, openAlert } = useSelector((state) => state.ui);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -58,6 +62,12 @@ const App = () => {
   return (
     <div className={classes.app}>
       <CssBaseline />
+      <DialogAlert
+        open={openAlert}
+        setOpen={setOpenAlert}
+        message={messageAlert}
+        title="Mensaje de Alerta!"
+      />
       {electron && <WindowControls />}
       <Switch>
         <GuestRoute path="/" exact component={Login} />

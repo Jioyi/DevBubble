@@ -11,6 +11,8 @@ export const CHANGE_VOLUME_STATE = 'CHANGE_VOLUME_STATE';
 export const CHANGE_MIC_STATE = 'CHANGE_MIC_STATE';
 export const SET_OPEN_ADD_GROUP = 'SET_OPEN_ADD_GROUP';
 export const SET_USER_STATE = 'SET_USER_STATE';
+export const SET_OPEN_ALERT = 'SET_OPEN_ALERT';
+export const SET_MESSAGE_ALERT = 'SET_MESSAGE_ALERT';
 // constants group
 export const SET_GROUPS = 'SET_GROUPS';
 export const SET_SELECT_GROUP = 'SET_SELECT_GROUP';

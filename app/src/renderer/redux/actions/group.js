@@ -6,7 +6,7 @@ import {
   ADD_GROUP,
   SET_CHANNELS,
 } from '../constants';
-import { setOpenAddGroup } from './ui';
+import { setOpenAddGroup, setMessageAlert, setOpenAlert } from './ui';
 
 export const createGroup = (image, name) => {
   return async (dispatch) => {
@@ -20,11 +20,16 @@ export const createGroup = (image, name) => {
         dispatch(setOpenAddGroup(false));
       } else {
         dispatch(setOpenAddGroup(false));
-        //mostrar un error
       }
     } catch (error) {
       console.log('error create group', error);
       dispatch(setOpenAddGroup(false));
+      dispatch(
+        setMessageAlert(
+          'Solo puedes utilizar formato de imagenes gif, jpg, jpeg y png.'
+        )
+      );
+      dispatch(setOpenAlert(true));
       //mostrar un error
     }
   };

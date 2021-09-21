@@ -49,7 +49,7 @@ router.post('/', checkToken, async (req, res, next) => {
 		});
 		const messageInfo = await Message.findOne({
 			where: { ID: messageCreated.ID },
-			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 			include: [
 				{
 					model: User,
@@ -79,7 +79,7 @@ router.put('/', checkToken, async (req, res, next) => {
 		await message.save();
 		const messageInfo = await Message.findOne({
 			where: { ID: message.ID },
-			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 			include: [
 				{
 					model: User,
@@ -124,7 +124,7 @@ router.post('/find/:ID', checkToken, async (req, res, next) => {
 		console.log(`test: limit-${limit} offset-${offset}`);
 		const messages = await Message.findAndCountAll({
 			where: { DirectMessageID: ID },
-			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 			order: [['createdAt', 'DESC']],
 			include: [
 				{
@@ -199,7 +199,7 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 			});
 			const messageInfo = await Message.findOne({
 				where: { ID: messageCreated.ID },
-				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 				include: [
 					{
 						model: User,
@@ -227,7 +227,7 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 			});
 			const messageInfo = await Message.findOne({
 				where: { ID: messageCreated.ID },
-				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 				include: [
 					{
 						model: User,

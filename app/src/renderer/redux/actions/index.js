@@ -8,6 +8,8 @@ export {
   setOpenAddGroup,
   ChangeUserState,
   getUserInfo,
+  setOpenAlert,
+  setMessageAlert,
 } from './ui';
 export { createGroup, setGroupSelectedID, getChannels } from './group';
 export { createSocketVoice, disconnectVoiceChannel } from './voice';

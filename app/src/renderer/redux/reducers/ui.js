@@ -4,6 +4,8 @@ import {
   SET_OPEN_ADD_GROUP,
   SET_USER_STATE,
   SET_USER_TARGET_INFO,
+  SET_OPEN_ALERT,
+  SET_MESSAGE_ALERT,
 } from '../constants';
 
 const initialState = {
@@ -12,6 +14,8 @@ const initialState = {
   mic: true,
   openAddGroup: false,
   userTarget: null,
+  openAlert: false,
+  messageAlert: '',
 };
 
 const ui = (state = initialState, action) => {
@@ -43,6 +47,16 @@ const ui = (state = initialState, action) => {
       return {
         ...state,
         userTarget: payload,
+      };
+    case SET_OPEN_ALERT:
+      return {
+        ...state,
+        openAlert: payload,
+      };
+    case SET_MESSAGE_ALERT:
+      return {
+        ...state,
+        messageAlert: payload,
       };
     default:
       return state;

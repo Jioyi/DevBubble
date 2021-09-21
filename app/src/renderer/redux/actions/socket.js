@@ -25,6 +25,7 @@ export const ConnectServerIO = (token) => {
       socket.on('disconnect', async () => {
         dispatch(setLoading(true));
       });
+
       socket.on('ALERT_NEW_MESSAGE', async (data) => {
         const location = window.location.href;
         if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {

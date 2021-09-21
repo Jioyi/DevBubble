@@ -28,6 +28,7 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.9rem',
     fontWeight: 'normal',
     lineHeight: 1.5,
+    minHeight: 20,
   },
 }));
 
@@ -49,11 +50,6 @@ const ParserHtmlToComponents = ({ htmlValue, handleOpen }) => {
           {processNodes(node.children, transform)}
         </p>
       );
-    }
-
-    if (node.type === 'tag' && node.name === 'ul') {
-      node.name = 'ol';
-      return convertNodeToElement(node, index, transform);
     }
 
     if (node.type === 'tag' && node.name === 'a') {
