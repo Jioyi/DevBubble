@@ -22,11 +22,19 @@ models.push(require('./models/Channel'));
 models.push(require('./models/DirectMessage'));
 models.push(require('./models/Message'));
 models.push(require('./models/SocialNetwork'));
+models.push(require('./models/Hidden'));
 
 models.forEach((model) => model(sequelize));
 
-const { User, Group, Channel, DirectMessage, Message, SocialNetwork } =
-	sequelize.models;
+const {
+	User,
+	Group,
+	Channel,
+	DirectMessage,
+	Message,
+	SocialNetwork,
+	Hidden,
+} = sequelize.models;
 
 //relacion user a grupos como creador del grupo
 //un usuario puede ser creador de muchos grupos
@@ -45,6 +53,10 @@ SocialNetwork.belongsTo(User, { as: 'social_networks', foreignKey: 'UserID' });
 //y a un grupo pueden pertenecer muchos usuarios
 User.belongsToMany(Group, { as: 'groups', through: 'UserGroup' });
 Group.belongsToMany(User, { as: 'users', through: 'UserGroup' });
+
+//realacion User a HiddenList
+User.hasMany(Hidden, { as: 'hidden_list', foreignKey: 'UserID' });
+Hidden.belongsTo(User, { as: 'hidden_list', foreignKey: 'UserID' });
 
 //realacion Group a Channels
 //un groupo puede tener muchos canales

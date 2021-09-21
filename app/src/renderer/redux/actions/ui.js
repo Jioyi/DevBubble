@@ -4,7 +4,9 @@ import {
   CHANGE_VOLUME_STATE,
   SET_OPEN_ADD_GROUP,
   SET_USER_STATE,
-  SET_USER_TARGET_INFO
+  SET_USER_TARGET_INFO,
+  SET_OPEN_ALERT,
+  SET_MESSAGE_ALERT,
 } from '../constants';
 const isElectron = require('is-electron');
 const electron = isElectron();
@@ -105,5 +107,19 @@ export const setUserTargetInfo = (user) => {
   return {
     type: SET_USER_TARGET_INFO,
     payload: user,
+  };
+};
+
+export const setOpenAlert = (boolean) => {
+  return {
+    type: SET_OPEN_ALERT,
+    payload: boolean,
+  };
+};
+
+export const setMessageAlert = (message) => {
+  return {
+    type: SET_MESSAGE_ALERT,
+    payload: message,
   };
 };

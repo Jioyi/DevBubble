@@ -2,8 +2,8 @@ const { Router } = require('express');
 const router = Router();
 const { v4: uuidv4 } = require('uuid');
 const { checkToken } = require('../security');
-const { sendAlertMessage } = require('./../alerts');
-const { User, DirectMessage, Message } = require('../db.js');
+const { sendAlertMessage, sendAlertMessageEdited } = require('./../alerts');
+const { User, DirectMessage, Message, Hidden } = require('../db.js');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -49,7 +49,7 @@ router.post('/', checkToken, async (req, res, next) => {
 		});
 		const messageInfo = await Message.findOne({
 			where: { ID: messageCreated.ID },
-			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID'],
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 			include: [
 				{
 					model: User,
@@ -68,36 +68,54 @@ router.post('/', checkToken, async (req, res, next) => {
 	}
 });
 
-//no usada
-router.get('/find/:ID', checkToken, async (req, res, next) => {
+router.put('/', checkToken, async (req, res, next) => {
 	try {
-		const { ID } = req.params;
-		const directMessage = await DirectMessage.findOne({
-			where: { ID: ID },
-			attributes: ['ID'],
+		const { messageID, DirectMessageID, content } = req.body;
+		let message = await Message.findOne({
+			where: { ID: messageID, UserID: req.user.ID, DirectMessageID: DirectMessageID },
+		});
+		message.content = content;
+		message.edited = true;
+		await message.save();
+		const messageInfo = await Message.findOne({
+			where: { ID: message.ID },
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 			include: [
 				{
-					model: Message,
-					as: 'messages',
-					attributes: ['ID', 'content', 'createdAt'],
-					include: [
-						{
-							model: User,
-							as: 'user',
-							attributes: ['ID', 'username', 'avatar'],
-						},
-					],
+					model: User,
+					as: 'user',
+					attributes: ['ID', 'username', 'avatar'],
 				},
 			],
 		});
+		sendAlertMessageEdited(req, messageInfo);
 		return res.json({
 			message: 'successful',
-			messages: directMessage.messages,
 		});
 	} catch (error) {
 		next(error);
 	}
 });
+
+router.post(
+	'/setHiddenDirectMessage/:ID',
+	checkToken,
+	async (req, res, next) => {
+		try {
+			const { ID } = req.params;
+			await Hidden.create({
+				ID: uuidv4(),
+				DirectMessageID: ID,
+				UserID: req.user.ID,
+			});
+			return res.json({
+				message: 'successful',
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
+);
 
 router.post('/find/:ID', checkToken, async (req, res, next) => {
 	try {
@@ -106,7 +124,7 @@ router.post('/find/:ID', checkToken, async (req, res, next) => {
 		console.log(`test: limit-${limit} offset-${offset}`);
 		const messages = await Message.findAndCountAll({
 			where: { DirectMessageID: ID },
-			attributes: ['ID', 'content', 'createdAt'],
+			attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
 			order: [['createdAt', 'DESC']],
 			include: [
 				{
@@ -154,7 +172,7 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 				},
 			],
 		});
-		//filtra los DirectMessage del user para ver si ya tiene un MD con el usuario a donde envia un mensaje
+		//filtra los DirectMessage del user para ver si ya tiene un MD con el usuario al que le envia un mensaje
 		const filtered = user.direct_messages.filter((directMessage) => {
 			if (directMessage.users.length > 2 || directMessage.users.length < 2) {
 				return false;
@@ -171,15 +189,59 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 			if (count === 2) return true;
 			return false;
 		});
-		if(filtered.length > 0){
+		if (filtered.length > 0) {
 			//usar MD existente con los dos usuarios
+			const messageCreated = await Message.create({
+				ID: uuidv4(),
+				content: message,
+				DirectMessageID: filtered[0].ID,
+				UserID: req.user.ID,
+			});
+			const messageInfo = await Message.findOne({
+				where: { ID: messageCreated.ID },
+				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
+				include: [
+					{
+						model: User,
+						as: 'user',
+						attributes: ['ID', 'username', 'avatar'],
+					},
+				],
+			});
+			sendAlertMessage(req, messageInfo);
+			return res.json({
+				message: 'successful',
+				data: messageInfo,
+			});
 		} else {
 			//crear nuevo MD
+			const directMessageCreated = await DirectMessage.create({
+				ID: uuidv4(),
+			});
+			await directMessageCreated.addUsers([UserID, req.user.ID]);
+			const messageCreated = await Message.create({
+				ID: uuidv4(),
+				content: message,
+				DirectMessageID: directMessageCreated.ID,
+				UserID: req.user.ID,
+			});
+			const messageInfo = await Message.findOne({
+				where: { ID: messageCreated.ID },
+				attributes: ['ID', 'content', 'createdAt', 'DirectMessageID', "edited"],
+				include: [
+					{
+						model: User,
+						as: 'user',
+						attributes: ['ID', 'username', 'avatar'],
+					},
+				],
+			});
+			sendAlertMessage(req, messageInfo);
+			return res.json({
+				message: 'successful',
+				data: messageInfo,
+			});
 		}
-		return res.json({
-			message: 'successful',
-			data: filtered,
-		});
 	} catch (error) {
 		next(error);
 	}

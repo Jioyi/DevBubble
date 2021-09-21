@@ -3,8 +3,8 @@ import { SET_MAIN_SOCKET } from '../constants';
 import { setLoading } from './auth';
 import {
   addMessage,
-  updateCurrentDirectMessage,
   updateDirectMessage,
+  updateMessageInStore,
 } from './message';
 
 const { SERVER_API_URL } = process.env;
@@ -25,14 +25,20 @@ export const ConnectServerIO = (token) => {
       socket.on('disconnect', async () => {
         dispatch(setLoading(true));
       });
+
       socket.on('ALERT_NEW_MESSAGE', async (data) => {
         const location = window.location.href;
         if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
           dispatch(addMessage(data.messageInfo));
-          dispatch(updateCurrentDirectMessage(data.directMessageInfo));
-        } else {
-          dispatch(updateDirectMessage(data.directMessageInfo));
         }
+        dispatch(updateDirectMessage(data.directMessageInfo));
+      });
+      socket.on('ALERT_EDITED_MESSAGE', async (data) => {
+        const location = window.location.href;
+        if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
+          dispatch(updateMessageInStore(data.messageInfo));
+        }
+        dispatch(updateDirectMessage(data.directMessageInfo));
       });
       dispatch(setMainSocket(socket));
     } catch (error) {

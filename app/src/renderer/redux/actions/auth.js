@@ -5,6 +5,8 @@ import {
   SET_USER,
   SET_AUTHENTICATE,
   SET_LOADING,
+  SET_HIDDEN_LIST,
+  ADD_HIDDEN_ITEM,
 } from '../constants';
 import { ConnectServerIO } from './socket';
 import { setUserState } from './ui';
@@ -15,9 +17,9 @@ export const checkToken = () => {
     try {
       const response = await API.checkToken();
       if (response.data?.message === 'successful') {
-        console.log('check', response.data);
-        dispatch(setUser(response.data.user)); 
+        dispatch(setUser(response.data.user));
         dispatch(setToken(response.data.token));
+        dispatch(setHiddenList(response.data.hidden_list));
         dispatch(setUserState(response.data.user.state));
         dispatch(setGroups(response.data.groups));
         dispatch(ConnectServerIO(response.data.token));
@@ -37,7 +39,6 @@ export const login = (email, password) => {
     try {
       const response = await API.login({ email, password });
       if (response.data?.message === 'successful') {
-        console.log('login', response.data);
         dispatch(setUser(response.data.user));
         dispatch(setToken(response.data.token));
         dispatch(setAuthenticate(true));
@@ -58,6 +59,20 @@ export const logOut = () => {
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setAuthenticate(false));
+  };
+};
+
+export const setHiddenList = (list) => {
+  return {
+    type: SET_HIDDEN_LIST,
+    payload: list,
+  };
+};
+
+export const addHiddenItem = (DirectMessageID) => {
+  return {
+    type: ADD_HIDDEN_ITEM,
+    payload: DirectMessageID,
   };
 };
 

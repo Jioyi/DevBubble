@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import ReactHtmlParser, {
@@ -28,11 +28,12 @@ const useStyles = makeStyles(() => ({
     fontSize: '0.9rem',
     fontWeight: 'normal',
     lineHeight: 1.5,
+    minHeight: 20,
   },
 }));
 
 const ParserHtmlToComponents = ({ htmlValue, handleOpen }) => {
-  const spanRef = React.useRef();
+  const spanRef = useRef();
   const classes = useStyles();
   let content = htmlValue;
   content = content.split('@@@__').join('<component user="');
@@ -49,11 +50,6 @@ const ParserHtmlToComponents = ({ htmlValue, handleOpen }) => {
           {processNodes(node.children, transform)}
         </p>
       );
-    }
-
-    if (node.type === 'tag' && node.name === 'ul') {
-      node.name = 'ol';
-      return convertNodeToElement(node, index, transform);
     }
 
     if (node.type === 'tag' && node.name === 'a') {

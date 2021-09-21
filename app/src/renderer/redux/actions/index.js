@@ -7,16 +7,20 @@ export {
   changeMicState,
   setOpenAddGroup,
   ChangeUserState,
-  getUserInfo
+  getUserInfo,
+  setOpenAlert,
+  setMessageAlert,
 } from './ui';
 export { createGroup, setGroupSelectedID, getChannels } from './group';
 export { createSocketVoice, disconnectVoiceChannel } from './voice';
 export {
   getDirectMessages,
   sendMessage,
-  getMessages,
+  updateMessage,
   clearMessages,
   setMessages,
   setInputSearchMessage,
-  sendMessageToUser
+  sendMessageToUser,
+  setHiddenDirectMessage,
 } from './message';
+export { setNewCall, setOpenCall } from './call';

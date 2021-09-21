@@ -1,24 +1,18 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import clsx from 'clsx';
-import axios from 'axios';
-import { MentionsInput, Mention } from 'react-mentions';
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
-import Nav from '../../components/Nav';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 //icons
 import AddIcon from '@material-ui/icons/Add';
 import SendIcon from '@material-ui/icons/Send';
-//internal files
-import defaultStyle from './defaultStyle.js';
-import classNames from './style.css';
 //components
-//import useScroll from './../../components/useScroll';
+import Nav from '../../components/Nav';
+import InputMentions from './../../components/InputMentions';
+import Message from './../../components/Message';
+import UserProfilePopover from './../../components/UserProfilePopover';
 import TextTooltip from './../../components/TextTooltip';
 //actions
 import {
@@ -28,14 +22,14 @@ import {
   getUserInfo,
 } from './../../redux/actions';
 //utils
-import { sortDate, calculateDate } from './../../utils';
-import ParserHtmlToComponents from '../../utils/ParserHtmlToComponents';
-import UserProfilePopover from './../../components/UserProfilePopover';
+import { sortDate } from './../../utils';
+import Loading from 'renderer/components/Loading';
+//hooks
+import useFetch from '../../components/hooks/useFetch';
+import useValue from './../../components/hooks/useValue';
 
-const { SERVER_API_URL } = process.env;
 const isElectron = require('is-electron');
 const electron = isElectron();
-const store = electron ? window.localStorage : localStorage;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -108,10 +102,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   single: {
+    display: 'flex',
+    flexDirection: 'column-reverse',
     height: '100%',
     width: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
+    ScreenOrientation: 'end',
     '&::-webkit-scrollbar': {
       width: '0.6em',
     },
@@ -131,166 +128,37 @@ const useStyles = makeStyles((theme) => ({
       background: 'transparent',
     },
   },
-  chatBox: {
-    display: 'flex',
-    margin: '0px',
-    padding: '5px',
-  },
-  chatBoxMention: {
-    display: 'flex',
-    margin: '0px',
-    padding: '5px',
-    backgroundColor: '#49443c',
-    borderLeft: '3px solid #faa81a',
-  },
-  chatBoxAvatar: {
-    display: 'flex',
-    height: '40px',
-    width: '40px',
-    marginLeft: '15px',
-    marginRight: '15px',
-  },
-  chatBoxUsername: {
-    display: 'flex',
-  },
-  chatBoxContent: {
-    display: 'flex',
-    color: '#fff',
-  },
-  chatBoxTypoUsername: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    paddingRight: '6px',
-  },
-  chatBoxTypoDate: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#5f6a79',
-    fontSize: '0.7rem',
-    fontWeight: 'normal',
-  },
 }));
 
 const DirectMessage = () => {
-  //styles
   const classes = useStyles();
-
   const { ID } = useParams();
+  const dispatch = useDispatch();
+
   const { messages, inputSearch } = useSelector((state) => state.message);
   const { user } = useSelector((state) => state.auth);
 
-  //state open UserProfilePopover
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const [users, setUsers] = useState([]);
+  const { loading, error, firstElementRef } = useFetch({
+    limit: 20,
+    ID: ID,
+    serverPath: `/directMessage/find/`,
+    data: messages,
+    setData: setMessages,
+    cleanData: clearMessages,
+  });
 
   const [messagesOrdered, setMessagesOrdered] = useState([]);
+  const lastElementRef = useRef();
 
-  //get more mesagges
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [handleGetMore, setHandleGetMore] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-
-  const GetData = async (DirectMessage, clean = false) => {
-    try {
-      const token = store.getItem('access_token');
-      let cancel;
-      let config = {
-        method: 'POST',
-        url: `${SERVER_API_URL}/directMessage/find/${DirectMessage}`,
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          offset: clean ? 0 : messages.length,
-          limit: 20,
-        },
-        cancelToken: new axios.CancelToken((c) => (cancel = c)),
-      };
-      const response = await axios(config);
-      const responseData = response.data;
-      if (clean) {
-        dispatch(setMessages(responseData.items));
-      } else {
-        dispatch(setMessages([...messages, ...responseData.items]));
-      }
-      setHasMore(responseData.has_more);
-      setLoading(false);
-      return () => cancel();
-    } catch (error) {
-      console.log(error);
-      setError(true);
-      setLoading(false);
-      if (axios.isCancel(error)) {
-        return;
-      }
-    }
-  };
-
-  useEffect(() => {
-    GetData(ID);
-  }, [handleGetMore]);
-
-  const dispatch = useDispatch();
-  const [emojis, setEmojis] = useState([]);
-  const [value, setValue] = useState({
-    content: '',
-  });
-  const onAdd = useCallback(() => {}, []);
-  const neverMatchingRegex = /($a)/;
-
-  const getUsers = async () => {
-    const response = await axios.get(`${SERVER_API_URL}/user`);
-    if (response?.data?.message === 'successful') {
-      const usersOdered = response.data.users.map((user) => ({
-        display: user.username,
-        id: user.ID,
-        avatar: user.avatar,
-      }));
-      setUsers(usersOdered);
-    }
-  };
-
-  const getEmojis = async () => {
-    const response = await axios.get(`${SERVER_API_URL}/emojis`);
-    if (response?.data?.message === 'successful') {
-      setEmojis(response.data.emojis);
-    }
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const searchEmoji = (query, callback) => {
-    if (query.length === 0) return;
-    const matches = emojis
-      .filter((emoji) => {
-        return emoji.name.indexOf(query.toLowerCase()) > -1;
-      })
-      .slice(0, 10);
-    return matches.map(({ emoji }) => ({ id: emoji }));
-  };
+  const [editable, setEditable] = useState('');
+  const [value, onChange, onAdd] = useValue('');
 
   const handleOnSubmitMessage = () => {
-    if (value.content !== '') {
-      const data = { ID: ID, message: value.content };
+    if (value.trim().length !== 0) {
+      const data = { ID: ID, message: value };
       dispatch(sendMessage(data));
-      setValue({
-        content: '',
-      });
+      onChange('');
     }
-  };
-
-  const onChange = (e, newValue) => {
-    setValue({
-      ...value,
-      content: newValue,
-    });
   };
 
   const handleKeyDown = (e) => {
@@ -303,55 +171,43 @@ const DirectMessage = () => {
     }
   };
 
-  const HandlerScroll = (event) => {
-    let { scrollTop, clientHeight } = event.currentTarget;
-    if (
-      scrollTop + clientHeight === clientHeight &&
-      loading === false &&
-      hasMore === true
-    ) {
-      setHandleGetMore((prevHandleGetMore) => prevHandleGetMore + 1);
-    }
-  };
-
+  const [anchorEl, setAnchorEl] = useState(null);
   const handleOpenUserProfile = (spanRef, userID) => {
     dispatch(getUserInfo(userID));
     setAnchorEl(spanRef);
   };
-
   const handleCloseUserProfile = () => {
     setAnchorEl(null);
   };
 
   useEffect(() => {
-    GetData(ID, true);
     return () => {
-      setHandleGetMore(1);
+      setEditable('');
       setMessagesOrdered([]);
-      dispatch(clearMessages([]));
     };
   }, [ID]);
 
-  useEffect(() => {
-    getUsers();
-    getEmojis();
-  }, []);
+  const filterForInputSearch = (message) => {
+    return (
+      message.content.toLowerCase().indexOf(inputSearch.toLowerCase()) > -1
+    );
+  };
+
+  const addEditable = (message) => {
+    if (message.ID === editable) {
+      return { ...message, isEditMode: true };
+    }
+    return { ...message, isEditMode: false };
+  };
 
   useEffect(() => {
+    const messageAux = messages.map(addEditable).sort(sortDate);
     if (inputSearch !== '') {
-      setMessagesOrdered(
-        messages
-          .filter(
-            (message) =>
-              message.content.toLowerCase().indexOf(inputSearch.toLowerCase()) >
-              -1
-          )
-          .sort(sortDate)
-      );
+      setMessagesOrdered(messageAux.filter(filterForInputSearch));
     } else {
-      setMessagesOrdered(messages.sort(sortDate));
+      setMessagesOrdered(messageAux);
     }
-  }, [messages, inputSearch]);
+  }, [messages, inputSearch, editable]);
 
   return (
     <Paper className={classes.paper}>
@@ -363,48 +219,29 @@ const DirectMessage = () => {
           anchorEl={anchorEl}
           onClose={handleCloseUserProfile}
         />
-        <div
-          id={'box-scroll'}
-          className={classes.single}
-          onScroll={HandlerScroll}
-        >
-          {loading && <Box className={classes.chatBox}>Cargando..</Box>}
+        <div className={classes.single}>
+          {<Box ref={lastElementRef} className={classes.chatBox}></Box>}
+          {messagesOrdered?.map((message, key) => {
+            return (
+              <Message
+                key={key}
+                reference={
+                  key === messagesOrdered.length - 1 ? firstElementRef : null
+                }
+                message={message}
+                user={user}
+                handleOpenUserProfile={handleOpenUserProfile}
+                editable={editable}
+                setEditable={setEditable}
+              />
+            );
+          })}
+          {loading && (
+            <Box className={classes.chatBox}>
+              <Loading size={25} />
+            </Box>
+          )}
           {error && <Box className={classes.chatBox}>Error</Box>}
-          {messagesOrdered &&
-            messagesOrdered.map((message, key) => {
-              const isMention = message.content.includes(`@@@__${user.ID}^^^__`)
-                ? true
-                : false;
-              return (
-                <Box
-                  key={key}
-                  className={clsx(classes.chatBox, {
-                    [classes.chatBoxMention]: isMention,
-                  })}
-                >
-                  <Avatar
-                    className={classes.chatBoxAvatar}
-                    alt="user-picture"
-                    src={`${SERVER_API_URL}/avatars/${message.user.avatar}`}
-                  />
-                  <Box>
-                    <Box className={classes.chatBoxUsername}>
-                      <Typography className={classes.chatBoxTypoUsername}>
-                        {message.user.username}
-                      </Typography>
-                      <Typography className={classes.chatBoxTypoDate}>
-                        {calculateDate(message.createdAt)}
-                      </Typography>
-                    </Box>
-                    <ParserHtmlToComponents
-                      user={user}
-                      htmlValue={message.content}
-                      handleOpen={handleOpenUserProfile}
-                    />
-                  </Box>
-                </Box>
-              );
-            })}
         </div>
       </Box>
       <div className={classes.end}>
@@ -415,49 +252,13 @@ const DirectMessage = () => {
             </IconButton>
           </TextTooltip>
         </div>
-        <MentionsInput
-          spellCheck={false}
-          name="content"
-          value={value.content}
+        <InputMentions
+          value={value}
           onChange={onChange}
-          style={defaultStyle}
-          onKeyDown={handleKeyDown}
+          onAdd={onAdd}
+          handleKeyDown={handleKeyDown}
           placeholder={'Enviar mensaje!'}
-          className="mentions"
-          classNames={classNames}
-          allowSuggestionsAboveCursor={true}
-          a11ySuggestionsListLabel={'mensiones sugeridas!'}
-        >
-          <Mention
-            suggestionsPosition={'top'}
-            trigger="@"
-            data={users}
-            markup="@@@____id__^^^____display__@@@^^^"
-            displayTransform={(userID) => {
-              const userTarget = users.find((user) => user.id === userID);
-              return `@${userTarget.display}`;
-            }}
-            onAdd={onAdd}
-            className={classNames.mentions__mention}
-            renderSuggestion={(
-              suggestion,
-              search,
-              highlightedDisplay,
-              index,
-              focused
-            ) => (
-              <div className={`user ${focused ? 'focused' : ''}`}>
-                {highlightedDisplay}
-              </div>
-            )}
-          />
-          <Mention
-            trigger=":"
-            markup="__id__"
-            regex={neverMatchingRegex}
-            data={searchEmoji}
-          />
-        </MentionsInput>
+        />
         <div className={classes.endSend}>
           <TextTooltip title="Enviar mensaje" placement="top">
             <IconButton

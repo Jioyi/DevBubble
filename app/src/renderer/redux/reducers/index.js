@@ -5,11 +5,13 @@ import group from './group.js';
 import socket from './socket.js';
 import voice from './voice.js';
 import message from './message.js';
+import call from './call.js';
 export default combineReducers({
 	ui,
 	auth,
 	group,
 	socket,
 	voice,
-	message
+	message,
+	call
 });

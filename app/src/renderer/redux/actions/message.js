@@ -5,19 +5,20 @@ import {
   ADD_MESSAGE,
   UPDATE_DIRECT_MESSAGE,
   SET_INPUT_SEARCH_MESSAGE,
+  UPDATE_MESSAGE,
 } from '../constants';
 import store from '../store';
+import { addHiddenItem } from './auth';
 
-//no usada
-export const getMessages = (DirectMessageID) => {
+export const setHiddenDirectMessage = (DirectMessageID) => {
   return async (dispatch) => {
     try {
-      const response = await API.getMessages(DirectMessageID);
+      const response = await API.setHiddenDirectMessage(DirectMessageID);
       if (response.data?.message === 'successful') {
-        dispatch(setMessages(response.data.messages));
+        dispatch(addHiddenItem(DirectMessageID));
       }
     } catch (error) {
-      console.log('error getMessages', error);
+      console.log('error setHiddenDirectMessage', error);
     }
   };
 };
@@ -27,7 +28,9 @@ export const sendMessageToUser = (data) => {
   return async (dispatch) => {
     try {
       const response = await API.sendMessageToUser(data);
-      console.log(response.data);
+      if (response.data?.message === 'successful') {
+        //dispatch(addMessage(response.data.data));
+      }
     } catch (error) {
       console.log('error sendMessageToUser', error);
     }
@@ -48,11 +51,12 @@ export const getDirectMessages = () => {
 };
 
 export const sendMessage = (data) => {
+  // eslint-disable-next-line no-unused-vars
   return async (dispatch) => {
     try {
       const response = await API.sendMessage(data);
+      // eslint-disable-next-line no-empty
       if (response.data?.message === 'successful') {
-        dispatch(addMessage(response.data.data));
       }
     } catch (error) {
       console.log('error sendMessage', error);
@@ -60,12 +64,18 @@ export const sendMessage = (data) => {
   };
 };
 
-export const clearMessages = (payload) => {
+export const updateMessage = (data) => {
+  // eslint-disable-next-line no-unused-vars
   return async (dispatch) => {
-    dispatch(clearMessages2(payload));
+    try {
+      await API.updateMessage(data);
+    } catch (error) {
+      console.log('error updateMessage', error);
+    }
   };
 };
-export const clearMessages2 = (payload) => {
+
+export const clearMessages = (payload) => {
   return {
     type: SET_MESSAGES,
     payload: payload,
@@ -93,25 +103,34 @@ export const addMessage = (message) => {
   };
 };
 
-export const updateCurrentDirectMessage = (directMessage) => {
+export const updateDirectMessage = (directMessage) => {
   const { directMessages } = store.getState().message;
   let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
   let newDirectMessages = [...directMessages];
-  newDirectMessages[index] = { ...directMessage };
+  if (index !== -1) {
+    newDirectMessages[index] = { ...directMessage };
+  } else {
+    newDirectMessages.push(directMessage);
+  }
   return {
     type: UPDATE_DIRECT_MESSAGE,
     payload: newDirectMessages,
   };
 };
 
-export const updateDirectMessage = (directMessage) => {
-  const { directMessages } = store.getState().message;
-  let index = directMessages.findIndex((DM) => DM.ID === directMessage.ID);
-  let newDirectMessages = [...directMessages];
-  newDirectMessages[index] = { ...directMessage, new: true };
+export const updateMessageInStore = (message) => {
+  message
+  const { messages } = store.getState().message;
+  let index = messages.findIndex(
+    (messageInStore) => messageInStore.ID === message.ID
+  );
+  let newMessages = [...messages];
+  if (index !== -1) {
+    newMessages[index] = { ...message };
+  }
   return {
-    type: UPDATE_DIRECT_MESSAGE,
-    payload: newDirectMessages,
+    type: UPDATE_MESSAGE,
+    payload: newMessages,
   };
 };
 

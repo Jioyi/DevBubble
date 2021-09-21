@@ -1,2 +1,2 @@
-export { formatContent, sortDate } from './formatContent';
+export { sortDate, sortDateReverse } from './sortDate';
 export { calculateDate } from './calculateDate';

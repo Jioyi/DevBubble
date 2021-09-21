@@ -29,6 +29,17 @@ socket.on('connection', async (socket) => {
 			await User.update({ connected: false }, { where: { ID: user.ID } });
 			console.log(`User ID:${user.ID} disconnected!`);
 		});
+
+		//llamada entre usuarios
+		socket.on('callUser', (data) => {
+			io.to(data.userToCall).emit('ImCallingYou', {
+				signal: data.signalData,
+				from: data.from,
+			});
+		});
+		socket.on('acceptCall', (data) => {
+			io.to(data.to).emit('callAccepted', data.signal);
+		});
 	}
 	//conexion a un voice channel
 	if (socket.handshake.query.voice) {

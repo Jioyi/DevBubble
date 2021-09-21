@@ -4,6 +4,7 @@ import {
   ADD_MESSAGE,
   UPDATE_DIRECT_MESSAGE,
   SET_INPUT_SEARCH_MESSAGE,
+  UPDATE_MESSAGE,
 } from '../constants';
 
 const initialState = {
@@ -24,6 +25,11 @@ const message = (state = initialState, action) => {
       return {
         ...state,
         directMessages: payload,
+      };
+    case UPDATE_MESSAGE:
+      return {
+        ...state,
+        messages: payload,
       };
     case SET_MESSAGES:
       return {
