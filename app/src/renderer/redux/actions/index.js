@@ -23,3 +23,4 @@ export {
   sendMessageToUser,
   setHiddenDirectMessage,
 } from './message';
+export { setNewCall, setOpenCall } from './call';

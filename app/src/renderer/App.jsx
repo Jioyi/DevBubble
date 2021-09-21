@@ -10,13 +10,14 @@ import WindowControls from './components/WindowControls';
 import GuestRoute from './components/GuestRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import DialogAlert from './components/DialogAlert';
+import DialogCall from './components/DialogCall';
 //views
 import Login from './views/Login';
 import Home from './views/Home';
 import VoiceChannel from './views/VoiceChannel';
 import DirectMessage from './views/DirectMessage';
 //actions
-import { setLoading, checkToken, setOpenAlert } from './redux/actions';
+import { setLoading, checkToken, setOpenAlert, setOpenCall } from './redux/actions';
 import './App.css';
 
 const isElectron = require('is-electron');
@@ -40,6 +41,7 @@ const App = () => {
   const electron = isElectron();
   const { isLoading, isAuthenticated } = useSelector((state) => state.auth);
   const { messageAlert, openAlert } = useSelector((state) => state.ui);
+  const { userCall, type, openCall } = useSelector((state) => state.call);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -67,6 +69,12 @@ const App = () => {
         setOpen={setOpenAlert}
         message={messageAlert}
         title="Mensaje de Alerta!"
+      />
+      <DialogCall
+        open={openCall}
+        userCall={userCall}
+        type={type}
+        setOpen={setOpenCall}
       />
       {electron && <WindowControls />}
       <Switch>

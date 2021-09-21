@@ -34,6 +34,9 @@ export const UPDATE_DIRECT_MESSAGE = 'UPDATE_DIRECT_MESSAGE';
 export const SET_MESSAGES = 'SET_MESSAGES';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const SET_INPUT_SEARCH_MESSAGE = 'SET_INPUT_SEARCH_MESSAGE';
+//call
+export const SET_OPEN_CALL = 'SET_OPEN_CALL';
+
 
 
 

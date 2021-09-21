@@ -18,7 +18,7 @@ import VideocamIcon from '@material-ui/icons/Videocam';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 //actions
 import { setInputSearchMessage } from './../../../redux/actions';
-import { getUserInfo } from './../../../redux/actions';
+import { getUserInfo, setNewCall } from './../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -259,7 +259,13 @@ const DirectMessageTopBar = () => {
                 </IconButton>
               </TextTooltip>
               <TextTooltip title="Iniciar videollamada" placement="bottom">
-                <IconButton color="inherit" className={classes.iconButton}>
+                <IconButton
+                  onClick={() => {
+                    dispatch(setNewCall(data[0], true, 'callToUser'));
+                  }}
+                  color="inherit"
+                  className={classes.iconButton}
+                >
                   <VideocamIcon className={classes.icon} />
                 </IconButton>
               </TextTooltip>
