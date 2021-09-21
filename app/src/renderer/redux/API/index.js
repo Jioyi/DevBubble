@@ -19,9 +19,13 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-//auth route
+/**** AUTH ROUTES ******/
+export const signup = (body) => API.post('/auth/signup', body);
 export const login = (data) => API.post(`/auth/login`, data);
 export const checkToken = () => API.get(`/auth/check_token`);
+
+
+
 //user route
 export const ChangeUserState = (state) =>
   API.put(`/user/change_state/${state}`);

@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { login } from 'renderer/redux/actions';
 
 import { useStyles } from '../index'
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import CardMedia from '@material-ui/core/CardMedia';
-import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import {Paper,
+  Typography,
+  CardMedia,
+  TextField,
+  Box,
+  Button
+} from '@material-ui/core';
 
 function SignIn({ showRegister, showRecoveryPassword }) {
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const [ inputLogin, setInputLogin ] = useState({
-      email: 'karlosagreda@hotmail.com',
-      password: '123456',
+      email: '',
+      password: '',
     });
 
     const handleOnChangeLogin = (e) => {

@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
 
+import { signup } from '../../../redux/API/index'
+
 import { makeStyles } from '@material-ui/core/styles';
 import { useStyles } from '../index'
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import CardMedia from '@material-ui/core/CardMedia';
-import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import {
+  Paper, 
+  Typography,
+  CardMedia, 
+  Input,
+  Box, 
+  Button,
+  FormLabel,
+  FormGroup,
+  FormControl,
+  FormHelperText,
+  TextField
+} from '@material-ui/core';
+
 
 const initInput = {
     username: '',
@@ -15,8 +25,19 @@ const initInput = {
     password: '',
 }
 
-function Register({ showLogin }) {
-    const classes = useStyles()
+const localStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.2rem'
+  }
+})
+
+function Register({ showLogin }) {  
+    const classes = {
+      ...useStyles(),
+      ...localStyles()
+    }
 
     const [ inputRegister, setInputRegister ] = useState(initInput);
 
@@ -27,14 +48,25 @@ function Register({ showLogin }) {
       });
     };
 
-    const handleOnSubmitRegister = () => {};
+    const handleOnSubmitRegister = async (e) => {
+      e.preventDefault()
+      try{
+        const newUser = await signup(inputRegister);
+        alert(`User ${newUser.data.username} created!`);
+      } catch (err) {
+        alert('User not created. Please try again.');
+      }
+    };
     
     return (
-        <Box>
-          <Box className={classes.boxCenter}>
+        <FormGroup >
+          <FormLabel className={classes.boxCenter}>
             <Typography className={classes.h1}>Registro de usuario</Typography>
-          </Box>
-          <Box className={classes.boxCenter}>
+          </FormLabel>
+          <form
+            className={classes.form}
+            onSubmit={handleOnSubmitRegister}
+          >
             <TextField
               label="Correo electrónico"
               name="email"
@@ -53,8 +85,7 @@ function Register({ showLogin }) {
               margin="dense"
               variant="outlined"
             />
-          </Box>
-          <Box className={classes.boxCenter}>
+
             <TextField
               label="Usuario"
               name="username"
@@ -73,8 +104,7 @@ function Register({ showLogin }) {
               margin="dense"
               variant="outlined"
             />
-          </Box>
-          <Box className={classes.boxCenter}>
+
             <TextField
               label="Contraseña"
               name="password"
@@ -93,21 +123,26 @@ function Register({ showLogin }) {
               margin="dense"
               variant="outlined"
             />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Button className={classes.button} onClick={handleOnSubmitRegister}>
-              registrase
+
+            <Button 
+              className={classes.button}
+              type='submit'
+            >
+              Register
             </Button>
-          </Box>
-          <Box className={classes.boxCenter}>
+
+          </form>
+          
+          <FormHelperText>
             <Typography className={classes.text}>
               ¿Ya tienes una Cuenta en Dev Bubble?{' '}
               <a href="/" onClick={showLogin} className={classes.text2}>
                 Iniciar sesión
               </a>
             </Typography>
-          </Box>
-        </Box>
+          </FormHelperText>
+              
+        </FormGroup>
     )
 }
 

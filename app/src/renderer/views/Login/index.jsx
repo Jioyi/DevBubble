@@ -82,6 +82,8 @@ export const useStyles = makeStyles((theme) => ({
   textField: {
     color: '#fff',
     width: '40ch',
+    paddingTop: '0',
+    paddingBottom: '0',
   },
   image: {
     height: '200px',
@@ -91,7 +93,8 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   button: {
-    margin: theme.spacing(1),
+    width: 'fit-content',
+    margin: 'auto',
     backgroundColor: '#5865f2',
     color: '#ffffff',
     fontWeight: 'bold',

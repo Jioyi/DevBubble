@@ -5,6 +5,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import store from './redux/store';
 import App from './App';
 
+
+
 const root = document.getElementById('root');
 
 const node = (

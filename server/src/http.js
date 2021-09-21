@@ -74,6 +74,9 @@ server.use((req, res, next) => {
 	next();
 });
 
+// Cambiado de lugar para usar el handler errors
+server.use('/', require('./routes'));
+
 server.use((err, req, res, next) => {
 	const status = err.status || 500;
 	const message = err.message || err;
@@ -81,6 +84,5 @@ server.use((err, req, res, next) => {
 	res.status(status).send(message);
 });
 
-server.use('/', require('./routes'));
 
 module.exports = http;

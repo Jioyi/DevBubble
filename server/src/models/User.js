@@ -15,7 +15,10 @@ module.exports = (sequelize) => {
 			email: {
 				type: DataTypes.STRING,
 			},
-			password: {
+			hashed_password: {
+				type: DataTypes.STRING,
+			},
+			salt: {
 				type: DataTypes.STRING,
 			},
 			avatar: {
