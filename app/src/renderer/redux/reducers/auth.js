@@ -3,6 +3,7 @@ import {
   SET_USER,
   SET_AUTHENTICATE,
   SET_LOADING,
+  SET_IS_ERROR
 } from '../constants';
 import store from '../store/myStore';
 
@@ -14,6 +15,8 @@ const initialState = {
   token: token ? token : null,
   isAuthenticated: user && token ? true : false,
   isLoading: true,
+  isError: true,
+
 };
 
 const auth = (state = initialState, action) => {
@@ -39,6 +42,11 @@ const auth = (state = initialState, action) => {
         ...state,
         isLoading: payload,
       };
+    case SET_IS_ERROR:
+      return {
+        ...state,
+        isError: payload
+      }
     default:
       return state;
   }

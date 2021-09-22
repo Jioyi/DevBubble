@@ -5,6 +5,7 @@ import {
   SET_USER,
   SET_AUTHENTICATE,
   SET_LOADING,
+  SET_IS_ERROR
 } from '../constants';
 import { ConnectServerIO } from './socket';
 import { setUserState } from './ui';
@@ -15,7 +16,6 @@ export const checkToken = () => {
     try {
       const response = await API.checkToken();
       if (response.data?.message === 'successful') {
-        console.log('check', response.data);
         dispatch(setUser(response.data.user)); 
         dispatch(setToken(response.data.token));
         dispatch(setUserState(response.data.user.state));
@@ -32,21 +32,20 @@ export const checkToken = () => {
   };
 };
 
-export const login = (email, password) => {
+export const signIn = (body) => {
   return async (dispatch) => {
+    dispatch(setLoading(true))
+    dispatch(setIsError(false))
     try {
-      const response = await API.login({ email, password });
-      if (response.data?.message === 'successful') {
-        console.log('login', response.data);
-        dispatch(setUser(response.data.user));
-        dispatch(setToken(response.data.token));
-        dispatch(setAuthenticate(true));
-      } else {
-        dispatch(logOut());
-      }
-    } catch (error) {
-      console.log('error login', error);
-      dispatch(logOut());
+      const response = await API.signIn(body);
+      const { user, token } = response.data;
+      dispatch(setUser(user));
+      dispatch(setToken(token));
+      dispatch(setLoading(false));
+      dispatch(setIsError(false));
+    } catch (err) {
+      dispatch(setLoading(false))
+      dispatch(setIsError(true))
     }
   };
 };
@@ -84,11 +83,18 @@ export const setAuthenticate = (bolean) => {
   };
 };
 
-export const setLoading = (bolean) => {
+export const setLoading = (boolean) => {
   return {
     type: SET_LOADING,
-    payload: bolean,
+    payload: boolean,
   };
+};
+
+export const setIsError = (boolean) => {
+  return {
+    type: SET_IS_ERROR,
+    payload: boolean
+  }
 };
 
 export const callbackTest = (time) => {

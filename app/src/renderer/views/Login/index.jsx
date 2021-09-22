@@ -110,7 +110,7 @@ export const useStyles = makeStyles((theme) => ({
   boxCenter: {
     display: 'flex',
     alignItems: 'center',
-    flexGrow: 1,
+    
     justifyContent: 'center',
     flexDirection: 'column',
   },

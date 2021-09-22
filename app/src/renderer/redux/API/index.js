@@ -19,17 +19,19 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-/**** AUTH ROUTES ******/
-export const signup = (body) => API.post('/auth/signup', body);
-export const login = (data) => API.post(`/auth/login`, data);
+/************** AUTH ROUTES ******/
+export const signUp = (body) => API.post('/auth/signup', body);
+export const signIn = (body) => API.post(`/auth/signin`, body);
 export const checkToken = () => API.get(`/auth/check_token`);
 
 
 
-//user route
+/********** USER ROUTES **************/
 export const ChangeUserState = (state) =>
   API.put(`/user/change_state/${state}`);
-//group route
+
+
+  //group route
 export const createGroup = (data) =>
   API.post('/group', data, {
     headers: {

@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -7,6 +8,9 @@ const { User } = require('./db');
 const server = express();
 const { checkTokenForSocketIO } = require('./security');
 const http = require('http').createServer(server);
+const { SECRET_SESSION } = process.env
+
+/*************   SOCKET CONFIG      ***************/
 
 const socket = require('socket.io')(http, {
 	cors: {
@@ -50,9 +54,9 @@ server.use((req, res, next) => {
 	next();
 });
 
+/************* SERVER CONFIG ******************/
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
-server.use(cookieParser());
 server.use(morgan('dev'));
 server.use(express.json());
 server.use(express.static(__dirname + '/public'));
@@ -63,20 +67,30 @@ server.use(
 	})
 );
 
+
+/*********** CORS CONFIG **********************/
 server.use((req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Credentials', 'true');
 	res.header(
 		'Access-Control-Allow-Headers',
 		'Origin, X-Requested-With, Content-Type, Accept'
-	);
+		);
 	res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-	next();
+	next();	
 });
 
-// Cambiado de lugar para usar el handler errors
+server.use(session({
+	secret: SECRET_SESSION,
+	resave: true,
+	saveUninitialized: true
+}))
+server.use(cookieParser(SECRET_SESSION));
+		
+/********** ROUTES ****************************/
 server.use('/', require('./routes'));
 
+/*********** ERROR HANDLER ********************/
 server.use((err, req, res, next) => {
 	const status = err.status || 500;
 	const message = err.message || err;

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { login } from 'renderer/redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { signIn } from 'renderer/redux/actions';
 
 import { useStyles } from '../index'
-import {Paper,
+import { makeStyles } from '@material-ui/styles';
+import {
+  Paper,
   Typography,
   CardMedia,
   TextField,
@@ -11,38 +13,56 @@ import {Paper,
   Button
 } from '@material-ui/core';
 
-function SignIn({ showRegister, showRecoveryPassword }) {
-    const classes = useStyles();
-    const dispatch = useDispatch();
+const localStyles = makeStyles({
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0'
+  }
+})
 
-    const [ inputLogin, setInputLogin ] = useState({
+function SignIn({ showRegister, showRecoveryPassword }) {
+  const classes = {
+    ...useStyles(),
+    ...localStyles()
+  }
+    const dispatch = useDispatch();
+    const { isError, isLoading } = useSelector(state => state.auth)
+
+    const [ inputSignIn, setInputSignIn ] = useState({
       email: '',
       password: '',
     });
 
-    const handleOnChangeLogin = (e) => {
-      setInputLogin({ ...inputLogin, [e.target.name]: e.target.value });
+    const handleOnChange = (e) => {
+      setInputSignIn({ 
+        ...inputSignIn, 
+        [e.target.name]: e.target.value
+      });
     };
 
-    const handleOnSubmitLogin = () => {
-      if (inputLogin.email !== '' && inputLogin.password !== '') {
-        dispatch(login(inputLogin.email, inputLogin.password));
-      }
-    };
+    const handleSignIn = async () => {
+      dispatch(signIn(inputSignIn))
+    }
 
     return (
         <Box>
           <Box className={classes.boxCenter}>
             <Typography className={classes.h1}>Inicio de sesion</Typography>
           </Box>
-          <Box className={classes.boxCenter}>
+          <form
+            className={classes.form}
+            onSubmit={handleSignIn}
+            onChange={handleOnChange}
+          >
+            
             <TextField
               label="Correo electrónico"
               name="email"
               type="email"
-              value={inputLogin.email}
+              value={inputSignIn.email}
               className={classes.textField}
-              helperText={'helperText'}
+              // helperText={'helperText'}
               error={false}
               InputProps={{
                 className: classes.input,
@@ -50,19 +70,19 @@ function SignIn({ showRegister, showRecoveryPassword }) {
               InputLabelProps={{
                 className: classes.input,
               }}
-              onChange={handleOnChangeLogin}
+              
               margin="dense"
               variant="outlined"
             />
-          </Box>
-          <Box className={classes.boxCenter}>
+          
+          
             <TextField
               label="Contraseña"
               name="password"
               type="password"
-              value={inputLogin.password}
+              value={inputSignIn.password}
               className={classes.textField}
-              helperText={'helperText'}
+              // helperText={'helperText'}
               error={false}
               InputProps={{
                 className: classes.input,
@@ -70,16 +90,15 @@ function SignIn({ showRegister, showRecoveryPassword }) {
               InputLabelProps={{
                 className: classes.input,
               }}
-              onChange={handleOnChangeLogin}
+              
               margin="dense"
               variant="outlined"
             />
-          </Box>
-          <Box className={classes.boxCenter}>
-            <Button className={classes.button} onClick={handleOnSubmitLogin}>
+          
+            <Button className={classes.button} >
               INGRESAR
             </Button>
-          </Box>
+          </form>
           <Box className={classes.boxCenter}>
             <Typography className={classes.text}>
               ¿Primera ves en Dev Bubble?{' '}
