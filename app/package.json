@@ -138,6 +138,7 @@
     "electron-log": "^4.3.5",
     "electron-updater": "^4.3.8",
     "history": "4.x.x",
+    "meyda": "^5.2.2",
     "peerjs": "^1.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

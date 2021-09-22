@@ -14,7 +14,6 @@ import UserProfilePopover from './../../UserProfilePopover';
 //icons
 import SearchIcon from '@material-ui/icons/Search';
 import CallIcon from '@material-ui/icons/Call';
-import VideocamIcon from '@material-ui/icons/Videocam';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 //actions
 import { setInputSearchMessage } from './../../../redux/actions';
@@ -254,11 +253,6 @@ const DirectMessageTopBar = () => {
             <>
               <div className={classes.maxWidth}></div>
               <TextTooltip title="Iniciar llamada de voz" placement="bottom">
-                <IconButton color="inherit" className={classes.iconButton}>
-                  <CallIcon className={classes.icon} />
-                </IconButton>
-              </TextTooltip>
-              <TextTooltip title="Iniciar videollamada" placement="bottom">
                 <IconButton
                   onClick={() => {
                     dispatch(setNewCall(data[0], true, 'callToUser'));
@@ -266,7 +260,7 @@ const DirectMessageTopBar = () => {
                   color="inherit"
                   className={classes.iconButton}
                 >
-                  <VideocamIcon className={classes.icon} />
+                  <CallIcon className={classes.icon} />
                 </IconButton>
               </TextTooltip>
             </>
