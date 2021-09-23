@@ -37,7 +37,8 @@ const App = () => {
   const { 
     isLoading, 
     isAuthenticated,
-    user } = useSelector((state) => state.auth);
+    user 
+  } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (isAuthenticated) {

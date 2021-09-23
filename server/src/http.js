@@ -1,5 +1,4 @@
 const express = require('express');
-const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -13,11 +12,11 @@ const passport = require('passport');
 
 /*********************   SOCKET CONFIG      ************************/
 
-//  ****  ***   *** *  *  *** *****
-//  *    *   * *    * *  *      *
-//   **  *   * *    **   * **   *
-//     * *   * *    * *  *      *
-//  ****  ***   *** *  *  ***   *
+//  ****  ***   ***  *  *   *** *****
+//  *    *   * *     * *   *      *
+//   **  *   * *     **    * **   *
+//     * *   * *     * *   *      *
+//  ****  ***   ***  *  *   ***   *
 
 const socket = require('socket.io')(http, {
 	cors: {
