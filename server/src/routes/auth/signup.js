@@ -3,6 +3,7 @@ const router = Router();
 
 const { User } = require('../../db');
 const genPassword = require('./passwordUtils').genPassword;
+const issueJWT = require('./passwordUtils').issueJWT;
 const { v4: uuidv4 } = require('uuid')
 
 router.post('/', async (req,res,next)=>{
@@ -20,8 +21,15 @@ router.post('/', async (req,res,next)=>{
             salt,
             username
         });
-        
-        res.json(user);
+
+        const { token, expiresIn } = issueJWT(user);
+
+        res.json({
+            success: true,
+            user,
+            token,
+            expiresIn
+        });
 
     } catch(err) {
         next(err);

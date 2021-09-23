@@ -8,16 +8,22 @@ const { User } = require('./db');
 const server = express();
 const { checkTokenForSocketIO } = require('./security');
 const http = require('http').createServer(server);
-const { SECRET_SESSION } = process.env
+const passport = require('passport');
 
-/*************   SOCKET CONFIG      ***************/
+
+/*********************   SOCKET CONFIG      ************************/
+
+//  ****  ***   *** *  *  *** *****
+//  *    *   * *    * *  *      *
+//   **  *   * *    **   * **   *
+//     * *   * *    * *  *      *
+//  ****  ***   *** *  *  ***   *
 
 const socket = require('socket.io')(http, {
 	cors: {
 		origin: '*',
 	},
 });
-
 socket.on('connection', async (socket) => {
 	//conexion de usuario para notificaciones y mensaje globales
 	if (socket.handshake.query.token) {
@@ -53,8 +59,12 @@ server.use((req, res, next) => {
 	req.socket = socket;
 	next();
 });
+//////////////////ENDS SOCKET CONFIG/////////////////
 
-/************* SERVER CONFIG ******************/
+
+
+
+/************* SERVER CONFIG ***********************/
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(morgan('dev'));
@@ -66,6 +76,10 @@ server.use(
 		origin: '*',
 	})
 );
+/////////////// ENDS SERVER CONFIG /////////////////////
+
+
+
 
 
 /*********** CORS CONFIG **********************/
@@ -79,16 +93,23 @@ server.use((req, res, next) => {
 	res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
 	next();	
 });
+//////////////// ENDS CORS CONFIG ///////////////////////
 
-server.use(session({
-	secret: SECRET_SESSION,
-	resave: true,
-	saveUninitialized: true
-}))
-server.use(cookieParser(SECRET_SESSION));
-		
+
+
+
+/**************** PASSPORT JWT CONFIG ********************/
+require('./passport')(passport);
+server.use(passport.initialize());
+/////////////// ENDS PASSPORT JWT CONFIG //////////////////
+
+
+
+
 /********** ROUTES ****************************/
 server.use('/', require('./routes'));
+////////////////////////////////////////////////
+
 
 /*********** ERROR HANDLER ********************/
 server.use((err, req, res, next) => {
@@ -97,6 +118,6 @@ server.use((err, req, res, next) => {
 	console.error(err);
 	res.status(status).send(message);
 });
-
+////////////////////////////////////////////////
 
 module.exports = http;
