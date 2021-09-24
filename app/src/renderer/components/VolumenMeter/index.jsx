@@ -28,12 +28,8 @@ const VolumeMeter = ({ audio }) => {
   const [features] = useAudioAnalyser(audio);
 
   useEffect(() => {
-    if (features) {
-      let aux = features.rms * 17;
-      if (aux > 1) {
-        aux = 1;
-      }
-      setVolume(aux * 100);
+    if (features) {      
+      setVolume(features.volume);
     }
   }, [features]);
 

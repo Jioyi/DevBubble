@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import clsx from 'clsx';
 import { useSelector, useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
@@ -17,8 +17,9 @@ import CallIcon from '@material-ui/icons/Call';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 //actions
 import { setInputSearchMessage } from './../../../redux/actions';
-import { getUserInfo, setNewCall } from './../../../redux/actions';
-
+import { getUserInfo } from './../../../redux/actions';
+//context
+import { SocketContext } from './../../SocketContext';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -164,6 +165,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectMessageTopBar = () => {
+  const { newCall } = useContext(SocketContext);
   const { ID } = useParams();
   const dispatch = useDispatch();
   const [data, setData] = useState(null);
@@ -255,7 +257,7 @@ const DirectMessageTopBar = () => {
               <TextTooltip title="Iniciar llamada de voz" placement="bottom">
                 <IconButton
                   onClick={() => {
-                    dispatch(setNewCall(data[0], true, 'callToUser'));
+                    newCall(data[0]);
                   }}
                   color="inherit"
                   className={classes.iconButton}

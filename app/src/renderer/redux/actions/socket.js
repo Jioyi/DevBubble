@@ -1,4 +1,5 @@
 import ClientSocketIO from 'socket.io-client';
+//import { setMessageAlert, setOpenAlert } from './ui';
 import { SET_MAIN_SOCKET } from '../constants';
 import { setLoading } from './auth';
 import {
@@ -11,7 +12,7 @@ const { SERVER_API_URL } = process.env;
 
 export const ConnectServerIO = (token) => {
   return async (dispatch) => {
-    try {
+    try {      
       const socket = ClientSocketIO(SERVER_API_URL, {
         query: { token: token },
         secure: true,
@@ -40,6 +41,28 @@ export const ConnectServerIO = (token) => {
         }
         dispatch(updateDirectMessage(data.directMessageInfo));
       });
+
+      /*socket.on('ImCallingYou', (data) => {
+        console.log('ImCallingYou', state);
+        //setUserIncomingCall(data.from);
+        //setOpenIncomingCall(true);
+        //setCall(data.signal);
+      });
+
+      socket.on('dontAccept', (data) => {
+        if (state === 'calling') {
+          //cancelNewCall();
+          dispatch(
+            setMessageAlert(
+              `El usuario @${data.userCalled.username} no a aceptado la llamada`
+            )
+          );
+          dispatch(setOpenAlert(true));
+        }
+      });
+      socket.on('acceptCall', (data) => {
+        socket.to(data.to.ID).emit('callAccepted', data.signal);
+      });*/
       dispatch(setMainSocket(socket));
     } catch (error) {
       console.log(error);
