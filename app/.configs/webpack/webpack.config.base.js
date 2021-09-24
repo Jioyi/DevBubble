@@ -38,6 +38,9 @@ export default {
     /*fallback: {
       fs: false,
     },*/
+    alias: {
+      process: 'process/browser',
+    },
   },
   plugins: [
     new Dotenv(),
@@ -45,6 +48,9 @@ export default {
       NODE_ENV: 'production',
     }),
     new webpack.ExternalsPlugin('commonjs', ['electron']),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
   ],
   externals: {
     electron: 'electron',

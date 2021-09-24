@@ -31,16 +31,45 @@ socket.on('connection', async (socket) => {
 		});
 
 		//llamada entre usuarios
-		socket.on('callUser', (data) => {
-			io.to(data.userToCall).emit('ImCallingYou', {
+		/*socket.on('callUser', (data) => {
+			socket.to(data.userToCall.ID).emit('ImCallingYou', {
 				signal: data.signalData,
 				from: data.from,
 			});
 		});
+		socket.on('dontAcceptCall', (data) => {
+			socket.to(data.userIncomingCall.ID).emit('dontAccept', {
+				userCalled: data.userCalled,
+			});
+		});
 		socket.on('acceptCall', (data) => {
-			io.to(data.to).emit('callAccepted', data.signal);
+			socket.to(data.to.ID).emit('callAccepted', data.signal);
+		});*/
+	}
+
+	//llamada entre usuarios
+	if (socket.handshake.query.calls) {
+		const ID = socket.handshake.query.ID;
+		socket.join(`Calls-${ID}`);
+		
+		socket.on('disconnect', async () => {});
+
+		socket.on('callUser', (data) => {
+			socket.to(`Calls-${data.userToCall.ID}`).emit('ImCallingYou', {
+				signal: data.signalData,
+				from: data.from,
+			});
+		});
+		socket.on('dontAcceptCall', (data) => {
+			socket.to(`Calls-${data.userIncomingCall.ID}`).emit('dontAccept', {
+				userCalled: data.userCalled,
+			});
+		});
+		socket.on('acceptCall', (data) => {
+			socket.to(`Calls-${data.to.ID}`).emit('callAccepted', data.signal);
 		});
 	}
+
 	//conexion a un voice channel
 	if (socket.handshake.query.voice) {
 		socket.on('join-channel-voice', (data) => {

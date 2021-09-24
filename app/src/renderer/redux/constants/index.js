@@ -6,6 +6,7 @@ export const ADD_HIDDEN_ITEM = 'ADD_HIDDEN_ITEM';
 export const SET_AUTHENTICATE = 'SET_AUTHENTICATE';
 export const SET_LOADING = 'SET_LOADING';
 // constants ui
+export const REDIRECT = 'REDIRECT';
 export const SET_USER_TARGET_INFO = 'SET_USER_TARGET_INFO';
 export const CHANGE_VOLUME_STATE = 'CHANGE_VOLUME_STATE';
 export const CHANGE_MIC_STATE = 'CHANGE_MIC_STATE';
@@ -35,21 +36,12 @@ export const SET_MESSAGES = 'SET_MESSAGES';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const SET_INPUT_SEARCH_MESSAGE = 'SET_INPUT_SEARCH_MESSAGE';
 //call
-export const SET_OPEN_CALL = 'SET_OPEN_CALL';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export const SET_OPEN_NEW_CALL = 'SET_OPEN_NEW_CALL';
+export const SET_USER_NEW_CALL = 'SET_USER_NEW_CALL';
+export const SET_STATE_CALL = 'SET_STATE_CALL';
+export const SET_OPEN_INCOMING_CALL = 'SET_OPEN_INCOMING_CALL';
+export const SET_USER_INCOMING_CALL = 'SET_USER_INCOMING_CALL';
+export const SET_SIGNAL_INCOMING_CALL = 'SET_SIGNAL_INCOMING_CALL';
+export const SET_USER_VIDEO_ONE = 'SET_USER_VIDEO_ONE';
+export const SET_USER_VIDEO_TWO = 'SET_USER_VIDEO_TWO';
+export const SET_PEER_CALL = 'SET_PEER_CALL';

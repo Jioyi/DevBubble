@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import clsx from 'clsx';
-
 import Divider from '@material-ui/core/Divider';
+//context
+import { SocketContext } from './../SocketContext';
 //components
 import UserState from './components/UserState';
 import CreateOrAddGroup from './components/CreateOrAddGroup';
@@ -135,23 +136,24 @@ const useStyles = makeStyles((theme) => ({
 
 const Nav = () => {
   const classes = useStyles();
+  const { state, closeCall } = useContext(SocketContext);
   const [group, setGroup] = useState(null);
-  const [openCall, setOpenCall] = useState(false);
-  const { user } = useSelector((state) => state.auth);
-  const { streaming } = useSelector((state) => state.voice);
-  const { groups, groupSelectedID } = useSelector((state) => state.group);
+  const [openMenuOpenCall, setOpenMenuOpenCall] = useState(false);
 
-  useEffect(() => {
-    if (streaming) {
-      setOpenCall(true);
-    } else {
-      setOpenCall(false);
-    }
-  }, [streaming]);
+  const { user } = useSelector((state) => state.auth);
+  const { groups, groupSelectedID } = useSelector((state) => state.group);
 
   useEffect(() => {
     setGroup(groups.find((group) => group.ID === groupSelectedID));
   }, [groupSelectedID, groups]);
+
+  useEffect(() => {
+    if (state?.current === 'inCall') {
+      setOpenMenuOpenCall(true);
+    } else {
+      setOpenMenuOpenCall(false);
+    }
+  }, [state?.current]);
 
   return (
     <>
@@ -173,16 +175,16 @@ const Nav = () => {
       >
         <div
           className={clsx(classes.drawerMiddle, {
-            [classes.drawerMiddleCall]: openCall,
+            [classes.drawerMiddleCall]: openMenuOpenCall,
           })}
         >
           <ChannelsList />
           <DirectMessagesList />
         </div>
         <div className={classes.drawerEnd}>
-          {openCall && (
+          {openMenuOpenCall && (
             <>
-              <MenuOpenCall />
+              <MenuOpenCall closeCall={closeCall} />
               <Divider className={classes.divider} />
             </>
           )}
