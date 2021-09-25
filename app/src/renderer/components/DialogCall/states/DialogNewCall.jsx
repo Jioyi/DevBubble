@@ -160,14 +160,16 @@ const DialogNewCall = ({
 
   const getDevices = async () => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
+      const devices = await window.navigator.mediaDevices.enumerateDevices();
       let devicesVideoAux = [];
       let devicesAudioAux = [];
       devices.forEach((device) => {
         if (device.kind === 'videoinput') {
           devicesVideoAux.push(device);
         } else if (device.kind === 'audioinput') {
-          devicesAudioAux.push(device);
+          if (!devicesAudioAux.some((dev) => dev.groupId === device.groupId)) {
+            devicesAudioAux.push(device);
+          }
         }
       });
       setDevicesVideo(devicesVideoAux);

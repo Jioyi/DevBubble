@@ -237,9 +237,11 @@ const SocketContextProvider = ({ children, history }) => {
   }, [socketState]);
 
   useEffect(() => {
-    console.log('state', state.current);
+    const location = window.location.href;
     if (state.current === 'avaible') {
-      history.push('/home');
+      if (location.includes("/call")) {
+        history.push('/home');
+      }      
     } else if (state?.current === 'inCall') {
       setOpenIncomingCall(false);
       setOpenNewCall(false);

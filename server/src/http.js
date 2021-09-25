@@ -50,22 +50,6 @@ socket.on('connection', async (socket) => {
 				userCalled: data.userCalled,
 			});
 		});
-
-
-		/*socket.on('callUser', (data) => {
-			socket.to(data.userToCall.ID).emit('ImCallingYou', {
-				signal: data.signalData,
-				from: data.from,
-			});
-		});
-		socket.on('dontAcceptCall', (data) => {
-			socket.to(data.userIncomingCall.ID).emit('dontAccept', {
-				userCalled: data.userCalled,
-			});
-		});
-		socket.on('acceptCall', (data) => {
-			socket.to(data.to.ID).emit('callAccepted', data.signal);
-		});*/
 	}
 	//conexion a un voice channel
 	if (socket.handshake.query.voice) {
