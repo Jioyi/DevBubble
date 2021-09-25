@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -134,9 +134,8 @@ const DialogIncomingCall = ({
   open,
   cancel,
   state,
-  user,
+  userCall,
   acceptCall,
-  streamRef,
   setStream,
 }) => {
   const classes = useStyles();
@@ -149,6 +148,7 @@ const DialogIncomingCall = ({
   const [deviceAudioSelect, setDeviceAudioSelect] = useState('');
   const [devicesAudio, setDevicesAudio] = useState([]);
   const [streamAudio, setStreamAudio] = useState(null);
+  const videoRef = useRef();
 
   const handleAcceptCall = () => {
     acceptCall(deviceVideoSelect, deviceAudioSelect);
@@ -211,8 +211,8 @@ const DialogIncomingCall = ({
 
   const gotStream = (stream) => {
     window.stream = stream;
-    if (streamRef.current) {
-      streamRef.current.srcObject = stream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
       setStream(stream);
       if (deviceAudioSelect !== '') {
         setStreamAudio(stream);
@@ -276,7 +276,7 @@ const DialogIncomingCall = ({
     >
       <DialogTitle id={'call'} className={classes.dialogTitle}>
         <Typography className={classes.tittle}>
-          llamada entrante de @{user?.username}
+          llamada entrante de @{userCall?.username}
         </Typography>
       </DialogTitle>
       <DialogContent className={classes.dialogContent}>
@@ -317,7 +317,7 @@ const DialogIncomingCall = ({
             component="video"
             muted="muted"
             className={classes.video}
-            ref={streamRef}
+            ref={videoRef}
             autoPlay
           />
         </Card>

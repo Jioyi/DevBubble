@@ -7,8 +7,8 @@ import {
   SET_LOADING,
   SET_HIDDEN_LIST,
   ADD_HIDDEN_ITEM,
+  SET_SOCKET_STATE,
 } from '../constants';
-import { ConnectServerIO } from './socket';
 import { setUserState } from './ui';
 import { setGroups } from './group';
 
@@ -22,7 +22,7 @@ export const checkToken = () => {
         dispatch(setHiddenList(response.data.hidden_list));
         dispatch(setUserState(response.data.user.state));
         dispatch(setGroups(response.data.groups));
-        dispatch(ConnectServerIO(response.data.token));
+        dispatch(setSocketState('connecting'));
       } else {
         dispatch(logOut());
         dispatch(setLoading(false));
@@ -59,6 +59,7 @@ export const logOut = () => {
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setAuthenticate(false));
+    dispatch(setSocketState('destroy'));
   };
 };
 
@@ -106,6 +107,9 @@ export const setLoading = (bolean) => {
   };
 };
 
-export const callbackTest = (time) => {
-  return new Promise((resolve) => setTimeout(resolve, time));
+export const setSocketState = (state) => {
+  return {
+    type: SET_SOCKET_STATE,
+    payload: state,
+  };
 };

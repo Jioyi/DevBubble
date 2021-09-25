@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
@@ -78,8 +77,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Call = () => {
   const classes = useStyles();
-  const { stream, stream2, state } = useContext(SocketContext);
-  const history = useHistory();
+  const { stream, stream2 } = useContext(SocketContext);
+
   const video = useRef();
   const video2 = useRef();
 
@@ -98,12 +97,6 @@ const Call = () => {
       }
     }
   }, [stream2, video2]);
-
-  useEffect(() => {
-    if (state?.current === 'avaible') {
-      history.push('/home');
-    }
-  }, [state?.current]);
 
   return (
     <Paper className={classes.paper}>

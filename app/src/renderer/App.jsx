@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 //components
@@ -18,7 +18,7 @@ import VoiceChannel from './views/VoiceChannel';
 import DirectMessage from './views/DirectMessage';
 import Call from './views/Call';
 //actions
-import { setLoading, checkToken, setOpenAlert } from './redux/actions';
+import { setOpenAlert } from './redux/actions';
 import './App.css';
 
 const isElectron = require('is-electron');
@@ -38,18 +38,9 @@ const useStyles = makeStyles(() => ({
 
 const App = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const electron = isElectron();
-  const { isLoading, isAuthenticated } = useSelector((state) => state.auth);
+  const { isLoading } = useSelector((state) => state.auth);
   const { messageAlert, openAlert } = useSelector((state) => state.ui);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(checkToken());
-    } else {
-      dispatch(setLoading(false));
-    }
-  }, [dispatch, isAuthenticated]);
 
   if (isLoading) {
     return (

@@ -5,6 +5,7 @@ import {
   ADD_HIDDEN_ITEM,
   SET_AUTHENTICATE,
   SET_LOADING,
+  SET_SOCKET_STATE,
 } from '../constants';
 import store from '../store/myStore';
 
@@ -17,6 +18,7 @@ const initialState = {
   token: token ? token : null,
   isAuthenticated: user && token ? true : false,
   isLoading: true,
+  socketState: '',
 };
 
 const auth = (state = initialState, action) => {
@@ -51,6 +53,11 @@ const auth = (state = initialState, action) => {
       return {
         ...state,
         isLoading: payload,
+      };
+    case SET_SOCKET_STATE:
+      return {
+        ...state,
+        socketState: payload,
       };
     default:
       return state;

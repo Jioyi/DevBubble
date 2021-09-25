@@ -14,6 +14,9 @@ export {
 export { createGroup, setGroupSelectedID, getChannels } from './group';
 export { createSocketVoice, disconnectVoiceChannel } from './voice';
 export {
+  addMessage,
+  updateDirectMessage,
+  updateMessageInStore,
   getDirectMessages,
   sendMessage,
   updateMessage,
