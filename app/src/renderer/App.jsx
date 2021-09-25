@@ -37,7 +37,6 @@ const App = () => {
   const { 
     isLoading, 
     isAuthenticated,
-    user 
   } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -63,16 +62,14 @@ const App = () => {
       <CssBaseline />
       {electron && <WindowControls />}
       <Switch>
-      { !user ?
+      
         <GuestRoute path="/" exact component={Login} />
-        :
-        <>
         <ProtectedRoute path="/home" exact component={Home} />
         <ProtectedRoute path="/voice_channel" exact component={VoiceChannel} />
         <ProtectedRoute path="/direct_message/:ID" exact component={DirectMessage} />
         <Route path="*" render={() => <Redirect to="/" />} />
-        </>
-      }
+      
+      
       </Switch>
     </div>
   );

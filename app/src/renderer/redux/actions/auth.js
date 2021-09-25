@@ -32,6 +32,25 @@ export const checkToken = () => {
   };
 };
 
+export const signUp = (body) => {
+  return async (dispatch) => {
+    dispatch(setLoading(true))
+    dispatch(setIsError(false))
+    try {
+      const response = await API.signUp(body);
+      const { user, token } = response.data;
+      dispatch(setUser(user));
+      dispatch(setToken(token));
+      dispatch(setLoading(false));
+      dispatch(setIsError(false));
+      dispatch(setAuthenticate(true))
+    } catch (err) {
+      dispatch(setLoading(false))
+      dispatch(setIsError(true))
+    }
+  };
+};
+
 export const signIn = (body) => {
   return async (dispatch) => {
     dispatch(setLoading(true))
@@ -43,6 +62,7 @@ export const signIn = (body) => {
       dispatch(setToken(token));
       dispatch(setLoading(false));
       dispatch(setIsError(false));
+      dispatch(setAuthenticate(true))
     } catch (err) {
       dispatch(setLoading(false))
       dispatch(setIsError(true))

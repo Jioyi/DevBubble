@@ -5,9 +5,9 @@ const { User } = require('../../db');
 const { validatePassword, issueJWT } = require('./passwordUtils');
 
 router.post('/', (req,res,next)=>{
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    User.findOne({ where: { username } })
+    User.findOne({ where: { email } })
         .then((user)=>{
             if (!user) return res.sendStatus(401);
         

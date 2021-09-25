@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { signup } from '../../../redux/API/index'
+import { signUp } from '../../../redux/actions/index'
 
 import { makeStyles } from '@material-ui/core/styles';
 import { useStyles } from '../index'
@@ -17,6 +17,7 @@ import {
   FormHelperText,
   TextField
 } from '@material-ui/core';
+import { useDispatch } from 'react-redux';
 
 
 const initInput = {
@@ -38,7 +39,7 @@ function Register({ showLogin }) {
       ...useStyles(),
       ...localStyles()
     }
-
+    const dispatch = useDispatch(); 
     const [ inputRegister, setInputRegister ] = useState(initInput);
 
     const handleOnChangeRegister = (e) => {
@@ -50,12 +51,7 @@ function Register({ showLogin }) {
 
     const handleOnSubmitRegister = async (e) => {
       e.preventDefault()
-      try{
-        const newUser = await signup(inputRegister);
-        alert(`User ${newUser.data.username} created!`);
-      } catch (err) {
-        alert('User not created. Please try again.');
-      }
+      dispatch(signUp(inputRegister))
     };
     
     return (

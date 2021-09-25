@@ -41,7 +41,8 @@ function SignIn({ showRegister, showRecoveryPassword }) {
       });
     };
 
-    const handleSignIn = async () => {
+    const handleSignIn = (e) => {
+      e.preventDefault();
       dispatch(signIn(inputSignIn))
     }
 
@@ -74,8 +75,6 @@ function SignIn({ showRegister, showRecoveryPassword }) {
               margin="dense"
               variant="outlined"
             />
-          
-          
             <TextField
               label="Contraseña"
               name="password"
@@ -94,8 +93,9 @@ function SignIn({ showRegister, showRecoveryPassword }) {
               margin="dense"
               variant="outlined"
             />
-          
-            <Button className={classes.button} >
+            <Button className={classes.button} 
+              onClick={handleSignIn}
+            >
               INGRESAR
             </Button>
           </form>
