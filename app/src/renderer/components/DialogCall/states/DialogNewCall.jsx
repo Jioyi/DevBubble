@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -135,8 +135,8 @@ const DialogNewCall = ({
   cancel,
   state,
   callToUser,
-  streamRef,
   setStream,
+  userCall,
 }) => {
   const classes = useStyles();
   const [video, setVideo] = useState(false);
@@ -148,6 +148,7 @@ const DialogNewCall = ({
   const [deviceAudioSelect, setDeviceAudioSelect] = useState('');
   const [devicesAudio, setDevicesAudio] = useState([]);
   const [streamAudio, setStreamAudio] = useState(null);
+  const videoRef = useRef();
 
   const handleCall = () => {
     callToUser(deviceVideoSelect, deviceAudioSelect);
@@ -159,14 +160,16 @@ const DialogNewCall = ({
 
   const getDevices = async () => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
+      const devices = await window.navigator.mediaDevices.enumerateDevices();
       let devicesVideoAux = [];
       let devicesAudioAux = [];
       devices.forEach((device) => {
         if (device.kind === 'videoinput') {
           devicesVideoAux.push(device);
         } else if (device.kind === 'audioinput') {
-          devicesAudioAux.push(device);
+          if (!devicesAudioAux.some((dev) => dev.groupId === device.groupId)) {
+            devicesAudioAux.push(device);
+          }
         }
       });
       setDevicesVideo(devicesVideoAux);
@@ -211,9 +214,9 @@ const DialogNewCall = ({
 
   const gotStream = (stream) => {
     window.stream = stream;
-    if (streamRef.current) {
+    if (videoRef.current) {
       setStream(stream);
-      streamRef.current.srcObject = stream;
+      videoRef.current.srcObject = stream;
       if (deviceAudioSelect !== '') {
         setStreamAudio(stream);
       }
@@ -234,18 +237,15 @@ const DialogNewCall = ({
   };
 
   useEffect(() => {
-    if (state.current === 'avaible') {
+    if (state?.current === 'avaible') {
       getStream();
     }
-    //console.log('video', deviceVideoSelect);
-    //console.log('audio', deviceAudioSelect);
-  }, [deviceVideoSelect, deviceAudioSelect]);
+  }, [deviceVideoSelect, deviceAudioSelect, state]);
 
   useEffect(() => {
     if (open) {
       getDevices();
       return () => {
-        //streamRef.current = null; //
         setDisableCall(true);
         setDisableCancel(false);
         setVideo(false);
@@ -258,7 +258,7 @@ const DialogNewCall = ({
   }, [open]);
 
   useEffect(() => {
-    if (state?.current === 'avaible') {
+    if (state.current === 'avaible') {
       if (video === true || audio === true) {
         setDisableCall(false);
       } else {
@@ -267,7 +267,7 @@ const DialogNewCall = ({
     } else {
       setDisableCall(true);
     }
-  }, [audio, video, state?.current]);
+  }, [audio, video, state.current]);
 
   return (
     <DialogStyle
@@ -280,10 +280,12 @@ const DialogNewCall = ({
       }}
     >
       <DialogTitle id={'call'} className={classes.dialogTitle}>
-        <Typography className={classes.tittle}>Configurar llamada</Typography>
+        <Typography className={classes.tittle}>
+          Configurar llamada para a @{userCall?.username}
+        </Typography>
       </DialogTitle>
-      {state?.current === 'calling' ? (
-        <>llamando</>
+      {state.current === 'calling' ? (
+        <>llamando a @{userCall?.username} </>
       ) : (
         <>
           <DialogContent className={classes.dialogContent}>
@@ -324,7 +326,7 @@ const DialogNewCall = ({
                 component="video"
                 muted="muted"
                 className={classes.video}
-                ref={streamRef}
+                ref={videoRef}
                 autoPlay
               />
             </Card>

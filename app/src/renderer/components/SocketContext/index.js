@@ -1,75 +1,104 @@
-import React, { createContext, useState, useRef, useEffect } from 'react';
-import store from './../../redux/store';
+import React, {
+  createContext,
+  useState,
+  useRef,
+  useEffect,
+  useReducer,
+} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import * as Peer from 'simple-peer';
+//actions
+import {
+  setLoading,
+  checkToken,
+  addMessage,
+  updateDirectMessage,
+  updateMessageInStore,
+  setMessageAlert,
+  setOpenAlert,
+} from './../../redux/actions';
+
 import ClientSocketIO from 'socket.io-client';
 const SocketContext = createContext();
 const { SERVER_API_URL } = process.env;
 
-const ContextProvider = ({ children }) => {
-  const { user } = store.getState().auth;
-  //const [socket, setSocket] = useState(null);
-  let state = useRef('avaible');
+const SocketContextProvider = ({ children, history }) => {
+  const [, render] = useReducer((p) => !p, false);
+  const dispatch = useDispatch();
+  const { user, isAuthenticated, socketState, token } = useSelector(
+    (state) => state.auth
+  );
+
+  //opens
+  const [openNewCall, setOpenNewCall] = useState(false);
+  const [openIncomingCall, setOpenIncomingCall] = useState(false);
 
   const [stream, setStream] = useState(null);
   const [stream2, setStream2] = useState(null);
 
-  const [connectionSoket, setConnectionSoket] = useState(false);
-  const [openNewCall, setOpenNewCall] = useState(false);
-  const [openIncomingCall, setOpenIncomingCall] = useState(false);
-  const [userNewCall, setUserNetCall] = useState(null);
-  const [userIncomingCall, setUserIncomingCall] = useState(null);
-  const [incomingCallSignal, setIncomingCallSignal] = useState();
-  const [callAccepted, setCallAccepted] = useState(false);
+  const [userCall, setUserCall] = useState(null);
 
+  const [signal, setSignal] = useState();
+
+  //refs
+  const state = useRef('avaible');
   const socket = useRef();
   const peer = useRef();
-  let myStream = useRef();
-
-  //const socket = useRef();
 
   const resetCall = () => {
+    setOpenIncomingCall(false);
+    setOpenNewCall(false);
     if (window.stream) {
       window.stream.getTracks().forEach((track) => {
         track.stop();
       });
     }
-    peer.current.destroy();
-    state.current = 'avaible';
+    if (peer.current) {
+      peer.current.destroy();
+    }
+    setState('avaible');
     socket.current.removeListener('callAccepted');
-    setCallAccepted(false);
-    setUserIncomingCall(false);
-    setUserNetCall(null);
+    socket.current.removeListener('dontAccept');
+    socket.current.removeListener('userCancelCall');
+
+    setUserCall(null);
     setStream(null);
     setStream2(null);
   };
 
+  const setState = (value) => {
+    state.current = value;
+    render();
+  };
+
   const newCall = (user) => {
-    setUserNetCall(user);
+    setUserCall(user);
     setOpenNewCall(true);
   };
 
   const cancelIncomingCall = () => {
-    setOpenIncomingCall(false);
+    socket.current.emit('dontAcceptCall', { to: userCall, userCalled: user });
+    resetCall();
   };
 
   const cancelNewCall = () => {
-    setOpenNewCall(false);
+    socket.current.emit('cancelCall', { to: userCall, userCalled: user });
+    resetCall();
   };
 
   const closeCall = () => {
     resetCall();
   };
 
-  const acceptIncomingCall = async () => {
-    state.current = 'inCall';
-    setCallAccepted(true);
+  const acceptCall = async () => {
+    setState('inCall');
     peer.current = new Peer({
       initiator: false,
       trickle: false,
       stream: stream,
     });
     peer.current.on('signal', (data) => {
-      socket.current.emit('acceptCall', { signal: data, to: userIncomingCall });
+      socket.current.emit('acceptCall', { signal: data, to: userCall });
     });
 
     peer.current.on('stream', (stream) => {
@@ -84,11 +113,11 @@ const ContextProvider = ({ children }) => {
       console.log('peer error ------');
     });
 
-    peer.current.signal(incomingCallSignal);
+    peer.current.signal(signal);
   };
 
   const callToUser = async () => {
-    state.current = 'calling';
+    setState('calling');
     peer.current = new Peer({
       initiator: true,
       trickle: false,
@@ -111,8 +140,8 @@ const ContextProvider = ({ children }) => {
 
     peer.current.on('signal', (data) => {
       socket.current.emit('callUser', {
-        userToCall: userNewCall,
-        signalData: data,
+        userToCall: userCall,
+        signal: data,
         from: user,
       });
     });
@@ -132,56 +161,110 @@ const ContextProvider = ({ children }) => {
     });
 
     socket.current.on('callAccepted', (signal) => {
-      state.current = 'inCall';
-      setCallAccepted(true);
+      setState('inCall');
       peer.current.signal(signal);
+    });
+    socket.current.on('dontAccept', async (data) => {
+      const message = `@${data.userCalled.username} no a aceptado la llamada`;
+      resetCall();
+      dispatch(setMessageAlert(message));
+      dispatch(setOpenAlert(true));
     });
   };
 
-  useEffect(() => {
+  const connectSocket = async () => {
     socket.current = ClientSocketIO(SERVER_API_URL, {
-      query: { calls: true, ID: user.ID },
+      query: { token: token },
       secure: true,
       reconnection: true,
       rejectUnauthorized: false,
       reconnectionAttempts: 10,
     });
     socket.current.on('connect', async () => {
-      setConnectionSoket(true);
+      dispatch(setLoading(false));
     });
     socket.current.on('disconnect', async () => {
-      setConnectionSoket(false);
+      dispatch(setLoading(true));
+    });
+    socket.current.on('ALERT_NEW_MESSAGE', async (data) => {
+      const location = window.location.href;
+      if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
+        dispatch(addMessage(data.messageInfo));
+      }
+      dispatch(updateDirectMessage(data.directMessageInfo));
+    });
+    socket.current.on('ALERT_EDITED_MESSAGE', async (data) => {
+      const location = window.location.href;
+      if (location.includes(`direct_message/${data.directMessageInfo.ID}`)) {
+        dispatch(updateMessageInStore(data.messageInfo));
+      }
+      dispatch(updateDirectMessage(data.directMessageInfo));
     });
     socket.current.on('ImCallingYou', async (data) => {
       if (state.current === 'avaible') {
+        socket.current.on('userCancelCall', async (data) => {
+          const message = `@${data.userCalled.username} cancelado la llamada`;
+          resetCall();
+          dispatch(setMessageAlert(message));
+          dispatch(setOpenAlert(true));
+        });
         setOpenIncomingCall(true);
-        state.current = 'acceptingCall';
+        setState('acceptingCall');
       }
-      setUserIncomingCall(data.from);
-      setIncomingCallSignal(data.signal);
+      setUserCall(data.from);
+      setSignal(data.signal);
     });
-  }, []);
+  };
+
+  const connectDestroy = () => {
+    socket.current.destroy();
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(checkToken());
+    } else {
+      dispatch(setLoading(false));
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (socketState === 'connecting') {
+      connectSocket();
+    } else if (socketState === 'destroy') {
+      connectDestroy();
+    }
+  }, [socketState]);
+
+  useEffect(() => {
+    const location = window.location.href;
+    if (state.current === 'avaible') {
+      if (location.includes("/call")) {
+        history.push('/home');
+      }      
+    } else if (state?.current === 'inCall') {
+      setOpenIncomingCall(false);
+      setOpenNewCall(false);
+      history.push('/call');
+    }
+  }, [state.current]);
 
   return (
     <SocketContext.Provider
       value={{
-        connectionSoket,
         state,
         openNewCall,
-        userNewCall,
         cancelNewCall,
         callToUser,
         newCall,
         stream,
-        setUserIncomingCall,
+        setUserCall,
         setOpenIncomingCall,
         openIncomingCall,
-        userIncomingCall,
-        acceptIncomingCall,
+        userCall,
+        acceptCall,
         cancelIncomingCall,
-        myStream,
         setStream,
-        callAccepted,
         setOpenNewCall,
         stream2,
         closeCall,
@@ -192,4 +275,4 @@ const ContextProvider = ({ children }) => {
   );
 };
 
-export { ContextProvider, SocketContext };
+export { SocketContextProvider, SocketContext };

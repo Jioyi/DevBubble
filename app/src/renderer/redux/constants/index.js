@@ -5,8 +5,8 @@ export const SET_HIDDEN_LIST = 'SET_HIDDEN_LIST';
 export const ADD_HIDDEN_ITEM = 'ADD_HIDDEN_ITEM';
 export const SET_AUTHENTICATE = 'SET_AUTHENTICATE';
 export const SET_LOADING = 'SET_LOADING';
+export const SET_SOCKET_STATE = 'SET_SOCKET_STATE';
 // constants ui
-export const REDIRECT = 'REDIRECT';
 export const SET_USER_TARGET_INFO = 'SET_USER_TARGET_INFO';
 export const CHANGE_VOLUME_STATE = 'CHANGE_VOLUME_STATE';
 export const CHANGE_MIC_STATE = 'CHANGE_MIC_STATE';
