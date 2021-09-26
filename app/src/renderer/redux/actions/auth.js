@@ -5,9 +5,11 @@ import {
   SET_USER,
   SET_AUTHENTICATE,
   SET_LOADING,
-  SET_IS_ERROR
+  SET_IS_ERROR,
+  SET_HIDDEN_LIST,
+  ADD_HIDDEN_ITEM,
+  SET_SOCKET_STATE,
 } from '../constants';
-import { ConnectServerIO } from './socket';
 import { setUserState } from './ui';
 import { setGroups } from './group';
 
@@ -18,9 +20,10 @@ export const checkToken = () => {
       if (response.data?.message === 'successful') {
         dispatch(setUser(response.data.user)); 
         dispatch(setToken(response.data.token));
+        dispatch(setHiddenList(response.data.hidden_list));
         dispatch(setUserState(response.data.user.state));
         dispatch(setGroups(response.data.groups));
-        dispatch(ConnectServerIO(response.data.token));
+        dispatch(setSocketState('connecting'));
       } else {
         dispatch(logOut());
         dispatch(setLoading(false));
@@ -77,6 +80,21 @@ export const logOut = () => {
     dispatch(setToken(null));
     dispatch(setUser(null));
     dispatch(setAuthenticate(false));
+    dispatch(setSocketState('destroy'));
+  };
+};
+
+export const setHiddenList = (list) => {
+  return {
+    type: SET_HIDDEN_LIST,
+    payload: list,
+  };
+};
+
+export const addHiddenItem = (DirectMessageID) => {
+  return {
+    type: ADD_HIDDEN_ITEM,
+    payload: DirectMessageID,
   };
 };
 
@@ -119,4 +137,11 @@ export const setIsError = (boolean) => {
 
 export const callbackTest = (time) => {
   return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+export const setSocketState = (state) => {
+  return {
+    type: SET_SOCKET_STATE,
+    payload: state,
+  };
 };

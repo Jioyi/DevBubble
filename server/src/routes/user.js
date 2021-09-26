@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { checkToken } = require('../security');
 const Sequelize = require('sequelize');
-const { User } = require('../db');
+const { User, SocialNetwork } = require('../db');
 const router = Router();
 const Op = Sequelize.Op;
 
@@ -34,6 +34,35 @@ router.get('/', async (req, res, next) => {
 		return res.status(200).json({
 			message: 'successful',
 			users: users,
+		});
+	} catch (error) {
+		console.log(error);
+		next(error);
+	}
+});
+
+router.get('/target/:userID', checkToken, async (req, res, next) => {
+	try {
+		const { userID } = req.params;
+		const user = await User.findOne({
+			where: { ID: userID },
+			attributes: ['ID', 'connected', 'state', 'username', 'avatar'],
+			include: [
+				{
+					model: SocialNetwork,
+					as: 'social_networks',
+					attributes: ['ID', 'link'],
+				},
+			],
+		});
+		if (user) {
+			return res.json({
+				message: 'successful',
+				user: user,
+			});
+		}
+		return res.json({
+			message: 'bad request',
 		});
 	} catch (error) {
 		console.log(error);

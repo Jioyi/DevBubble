@@ -10,8 +10,12 @@ module.exports = (sequelize) => {
 				unique: true,
 			},
 			content: {
-				type: DataTypes.STRING,
+				type: DataTypes.TEXT,
 				allowNull: false,
+			},
+			edited: {
+				type: DataTypes.BOOLEAN,
+				defaultValue: false,
 			},
 		},
 		{ timestamps: true }

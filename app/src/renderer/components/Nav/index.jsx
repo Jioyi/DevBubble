@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import clsx from 'clsx';
-
 import Divider from '@material-ui/core/Divider';
+//context
+import { SocketContext } from './../SocketContext';
 //components
 import UserState from './components/UserState';
 import CreateOrAddGroup from './components/CreateOrAddGroup';
@@ -14,6 +15,7 @@ import GroupList from './components/GroupList';
 import ChannelsList from './components/ChannelList';
 import MenuOpenCall from './components/MenuOpenCall';
 import DirectMessagesList from './components/DirectMessagesList';
+import TopBar from '../TopBar';
 
 const drawerWidth = 300;
 const isElectron = require('is-electron');
@@ -32,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     minHeight: '64px',
     flexGrow: 1,
-    borderRight: '2px solid #202225',
-    borderBottom: '2px solid #202225',
+    borderRight: '1px solid #202225',
+    borderBottom: '1px solid #202225',
     padding: theme.spacing(0),
     margin: theme.spacing(0),
     height: '50px',
@@ -46,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: electron ? '92px' : '64px',
     backgroundColor: '#2f3136',
     width: drawerWidth,
+    minWidth: drawerWidth,
     overflowY: 'hidden',
     overflowX: 'hidden',
   },
@@ -106,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0),
     backgroundColor: '#2f3136',
     width: `${drawerWidth}px`,
+    minWidth: `${drawerWidth}px`,
     height: '100%',
   },
   drawerEnd: {
@@ -132,23 +136,24 @@ const useStyles = makeStyles((theme) => ({
 
 const Nav = () => {
   const classes = useStyles();
+  const { state, closeCall } = useContext(SocketContext);
   const [group, setGroup] = useState(null);
-  const [openCall, setOpenCall] = useState(false);
-  const { user } = useSelector((state) => state.auth);
-  const { streaming } = useSelector((state) => state.voice);
-  const { groups, groupSelectedID } = useSelector((state) => state.group);
+  const [openMenuOpenCall, setOpenMenuOpenCall] = useState(false);
 
-  useEffect(() => {
-    if (streaming) {
-      setOpenCall(true);
-    } else {
-      setOpenCall(false);
-    }
-  }, [streaming]);
+  const { user } = useSelector((state) => state.auth);
+  const { groups, groupSelectedID } = useSelector((state) => state.group);
 
   useEffect(() => {
     setGroup(groups.find((group) => group.ID === groupSelectedID));
   }, [groupSelectedID, groups]);
+
+  useEffect(() => {
+    if (state?.current === 'inCall') {
+      setOpenMenuOpenCall(true);
+    } else {
+      setOpenMenuOpenCall(false);
+    }
+  }, [state?.current]);
 
   return (
     <>
@@ -159,7 +164,7 @@ const Nav = () => {
             <div className={classes.maxWidth}></div>
             <CreateOrAddGroup />
           </div>
-          <div className={classes.maxWidth}>max</div>
+          <TopBar />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -170,16 +175,16 @@ const Nav = () => {
       >
         <div
           className={clsx(classes.drawerMiddle, {
-            [classes.drawerMiddleCall]: openCall,
+            [classes.drawerMiddleCall]: openMenuOpenCall,
           })}
         >
           <ChannelsList />
           <DirectMessagesList />
         </div>
         <div className={classes.drawerEnd}>
-          {openCall && (
+          {openMenuOpenCall && (
             <>
-              <MenuOpenCall />
+              <MenuOpenCall closeCall={closeCall} />
               <Divider className={classes.divider} />
             </>
           )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -7,13 +8,20 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 //icons
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import FiberNewIcon from '@material-ui/icons/FiberNew';
+import CloseIcon from '@material-ui/icons/Close';
+//components
+import TextTooltip from './../../TextTooltip';
 //actions
-import { getDirectMessages } from '../../../redux/actions';
+import {
+  getDirectMessages,
+  setHiddenDirectMessage,
+} from '../../../redux/actions';
 
 const { SERVER_API_URL } = process.env;
 const useStyles = makeStyles((theme) => ({
@@ -22,6 +30,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  colapse: {
+    margin: '0px',
+    padding: '0px',
   },
   list: {
     width: '100%',
@@ -33,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   listItemIcon: {
-    margin: '2px',
+    margin: '0px',
     padding: '4px',
     color: '#747f8d',
     '&:hover': {
@@ -100,12 +112,18 @@ const useStyles = makeStyles((theme) => ({
   relative: {
     position: 'relative',
   },
-  iconNew: {
+  noSelect: {
+    '-moz-user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-ms-user-select': 'none',
+    'user-select': 'none',
+  },
+  iconButton: {
+    padding: theme.spacing(0),
     margin: '0px',
-    padding: '0px',
-    color: '#ed4245',
-    height: '24px',
-    width: '24px',
+    '&:hover': {
+      backgroundColor: '#292b2f',
+    },
   },
 }));
 
@@ -114,6 +132,7 @@ const DirectMessagesList = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [open, setOpen] = useState(true);
+  const { hidden_list, user } = useSelector((state) => state.auth);
   const { directMessages } = useSelector((state) => state.message);
 
   const handleOpen = () => {
@@ -130,6 +149,10 @@ const DirectMessagesList = () => {
     history.push(`/direct_message/${ID}`);
   };
 
+  const handleHiddenDirectMessage = (ID) => {
+    dispatch(setHiddenDirectMessage(ID));
+  };
+
   return (
     <div className={classes.root}>
       <List component="div" disablePadding className={classes.list}>
@@ -144,9 +167,33 @@ const DirectMessagesList = () => {
             primary="Mensajes directos"
           />
         </ListItem>
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <Collapse
+          in={open}
+          timeout="auto"
+          unmountOnExit
+          className={classes.collapse}
+        >
           {open &&
             directMessages.map((DirectMessage) => {
+              if (hidden_list.includes(DirectMessage.ID)) {
+                return null;
+              }
+              let primary = '';
+              let usersFiltered;
+              if (DirectMessage.users.length === 1) {
+                primary = 'Tú';
+                usersFiltered = DirectMessage.users;
+              } else if (DirectMessage.users.length === 2) {
+                usersFiltered = DirectMessage.users.filter(
+                  (userP) => userP.ID !== user.ID
+                );
+                primary = `${usersFiltered[0].username}`;
+              } else {
+                primary = `Tú y ${DirectMessage.users.length - 1} personas`;
+                usersFiltered = DirectMessage.users
+                  .filter((userP) => userP.ID !== user.ID)
+                  .slice(0, 5);
+              }
               return (
                 <ListItem
                   onClick={() => {
@@ -156,7 +203,7 @@ const DirectMessagesList = () => {
                   className={classes.listItem}
                   component="div"
                 >
-                  {DirectMessage.users.slice(0, 5).map((user) => {
+                  {usersFiltered.map((user) => {
                     return (
                       <div key={user.ID} className={classes.relative}>
                         <Avatar
@@ -194,18 +241,28 @@ const DirectMessagesList = () => {
                     );
                   })}
                   <ListItemText
-                    classes={{ primary: classes.listDirectMessageText }}
-                    primary={
-                      DirectMessage.users.length === 1
-                        ? 'Tú'
-                        : DirectMessage.users.length === 2
-                        ? `Tú y ${DirectMessage.users.length - 1} persona`
-                        : `Tú y ${DirectMessage.users.length - 1} personas`
-                    }
+                    classes={{
+                      primary: clsx(
+                        classes.listDirectMessageText,
+                        classes.noSelect
+                      ),
+                    }}
+                    primary={primary}
                   />
-                  {DirectMessage?.new && (
-                    <FiberNewIcon className={classes.iconNew} />
-                  )}
+                  <ListItemSecondaryAction>
+                    <TextTooltip title="Ocultar" placement="top">
+                      <IconButton
+                        color="inherit"
+                        className={classes.iconButton}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleHiddenDirectMessage(DirectMessage.ID);
+                        }}
+                      >
+                        <CloseIcon className={classes.listItemIcon} />
+                      </IconButton>
+                    </TextTooltip>
+                  </ListItemSecondaryAction>
                 </ListItem>
               );
             })}

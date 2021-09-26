@@ -24,10 +24,10 @@ const socket = require('socket.io')(http, {
 	},
 });
 socket.on('connection', async (socket) => {
-	//conexion de usuario para notificaciones y mensaje globales
+	//conexion de usuario solo con token
 	if (socket.handshake.query.token) {
-		const user = await checkTokenForSocketIO(socket.handshake.query.token);
 
+		const user = await checkTokenForSocketIO(socket.handshake.query.token);
 		if (!user) return socket.disconnect();
 		await User.update({ connected: true }, { where: { ID: user.ID } });
 
@@ -37,6 +37,27 @@ socket.on('connection', async (socket) => {
 		socket.on('disconnect', async () => {
 			await User.update({ connected: false }, { where: { ID: user.ID } });
 			console.log(`User ID:${user.ID} disconnected!`);
+		});
+
+		//llamada entre usuarios
+		socket.on('callUser', (data) => {
+			socket.to(data.userToCall.ID).emit('ImCallingYou', {
+				signal: data.signal,
+				from: data.from,
+			});
+		});
+		socket.on('acceptCall', (data) => {
+			socket.to(data.to.ID).emit('callAccepted', data.signal);
+		});
+		socket.on('dontAcceptCall', (data) => {
+			socket.to(data.to.ID).emit('dontAccept', {
+				userCalled: data.userCalled,
+			});
+		});
+		socket.on('cancelCall', (data) => {
+			socket.to(data.to.ID).emit('userCancelCall', {
+				userCalled: data.userCalled,
+			});
 		});
 	}
 	//conexion a un voice channel

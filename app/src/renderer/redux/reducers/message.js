@@ -3,11 +3,14 @@ import {
   SET_MESSAGES,
   ADD_MESSAGE,
   UPDATE_DIRECT_MESSAGE,
+  SET_INPUT_SEARCH_MESSAGE,
+  UPDATE_MESSAGE,
 } from '../constants';
 
 const initialState = {
   directMessages: [],
   messages: [],
+  inputSearch: '',
 };
 
 const message = (state = initialState, action) => {
@@ -23,6 +26,11 @@ const message = (state = initialState, action) => {
         ...state,
         directMessages: payload,
       };
+    case UPDATE_MESSAGE:
+      return {
+        ...state,
+        messages: payload,
+      };
     case SET_MESSAGES:
       return {
         ...state,
@@ -32,6 +40,11 @@ const message = (state = initialState, action) => {
       return {
         ...state,
         messages: [...state.messages, payload],
+      };
+    case SET_INPUT_SEARCH_MESSAGE:
+      return {
+        ...state,
+        inputSearch: payload,
       };
     default:
       return state;
