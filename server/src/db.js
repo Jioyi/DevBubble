@@ -7,13 +7,31 @@ const {
 	SERVER_DB_NAME,
 } = process.env;
 
-const sequelize = new Sequelize(
-	`postgres://${SERVER_DB_USER}:${SERVER_DB_PASS}@${SERVER_DB_HOST}:${SERVER_DB_PORT}/${SERVER_DB_NAME}`,
-	{
+let sequelize;
+
+const DATABASE_URL = process.env.DATABASE_URL;
+
+if (DATABASE_URL) {
+	sequelize = new Sequelize(DATABASE_URL, {
 		logging: false,
-		native: false,
-	}
-);
+		dialect: 'postgres',
+		protocol: 'postgres',
+		dialectOptions: {
+			ssl: {
+				require: true,
+				rejectUnauthorized: false,
+			},
+		},
+	});
+} else {
+	sequelize = new Sequelize(
+		`postgres://${SERVER_DB_USER}:${SERVER_DB_PASS}@${SERVER_DB_HOST}:${SERVER_DB_PORT}/${SERVER_DB_NAME}`,
+		{
+			logging: false, // set to console.log to see the raw SQL queries
+			native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+		}
+	);
+}
 
 const models = [];
 models.push(require('./models/User'));
@@ -26,15 +44,8 @@ models.push(require('./models/Hidden'));
 
 models.forEach((model) => model(sequelize));
 
-const {
-	User,
-	Group,
-	Channel,
-	DirectMessage,
-	Message,
-	SocialNetwork,
-	Hidden,
-} = sequelize.models;
+const { User, Group, Channel, DirectMessage, Message, SocialNetwork, Hidden } =
+	sequelize.models;
 
 //relacion user a grupos como creador del grupo
 //un usuario puede ser creador de muchos grupos
