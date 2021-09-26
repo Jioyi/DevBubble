@@ -5,6 +5,7 @@ import {
   SET_USER,
   SET_AUTHENTICATE,
   SET_LOADING,
+  SET_IS_ERROR,
   SET_HIDDEN_LIST,
   ADD_HIDDEN_ITEM,
   SET_SOCKET_STATE,
@@ -17,7 +18,7 @@ export const checkToken = () => {
     try {
       const response = await API.checkToken();
       if (response.data?.message === 'successful') {
-        dispatch(setUser(response.data.user));
+        dispatch(setUser(response.data.user)); 
         dispatch(setToken(response.data.token));
         dispatch(setHiddenList(response.data.hidden_list));
         dispatch(setUserState(response.data.user.state));
@@ -34,20 +35,40 @@ export const checkToken = () => {
   };
 };
 
-export const login = (email, password) => {
+export const signUp = (body) => {
   return async (dispatch) => {
+    dispatch(setLoading(true))
+    dispatch(setIsError(false))
     try {
-      const response = await API.login({ email, password });
-      if (response.data?.message === 'successful') {
-        dispatch(setUser(response.data.user));
-        dispatch(setToken(response.data.token));
-        dispatch(setAuthenticate(true));
-      } else {
-        dispatch(logOut());
-      }
-    } catch (error) {
-      console.log('error login', error);
-      dispatch(logOut());
+      const response = await API.signUp(body);
+      const { user, token } = response.data;
+      dispatch(setUser(user));
+      dispatch(setToken(token));
+      dispatch(setLoading(false));
+      dispatch(setIsError(false));
+      dispatch(setAuthenticate(true))
+    } catch (err) {
+      dispatch(setLoading(false))
+      dispatch(setIsError(true))
+    }
+  };
+};
+
+export const signIn = (body) => {
+  return async (dispatch) => {
+    dispatch(setLoading(true))
+    dispatch(setIsError(false))
+    try {
+      const response = await API.signIn(body);
+      const { user, token } = response.data;
+      dispatch(setUser(user));
+      dispatch(setToken(token));
+      dispatch(setLoading(false));
+      dispatch(setIsError(false));
+      dispatch(setAuthenticate(true))
+    } catch (err) {
+      dispatch(setLoading(false))
+      dispatch(setIsError(true))
     }
   };
 };
@@ -100,12 +121,23 @@ export const setAuthenticate = (bolean) => {
   };
 };
 
-export const setLoading = (bolean) => {
+export const setLoading = (boolean) => {
   return {
     type: SET_LOADING,
-    payload: bolean,
+    payload: boolean,
   };
 };
+
+export const setIsError = (boolean) => {
+  return {
+    type: SET_IS_ERROR,
+    payload: boolean
+  }
+};
+
+export const callbackTest = (time) => {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 
 export const setSocketState = (state) => {
   return {

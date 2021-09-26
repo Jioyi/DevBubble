@@ -5,6 +5,7 @@ import {
   ADD_HIDDEN_ITEM,
   SET_AUTHENTICATE,
   SET_LOADING,
+  SET_IS_ERROR,
   SET_SOCKET_STATE,
 } from '../constants';
 import store from '../store/myStore';
@@ -18,6 +19,7 @@ const initialState = {
   token: token ? token : null,
   isAuthenticated: user && token ? true : false,
   isLoading: true,
+  isError: true,
   socketState: '',
 };
 
@@ -54,6 +56,11 @@ const auth = (state = initialState, action) => {
         ...state,
         isLoading: payload,
       };
+    case SET_IS_ERROR:
+      return {
+        ...state,
+        isError: payload
+      }
     case SET_SOCKET_STATE:
       return {
         ...state,

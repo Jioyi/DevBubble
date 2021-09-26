@@ -7,13 +7,22 @@ const { User } = require('./db');
 const server = express();
 const { checkTokenForSocketIO } = require('./security');
 const http = require('http').createServer(server);
+const passport = require('passport');
+
+
+/*********************   SOCKET CONFIG      ************************/
+
+//  ****  ***   ***  *  *   *** *****
+//  *    *   * *     * *   *      *
+//   **  *   * *     **    * **   *
+//     * *   * *     * *   *      *
+//  ****  ***   ***  *  *   ***   *
 
 const socket = require('socket.io')(http, {
 	cors: {
 		origin: '*',
 	},
 });
-
 socket.on('connection', async (socket) => {
 	//conexion de usuario solo con token
 	if (socket.handshake.query.token) {
@@ -70,10 +79,14 @@ server.use((req, res, next) => {
 	req.socket = socket;
 	next();
 });
+//////////////////ENDS SOCKET CONFIG/////////////////
 
+
+
+
+/************* SERVER CONFIG ***********************/
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
-server.use(cookieParser());
 server.use(morgan('dev'));
 server.use(express.json());
 server.use(express.static(__dirname + '/public'));
@@ -83,25 +96,48 @@ server.use(
 		origin: '*',
 	})
 );
+/////////////// ENDS SERVER CONFIG /////////////////////
 
+
+
+
+
+/*********** CORS CONFIG **********************/
 server.use((req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Credentials', 'true');
 	res.header(
 		'Access-Control-Allow-Headers',
 		'Origin, X-Requested-With, Content-Type, Accept'
-	);
+		);
 	res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-	next();
+	next();	
 });
+//////////////// ENDS CORS CONFIG ///////////////////////
 
+
+
+
+/**************** PASSPORT JWT CONFIG ********************/
+require('./passport')(passport);
+server.use(passport.initialize());
+/////////////// ENDS PASSPORT JWT CONFIG //////////////////
+
+
+
+
+/********** ROUTES ****************************/
+server.use('/', require('./routes'));
+////////////////////////////////////////////////
+
+
+/*********** ERROR HANDLER ********************/
 server.use((err, req, res, next) => {
 	const status = err.status || 500;
 	const message = err.message || err;
 	console.error(err);
 	res.status(status).send(message);
 });
-
-server.use('/', require('./routes'));
+////////////////////////////////////////////////
 
 module.exports = http;

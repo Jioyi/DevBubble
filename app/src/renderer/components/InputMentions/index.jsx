@@ -6,7 +6,7 @@ import defaultStyle from './defaultStyle.js';
 import editStyle from './editStyle.js';
 
 import classNames from './style.css';
-import EditClassNames from './Editstyle.css';
+import EditClassNames from './EditStyle.css';
 
 const { SERVER_API_URL } = process.env;
 const InputMentions = ({

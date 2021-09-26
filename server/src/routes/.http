@@ -1,0 +1,29 @@
+POST http://localhost:3001/auth/signup 
+Content-Type: application/json
+
+{
+    "email": "loco@loco",
+    "username": "ssss",
+    "password": "pass"
+}
+
+###
+
+POST http://localhost:3001/auth/signin 
+Content-Type: application/json
+
+{
+    "username": "ssss",
+    "password": "pass"
+}
+
+###
+
+GET http://localhost:3001/user 
+Content-Type: application/json
+Authorization: Bearer eyJhGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MmQ4NTA2OC0wYTgyLTQ4NGUtYmQ0YS05Y2Y4ZDdkNTg2MDMiLCJpYXQiOjE2MzIzNTUyOTI5NjQsImV4cCI6MTYzMjM1NTM3OTM2NH0.N7-FBQ4H4YSJG6oeDt2Cp77WSqMdXG2iq_s5HqTRwDLn14EPgUZRtiQe_IEZpn7dAoD4gnUcPHoxe4QSQOZ5BuSUYAAi9n4a7mrAI0a6gqK0XZEZ9xksDJo10sBGKx72CEvEfNHl2-Tf4eFQll1XZpCTE_J1wuDPpASERkJIVsBVjW_97NqgP7pKpP0ETv6ZbHVNZPmCg7S_iNBU3yK2bwMSg4oqzFRmPG8I65PVAJTyu9YWLz6YjO0eyoc2ro7yk1My7Zgw_Z494PLcZbf7MhIfZBTsTTb3OBq0YYqe6eaz6CMBgcDLu3pWzFuvAkZCwk9nCl5DusgcMybZmnYFyg4YLJgNHOVKlZe2n78Gvdbnb6Bkgo-qXdPxIKaNhifxufuR1jkk4dd5n4YsyecxYYQjVBR-3JSu0-vFdzXnSdSUFo7ai8FaGPGC7F4YGMjjrWhSi0sTJ4wenUqneCTU3_FE6KJsNLgYyh2SZL-I3m_pXQ9zVtec6dqjy7TiVjkvVutKCy8CrRb7tw_dhyFRaOantAoIuERkzMUZyJFXBSYyHNb3K7VCJV9_TXF7uSfa8MZbTBC3d6_8X8pafMZtJZGg76nnsSo2HGmB5kvsiAoXm_Bdsn7crJkmcE54K1lQ0EL7W2AXkVUJPUA84M3z_TalFr7KBOHzRI4R_K26Jzc
+
+{
+    "username": "ssss",
+    "password": "pass"
+}
