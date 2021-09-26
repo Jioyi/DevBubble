@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "nodemon src/index.js",
+    "start-deploy": "node src/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -30,5 +31,9 @@
     "simple-peer": "^9.11.0",
     "socket.io": "^4.2.0",
     "uuid": "^8.3.2"
+  },
+  "engines": {
+    "node": "14.x",
+    "npm": "7.x"
   }
 }

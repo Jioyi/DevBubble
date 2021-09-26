@@ -12,9 +12,30 @@ const channels = require('./channels');
 const directMessages = require('./directMessages');
 const socialNetworks = require('./socialNetworks');
 const messages = require('./messages');
+const path = require('path');
+const fs = require('fs');
+
+const createDirectory = (pathname) => {
+	const __dirname = path.resolve();
+	pathname = pathname.replace(/^\.*\/|\/?[^\/]+\.[a-z]+|\/$/g, ''); // Remove leading directory markers, and remove ending /file-name.extension
+	fs.mkdir(path.resolve(__dirname, pathname), { recursive: true }, (e) => {
+		if (e) {
+			console.error(e);
+		} else {
+			console.log(`dir created success: ${pathname}`);
+		}
+	});
+};
 
 const preload = async () => {
 	try {
+		//creating directories
+		createDirectory('/imagesAvatar/animated');
+		createDirectory('/imagesAvatar/original');
+		createDirectory('/imagesAvatar/rezise');
+		createDirectory('/imagesUpload/animated');
+		createDirectory('/imagesUpload/original');
+		createDirectory('/imagesUpload/rezise');
 		//creating Users
 		const usersCreated = await User.bulkCreate(users);
 
