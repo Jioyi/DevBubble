@@ -18,7 +18,7 @@ import VoiceChannel from './views/VoiceChannel';
 import DirectMessage from './views/DirectMessage';
 import Call from './views/Call';
 //actions
-import { setOpenAlert, checkToken } from './redux/actions';
+import { setOpenAlert, checkToken, setLoading } from './redux/actions';
 import './App.css';
 
 const isElectron = require('is-electron');
