@@ -46,6 +46,7 @@ const SocketContextProvider = ({ children, history }) => {
   const peer = useRef();
 
   const resetCall = () => {
+    setState('avaible');
     setOpenIncomingCall(false);
     setOpenNewCall(false);
     if (window.stream) {
@@ -53,15 +54,14 @@ const SocketContextProvider = ({ children, history }) => {
         track.stop();
       });
     }
-    connectDestroy();
-    setState('avaible');
     socket.current.removeListener('callAccepted');
     socket.current.removeListener('dontAccept');
     socket.current.removeListener('userCancelCall');
-
+    socket.current.removeListener('userCloseCall');
     setUserCall(null);
     setStream(null);
     setStream2(null);
+    connectDestroy();
   };
 
   const setState = (value) => {
@@ -85,6 +85,7 @@ const SocketContextProvider = ({ children, history }) => {
   };
 
   const closeCall = () => {
+    socket.current.emit('closeCall', { to: userCall });
     resetCall();
   };
 
@@ -112,6 +113,10 @@ const SocketContextProvider = ({ children, history }) => {
     });
 
     peer.current.signal(signal);
+
+    socket.current.on('userCloseCall', () => {
+      resetCall();
+    });
   };
 
   const callToUser = async () => {
@@ -168,6 +173,9 @@ const SocketContextProvider = ({ children, history }) => {
       dispatch(setMessageAlert(message));
       dispatch(setOpenAlert(true));
     });
+    socket.current.on('userCloseCall', () => {
+      resetCall();
+    });
   };
 
   const connectSocket = async () => {
@@ -215,8 +223,14 @@ const SocketContextProvider = ({ children, history }) => {
   };
 
   const connectDestroy = () => {
-    if (peer.current) {
-      socket.current.destroy();
+    if (peer.curren?.close) {
+      peer.close();
+      render();
+    }
+    if (peer.curren?.destroy) {
+      peer.curren.destroy();      
+      peer.current = null;
+      render();
     }
   };
 

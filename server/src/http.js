@@ -27,14 +27,14 @@ socket.on('connection', async (socket) => {
 	//user connection only with token
 	if (socket.handshake.query.token) {
 		const userID = await validateToken(socket.handshake.query.token);
-		if (!userID ) return socket.disconnect();
+		if (!userID) return socket.disconnect();
 		await User.update({ connected: true }, { where: { ID: userID } });
 
 		socket.join(userID);
 		console.log(`User ID:${userID} connected to socket IO!`);
 
 		socket.on('disconnect', async () => {
-			await User.update({ connected: false }, { where: { ID: userID  } });
+			await User.update({ connected: false }, { where: { ID: userID } });
 			console.log(`User ID:${userID} disconnected to socket IO!`);
 		});
 
@@ -57,6 +57,9 @@ socket.on('connection', async (socket) => {
 			socket.to(data.to.ID).emit('userCancelCall', {
 				userCalled: data.userCalled,
 			});
+		});
+		socket.on('closeCall', (data) => {
+			socket.to(data.to.ID).emit('userCloseCall');
 		});
 	}
 	//conexion a un voice channel
