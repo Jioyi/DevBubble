@@ -4,7 +4,6 @@ psd/
 imagesUpload/
 imagesAvatar/
 
-yarn.lock*
 # Logs
 logs
 *.log
