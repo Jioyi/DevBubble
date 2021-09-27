@@ -5,10 +5,9 @@ const morgan = require('morgan');
 const cors = require('cors');
 const { User } = require('./db');
 const server = express();
-const { checkTokenForSocketIO } = require('./security');
 const http = require('http').createServer(server);
 const passport = require('passport');
-
+const { validateToken } = require('./utils/passwordUtils');
 
 /*********************   SOCKET CONFIG      ************************/
 
@@ -23,23 +22,23 @@ const socket = require('socket.io')(http, {
 		origin: '*',
 	},
 });
+
 socket.on('connection', async (socket) => {
-	//conexion de usuario solo con token
+	//user connection only with token
 	if (socket.handshake.query.token) {
+		const userID = await validateToken(socket.handshake.query.token);
+		if (!userID ) return socket.disconnect();
+		await User.update({ connected: true }, { where: { ID: userID } });
 
-		const user = await checkTokenForSocketIO(socket.handshake.query.token);
-		if (!user) return socket.disconnect();
-		await User.update({ connected: true }, { where: { ID: user.ID } });
-
-		socket.join(user.ID);
-		console.log(`User ID:${user.ID} connected!`);
+		socket.join(userID);
+		console.log(`User ID:${userID} connected to socket IO!`);
 
 		socket.on('disconnect', async () => {
-			await User.update({ connected: false }, { where: { ID: user.ID } });
-			console.log(`User ID:${user.ID} disconnected!`);
+			await User.update({ connected: false }, { where: { ID: userID  } });
+			console.log(`User ID:${userID} disconnected to socket IO!`);
 		});
 
-		//llamada entre usuarios
+		//call between users
 		socket.on('callUser', (data) => {
 			socket.to(data.userToCall.ID).emit('ImCallingYou', {
 				signal: data.signal,
@@ -81,9 +80,6 @@ server.use((req, res, next) => {
 });
 //////////////////ENDS SOCKET CONFIG/////////////////
 
-
-
-
 /************* SERVER CONFIG ***********************/
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
@@ -98,10 +94,6 @@ server.use(
 );
 /////////////// ENDS SERVER CONFIG /////////////////////
 
-
-
-
-
 /*********** CORS CONFIG **********************/
 server.use((req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*');
@@ -109,27 +101,20 @@ server.use((req, res, next) => {
 	res.header(
 		'Access-Control-Allow-Headers',
 		'Origin, X-Requested-With, Content-Type, Accept'
-		);
+	);
 	res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-	next();	
+	next();
 });
 //////////////// ENDS CORS CONFIG ///////////////////////
-
-
-
 
 /**************** PASSPORT JWT CONFIG ********************/
 require('./passport')(passport);
 server.use(passport.initialize());
 /////////////// ENDS PASSPORT JWT CONFIG //////////////////
 
-
-
-
 /********** ROUTES ****************************/
 server.use('/', require('./routes'));
 ////////////////////////////////////////////////
-
 
 /*********** ERROR HANDLER ********************/
 server.use((err, req, res, next) => {

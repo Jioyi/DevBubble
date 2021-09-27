@@ -1,9 +1,9 @@
 const { Router } = require('express');
 const router = Router();
-const { checkToken } = require('../security');
-const { Channel, Group } = require('../db.js');
+const { Channel } = require('../db.js');
+const { validateTokenMiddleware } = require('./../utils/passwordUtils');
 
-router.get('/:groupID', checkToken, async (req, res, next) => {
+router.get('/:groupID', validateTokenMiddleware, async (req, res, next) => {
 	try {
 		const { groupID } = req.params;
 		const channels = await Channel.findAll({

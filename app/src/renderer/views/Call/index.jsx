@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
 import Grid from '@material-ui/core/Grid';
 //context
-import { SocketContext } from './../../components/SocketContext';
+import { SocketContext } from '../../SocketContext';
 //components
 import Nav from '../../components/Nav';
 

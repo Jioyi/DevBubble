@@ -1,30 +1,34 @@
 const { Router } = require('express');
-const { checkToken } = require('../security');
+const { validateTokenMiddleware } = require('./../utils/passwordUtils');
 const Sequelize = require('sequelize');
 const { User, SocialNetwork } = require('../db');
 const router = Router();
 const Op = Sequelize.Op;
 
-router.put('/change_state/:state', checkToken, async (req, res, next) => {
-	try {
-		const { state } = req.params;
-		await User.update(
-			{
-				state: state,
-			},
-			{
-				where: {
-					ID: req.user.ID,
+router.put(
+	'/change_state/:state',
+	validateTokenMiddleware,
+	async (req, res, next) => {
+		try {
+			const { state } = req.params;
+			await User.update(
+				{
+					state: state,
 				},
-			}
-		);
-		return res.status(200).json({
-			message: 'successful',
-		});
-	} catch (error) {
-		next(error);
+				{
+					where: {
+						ID: req.userID,
+					},
+				}
+			);
+			return res.status(200).json({
+				message: 'successful',
+			});
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
 router.get('/', async (req, res, next) => {
 	try {
@@ -41,7 +45,7 @@ router.get('/', async (req, res, next) => {
 	}
 });
 
-router.get('/target/:userID', checkToken, async (req, res, next) => {
+router.get('/target/:userID', validateTokenMiddleware, async (req, res, next) => {
 	try {
 		const { userID } = req.params;
 		const user = await User.findOne({

@@ -7,7 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 //context
-import { SocketContext } from './../SocketContext';
+import { SocketContext } from '../../SocketContext';
 //components
 import UserState from './components/UserState';
 import CreateOrAddGroup from './components/CreateOrAddGroup';

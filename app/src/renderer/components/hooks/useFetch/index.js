@@ -26,7 +26,7 @@ const useFetch = ({ limit, serverPath, data, setData, ID, cleanData }) => {
         url: `${SERVER_API_URL}${serverPath}${ID}`,
         headers: {
           'Content-type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `${token}`,
         },
         data: {
           offset: handleGetMore === 1 ? 0 : data.length,

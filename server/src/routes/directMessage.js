@@ -1,16 +1,16 @@
 const { Router } = require('express');
 const router = Router();
 const { v4: uuidv4 } = require('uuid');
-const { checkToken } = require('../security');
+const { validateTokenMiddleware } = require('./../utils/passwordUtils');
 const { sendAlertMessage, sendAlertMessageEdited } = require('./../alerts');
 const { User, DirectMessage, Message, Hidden } = require('../db.js');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-router.get('/', checkToken, async (req, res, next) => {
+router.get('/', validateTokenMiddleware, async (req, res, next) => {
 	try {
 		const user = await User.findOne({
-			where: { ID: req.user.ID },
+			where: { ID: req.userID },
 			attributes: ['ID'],
 			include: [
 				{
@@ -38,14 +38,14 @@ router.get('/', checkToken, async (req, res, next) => {
 	}
 });
 
-router.post('/', checkToken, async (req, res, next) => {
+router.post('/', validateTokenMiddleware, async (req, res, next) => {
 	try {
 		const { ID, message } = req.body;
 		const messageCreated = await Message.create({
 			ID: uuidv4(),
 			content: message,
 			DirectMessageID: ID,
-			UserID: req.user.ID,
+			UserID: req.userID,
 		});
 		const messageInfo = await Message.findOne({
 			where: { ID: messageCreated.ID },
@@ -68,11 +68,11 @@ router.post('/', checkToken, async (req, res, next) => {
 	}
 });
 
-router.put('/', checkToken, async (req, res, next) => {
+router.put('/', validateTokenMiddleware, async (req, res, next) => {
 	try {
 		const { messageID, DirectMessageID, content } = req.body;
 		let message = await Message.findOne({
-			where: { ID: messageID, UserID: req.user.ID, DirectMessageID: DirectMessageID },
+			where: { ID: messageID, UserID: req.userID, DirectMessageID: DirectMessageID },
 		});
 		message.content = content;
 		message.edited = true;
@@ -99,14 +99,14 @@ router.put('/', checkToken, async (req, res, next) => {
 
 router.post(
 	'/setHiddenDirectMessage/:ID',
-	checkToken,
+	validateTokenMiddleware,
 	async (req, res, next) => {
 		try {
 			const { ID } = req.params;
 			await Hidden.create({
 				ID: uuidv4(),
 				DirectMessageID: ID,
-				UserID: req.user.ID,
+				UserID: req.userID,
 			});
 			return res.json({
 				message: 'successful',
@@ -117,7 +117,7 @@ router.post(
 	}
 );
 
-router.post('/find/:ID', checkToken, async (req, res, next) => {
+router.post('/find/:ID', validateTokenMiddleware, async (req, res, next) => {
 	try {
 		const { ID } = req.params;
 		const { limit, offset } = req.body;
@@ -147,12 +147,12 @@ router.post('/find/:ID', checkToken, async (req, res, next) => {
 	}
 });
 
-router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
+router.post('/sendMessageToUser/', validateTokenMiddleware, async (req, res, next) => {
 	try {
 		const { UserID, message } = req.body;
 		const user = await User.findOne({
 			where: {
-				ID: req.user.ID,
+				ID: req.userID,
 			},
 			attributes: ['ID'],
 			include: [
@@ -181,7 +181,7 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 			for (let i in directMessage.users) {
 				if (
 					directMessage.users[i].ID === UserID ||
-					directMessage.users[i].ID === req.user.ID
+					directMessage.users[i].ID === req.userID
 				) {
 					count++;
 				}
@@ -195,7 +195,7 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 				ID: uuidv4(),
 				content: message,
 				DirectMessageID: filtered[0].ID,
-				UserID: req.user.ID,
+				UserID: req.userID,
 			});
 			const messageInfo = await Message.findOne({
 				where: { ID: messageCreated.ID },
@@ -218,12 +218,12 @@ router.post('/sendMessageToUser/', checkToken, async (req, res, next) => {
 			const directMessageCreated = await DirectMessage.create({
 				ID: uuidv4(),
 			});
-			await directMessageCreated.addUsers([UserID, req.user.ID]);
+			await directMessageCreated.addUsers([UserID, req.userID]);
 			const messageCreated = await Message.create({
 				ID: uuidv4(),
 				content: message,
 				DirectMessageID: directMessageCreated.ID,
-				UserID: req.user.ID,
+				UserID: req.userID,
 			});
 			const messageInfo = await Message.findOne({
 				where: { ID: messageCreated.ID },

@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import CssBaseline from '@material-ui/core/CssBaseline';
-
 //components
 import Loading from './components/Loading';
 import WindowControls from './components/WindowControls';
@@ -18,7 +17,7 @@ import VoiceChannel from './views/VoiceChannel';
 import DirectMessage from './views/DirectMessage';
 import Call from './views/Call';
 //actions
-import { setOpenAlert, checkToken, setLoading } from './redux/actions';
+import { setOpenAlert } from './redux/actions';
 import './App.css';
 
 const isElectron = require('is-electron');
@@ -39,20 +38,9 @@ const useStyles = makeStyles(() => ({
 const App = () => {
   const classes = useStyles();
   const electron = isElectron();
-  const dispatch = useDispatch()
-  const { 
-    isLoading, 
-    isAuthenticated,
-  } = useSelector((state) => state.auth);
-  const { messageAlert, openAlert } = useSelector((state) => state.ui);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(checkToken());
-    } else {
-      dispatch(setLoading(false));
-    }
-  }, [dispatch, isAuthenticated]);
+  const { isLoading } = useSelector((state) => state.auth);
+  const { messageAlert, openAlert } = useSelector((state) => state.ui);
 
   if (isLoading) {
     return (
@@ -76,7 +64,6 @@ const App = () => {
       <DialogCall />
       {electron && <WindowControls />}
       <Switch>
-      
         <GuestRoute path="/" exact component={Login} />
         <ProtectedRoute path="/home" exact component={Home} />
         <ProtectedRoute path="/voice_channel" exact component={VoiceChannel} />
@@ -87,8 +74,6 @@ const App = () => {
           component={DirectMessage}
         />
         <Route path="*" render={() => <Redirect to="/" />} />
-      
-      
       </Switch>
     </div>
   );

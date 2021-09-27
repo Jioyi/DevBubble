@@ -10,13 +10,13 @@ import * as Peer from 'simple-peer';
 //actions
 import {
   setLoading,
-  checkToken,
+  refreshToken,
   addMessage,
   updateDirectMessage,
   updateMessageInStore,
   setMessageAlert,
   setOpenAlert,
-} from './../../redux/actions';
+} from '../redux/actions';
 
 import ClientSocketIO from 'socket.io-client';
 const SocketContext = createContext();
@@ -53,9 +53,7 @@ const SocketContextProvider = ({ children, history }) => {
         track.stop();
       });
     }
-    if (peer.current) {
-      peer.current.destroy();
-    }
+    connectDestroy();
     setState('avaible');
     socket.current.removeListener('callAccepted');
     socket.current.removeListener('dontAccept');
@@ -217,12 +215,14 @@ const SocketContextProvider = ({ children, history }) => {
   };
 
   const connectDestroy = () => {
-    socket.current.destroy();
+    if (peer.current) {
+      socket.current.destroy();
+    }
   };
 
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(checkToken());
+      dispatch(refreshToken());
     } else {
       dispatch(setLoading(false));
     }
@@ -239,9 +239,9 @@ const SocketContextProvider = ({ children, history }) => {
   useEffect(() => {
     const location = window.location.href;
     if (state.current === 'avaible') {
-      if (location.includes("/call")) {
+      if (location.includes('/call')) {
         history.push('/home');
-      }      
+      }
     } else if (state?.current === 'inCall') {
       setOpenIncomingCall(false);
       setOpenNewCall(false);

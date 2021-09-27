@@ -13,23 +13,21 @@ import {
 import { setUserState } from './ui';
 import { setGroups } from './group';
 
-export const checkToken = () => {
+export const refreshToken = () => {
   return async (dispatch) => {
     try {
-      const response = await API.checkToken();
-      if (response.data?.message === 'successful') {
-        dispatch(setUser(response.data.user)); 
-        dispatch(setToken(response.data.token));
-        dispatch(setHiddenList(response.data.hidden_list));
-        dispatch(setUserState(response.data.user.state));
-        dispatch(setGroups(response.data.groups));
-        dispatch(setSocketState('connecting'));
-      } else {
-        dispatch(logOut());
-        dispatch(setLoading(false));
-      }
-    } catch (error) {
-      console.log('error checkToken', error);
+      const response = await API.refreshToken();
+      dispatch(setUser(response.data.user));
+      dispatch(setToken(response.data.token));
+      dispatch(setHiddenList(response.data.hidden_list));
+      dispatch(setUserState(response.data.user.state));
+      dispatch(setGroups(response.data.groups));
+      dispatch(setLoading(false));
+      dispatch(setSocketState('connecting'));
+    } catch (err) {
+      console.log('error refreshToken', err);
+      dispatch(logOut());
+      dispatch(setIsError(true))
       dispatch(setLoading(false));
     }
   };

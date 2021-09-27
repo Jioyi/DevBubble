@@ -3,6 +3,8 @@ psd/
 # images upload directories
 imagesUpload/
 imagesAvatar/
+
+yarn.lock*
 # Logs
 logs
 *.log
