@@ -1,4 +1,4 @@
-export { signUp, signIn, setLoading, checkToken, logOut } from './auth';
+export { signUp, signIn, setLoading, refreshToken, logOut } from './auth';
 export {
   minimize,
   maximize,

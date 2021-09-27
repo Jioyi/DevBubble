@@ -19,7 +19,7 @@ import Brightness1Icon from '@material-ui/icons/Brightness1';
 import { setInputSearchMessage } from './../../../redux/actions';
 import { getUserInfo } from './../../../redux/actions';
 //context
-import { SocketContext } from './../../SocketContext';
+import { SocketContext } from '../../../SocketContext';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',

@@ -1,35 +1,43 @@
-const { v4: uuidv4 } = require('uuid');
-const Bcrypt = require('bcrypt');
 const users = [
 	{
 		ID: '5aabf741-481b-498e-ae96-62a643a38d82',
-		username: "carlos198",
+		username: 'carlos198',
 		email: 'karlosagreda@hotmail.com',
-		password: Bcrypt.hashSync('123456', 10),
+		hashed_password:
+			'478c4a1b16b31126d1967d4c95571bdd385b7c0875578b4e92d47169cac51ab9de31f398969fcd327b3588ee7aebda4bbf11d0545825174771af3efb3ddec2fb',
+		salt: '1b4b052863f0e34f2fc431d55e125e349bcaf2c349043050f3dc0dd9294b6262',
 	},
 	{
 		ID: '5aabf741-481b-498e-ae96-62a643a12d82',
-		username: "karlos198",
+		username: 'karlos198',
 		email: 'karlosagreda2@hotmail.com',
-		password: Bcrypt.hashSync('123456', 10),
+		hashed_password:
+			'478c4a1b16b31126d1967d4c95571bdd385b7c0875578b4e92d47169cac51ab9de31f398969fcd327b3588ee7aebda4bbf11d0545825174771af3efb3ddec2fb',
+		salt: '1b4b052863f0e34f2fc431d55e125e349bcaf2c349043050f3dc0dd9294b6262',
 	},
 	{
 		ID: '5aabf741-481b-498e-ae96-22a643a12d82',
-		username: "esteban",
+		username: 'esteban',
 		email: 'karlosagreda3@hotmail.com',
-		password: Bcrypt.hashSync('123456', 10),
+		hashed_password:
+			'478c4a1b16b31126d1967d4c95571bdd385b7c0875578b4e92d47169cac51ab9de31f398969fcd327b3588ee7aebda4bbf11d0545825174771af3efb3ddec2fb',
+		salt: '1b4b052863f0e34f2fc431d55e125e349bcaf2c349043050f3dc0dd9294b6262',
 	},
 	{
 		ID: '5aabf741-481b-498e-ae96-15a643a12d82',
-		username: "carmarom",
+		username: 'carmarom',
 		email: 'karlosagreda4@hotmail.com',
-		password: Bcrypt.hashSync('123456', 10),
+		hashed_password:
+			'478c4a1b16b31126d1967d4c95571bdd385b7c0875578b4e92d47169cac51ab9de31f398969fcd327b3588ee7aebda4bbf11d0545825174771af3efb3ddec2fb',
+		salt: '1b4b052863f0e34f2fc431d55e125e349bcaf2c349043050f3dc0dd9294b6262',
 	},
 	{
 		ID: '5aabf741-481b-498e-ae96-62a646a11d82',
-		username: "camarada",
+		username: 'camarada',
 		email: 'karlosagreda5@hotmail.com',
-		password: Bcrypt.hashSync('123456', 10),
+		hashed_password:
+			'478c4a1b16b31126d1967d4c95571bdd385b7c0875578b4e92d47169cac51ab9de31f398969fcd327b3588ee7aebda4bbf11d0545825174771af3efb3ddec2fb',
+		salt: '1b4b052863f0e34f2fc431d55e125e349bcaf2c349043050f3dc0dd9294b6262',
 	},
 ];
 
