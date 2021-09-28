@@ -61,6 +61,7 @@ socket.on('connection', async (socket) => {
 		socket.on('closeCall', (data) => {
 			socket.to(data.to.ID).emit('userCloseCall');
 		});
+		
 	}
 	//conexion a un voice channel
 	if (socket.handshake.query.voice) {

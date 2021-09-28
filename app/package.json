@@ -1,6 +1,7 @@
 {
   "name": "app",
   "productName": "DevBubble",
+  "homepage": ".",
   "version": "1.0.0",
   "description": "DevBubble is an application based on Webpack, Electron, React, JS, TS, Redux, Socket io to be able to create workgroups and join other existing groups within the network.",
   "license": "MIT",

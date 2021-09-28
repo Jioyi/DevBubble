@@ -5,8 +5,8 @@ import axios from 'axios';
 import defaultStyle from './defaultStyle.js';
 import editStyle from './editStyle.js';
 
-import classNames from './style.css';
-import EditClassNames from './EditStyle.css';
+import classNames from './style.module.css';
+import EditClassNames from './edit.module.css';
 
 const { SERVER_API_URL } = process.env;
 const InputMentions = ({
