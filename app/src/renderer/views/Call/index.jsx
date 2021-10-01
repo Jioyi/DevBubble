@@ -119,6 +119,7 @@ const Call = () => {
               <Card className={classes.card}>
                 <CardMedia
                   component="video"
+                  muted="muted"
                   className={classes.video}
                   ref={video2}
                   autoPlay

@@ -137,6 +137,8 @@ const DialogIncomingCall = ({
   userCall,
   acceptCall,
   setStream,
+  devicesVideo,
+  devicesAudio,
 }) => {
   const classes = useStyles();
   const [video, setVideo] = useState(false);
@@ -144,37 +146,16 @@ const DialogIncomingCall = ({
   const [disableCall, setDisableCall] = useState(true);
   const [disableCancel, setDisableCancel] = useState(false);
   const [deviceVideoSelect, setDeviceVideoSelect] = useState('');
-  const [devicesVideo, setDevicesVideo] = useState([]);
   const [deviceAudioSelect, setDeviceAudioSelect] = useState('');
-  const [devicesAudio, setDevicesAudio] = useState([]);
   const [streamAudio, setStreamAudio] = useState(null);
   const videoRef = useRef();
 
   const handleAcceptCall = () => {
-    acceptCall(deviceVideoSelect, deviceAudioSelect);
+    acceptCall();
   };
 
   const handleClose = () => {
     cancel();
-  };
-
-  const getDevices = async () => {
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      let devicesVideoAux = [];
-      let devicesAudioAux = [];
-      devices.forEach((device) => {
-        if (device.kind === 'videoinput') {
-          devicesVideoAux.push(device);
-        } else if (device.kind === 'audioinput') {
-          devicesAudioAux.push(device);
-        }
-      });
-      setDevicesVideo(devicesVideoAux);
-      setDevicesAudio(devicesAudioAux);
-    } catch (error) {
-      handleError(error);
-    }
   };
 
   const getStream = () => {
@@ -198,8 +179,8 @@ const DialogIncomingCall = ({
       audioSource = deviceAudioSelect;
     }
     let constraints = {
-      video: videoSource ? { deviceId: { exact: videoSource } } : false,
-      audio: audioSource ? { deviceId: { exact: audioSource } } : false,
+      video: videoSource ? { deviceId: { exact: videoSource } } : undefined,
+      audio: audioSource ? { deviceId: { exact: audioSource } } : true,
     };
     if (deviceVideoSelect !== '' || deviceAudioSelect !== '') {
       return navigator.mediaDevices
@@ -212,8 +193,9 @@ const DialogIncomingCall = ({
   const gotStream = (stream) => {
     window.stream = stream;
     if (videoRef.current) {
-      videoRef.current.srcObject = stream;
+      console.log('set', stream);
       setStream(stream);
+      videoRef.current.srcObject = stream;
       if (deviceAudioSelect !== '') {
         setStreamAudio(stream);
       }
@@ -233,14 +215,14 @@ const DialogIncomingCall = ({
   };
 
   useEffect(() => {
-    getStream();
-  }, [deviceVideoSelect, deviceAudioSelect]);
+    if (state.current === 'acceptingCall' && open) {
+      getStream();
+    }
+  }, [deviceVideoSelect, deviceAudioSelect, state, open]);
 
   useEffect(() => {
     if (open) {
-      getDevices();
       return () => {
-        //streamRef.current = null; //
         setDisableCall(true);
         setDisableCancel(false);
         setVideo(false);
@@ -303,7 +285,7 @@ const DialogIncomingCall = ({
           onChange={handleChangeDeviceAudio}
           required
         >
-          <option key={-1} value={''}>{`Seleccione un microfo`}</option>
+          <option key={-1} value={''}>{`Seleccione un microfono`}</option>
           {devicesAudio.map((device, index) => (
             <option key={index} value={`${device.deviceId}`}>
               {`${device.label}` || `Microfono ${index + 1}`}

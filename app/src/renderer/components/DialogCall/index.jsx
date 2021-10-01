@@ -14,6 +14,8 @@ const DialogCall = () => {
     userCall,
     acceptCall,
     setStream,
+    devicesVideo,
+    devicesAudio,
   } = useContext(SocketContext);
 
   return (
@@ -25,6 +27,8 @@ const DialogCall = () => {
         callToUser={callToUser}
         setStream={setStream}
         userCall={userCall}
+        devicesVideo={devicesVideo}
+        devicesAudio={devicesAudio}
       />
       <DialogIncomingCall
         open={openIncomingCall}
@@ -33,6 +37,8 @@ const DialogCall = () => {
         userCall={userCall}
         acceptCall={acceptCall}
         setStream={setStream}
+        devicesVideo={devicesVideo}
+        devicesAudio={devicesAudio}
       />
     </>
   );

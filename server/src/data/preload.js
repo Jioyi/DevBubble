@@ -17,12 +17,12 @@ const createDirectory = require('./../utils/createDirectory');
 const preload = async () => {
 	try {
 		//creating directories
-		createDirectory('/imagesAvatar/animated');
-		createDirectory('/imagesAvatar/original');
-		createDirectory('/imagesAvatar/rezise');
-		createDirectory('/imagesUpload/animated');
-		createDirectory('/imagesUpload/original');
-		createDirectory('/imagesUpload/rezise');
+		createDirectory('src/imagesAvatar/animated');
+		createDirectory('src/imagesAvatar/original');
+		createDirectory('src/imagesAvatar/rezise');
+		createDirectory('src/imagesUpload/animated');
+		createDirectory('src/imagesUpload/original');
+		createDirectory('src/imagesUpload/rezise');
 		//creating Users
 		const usersCreated = await User.bulkCreate(users);
 

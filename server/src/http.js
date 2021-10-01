@@ -37,7 +37,7 @@ socket.on('connection', async (socket) => {
 			await User.update({ connected: false }, { where: { ID: userID } });
 			console.log(`User ID:${userID} disconnected to socket IO!`);
 		});
-
+		
 		//call between users
 		socket.on('callUser', (data) => {
 			socket.to(data.userToCall.ID).emit('ImCallingYou', {

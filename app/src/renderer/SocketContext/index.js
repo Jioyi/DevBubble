@@ -24,6 +24,7 @@ const { SERVER_API_URL } = process.env;
 
 const SocketContextProvider = ({ children, history }) => {
   const [, render] = useReducer((p) => !p, false);
+
   const dispatch = useDispatch();
   const { user, isAuthenticated, socketState, token } = useSelector(
     (state) => state.auth
@@ -33,13 +34,17 @@ const SocketContextProvider = ({ children, history }) => {
   const [openNewCall, setOpenNewCall] = useState(false);
   const [openIncomingCall, setOpenIncomingCall] = useState(false);
 
+  //streams
   const [stream, setStream] = useState(null);
   const [stream2, setStream2] = useState(null);
 
+  //info user call
   const [userCall, setUserCall] = useState(null);
-
   const [signal, setSignal] = useState();
 
+  //devices
+  const [devicesVideo, setDevicesVideo] = useState([]);
+  const [devicesAudio, setDevicesAudio] = useState([]);
   //refs
   const state = useRef('avaible');
   const socket = useRef();
@@ -61,7 +66,7 @@ const SocketContextProvider = ({ children, history }) => {
     setUserCall(null);
     setStream(null);
     setStream2(null);
-    connectDestroy();
+    peerDestroy();
   };
 
   const setState = (value) => {
@@ -96,11 +101,13 @@ const SocketContextProvider = ({ children, history }) => {
       trickle: false,
       stream: stream,
     });
+
     peer.current.on('signal', (data) => {
       socket.current.emit('acceptCall', { signal: data, to: userCall });
     });
 
     peer.current.on('stream', (stream) => {
+      console.log('recividor', stream);
       setStream2(stream);
     });
     peer.current.on('close', () => {
@@ -150,6 +157,7 @@ const SocketContextProvider = ({ children, history }) => {
     });
 
     peer.current.on('stream', (stream) => {
+      console.log('llamador', stream);
       setStream2(stream);
     });
 
@@ -222,14 +230,50 @@ const SocketContextProvider = ({ children, history }) => {
     });
   };
 
-  const connectDestroy = () => {
+  const peerDestroy = () => {
     if (peer.curren?.close) {
       peer.close();
       render();
     }
     if (peer.curren?.destroy) {
-      peer.curren.destroy();      
+      peer.curren.destroy();
       peer.current = null;
+      render();
+    }
+  };
+
+  const getDevices = async () => {
+    await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    navigator.mediaDevices
+      .enumerateDevices()
+      .then(gotDevices)
+      .catch(handleError);
+  };
+
+  const gotDevices = (devices) => {
+    let devicesVideoAux = [];
+    let devicesAudioAux = [];
+    devices.forEach((device) => {
+      if (device.kind === 'videoinput') {
+        devicesVideoAux.push(device);
+      } else if (device.kind === 'audioinput') {
+        if (!devicesAudioAux.some((dev) => dev.groupId === device.groupId)) {
+          devicesAudioAux.push(device);
+        }
+      }
+    });
+    setDevicesVideo(devicesVideoAux);
+    setDevicesAudio(devicesAudioAux);
+  };
+
+  const handleError = (error) => {
+    console.error('Error: ', error);
+  };
+
+  const connectDestroy = () => {
+    if (socket.current?.destroy) {
+      socket.current.destroy();
+      socket.current = null;
       render();
     }
   };
@@ -249,6 +293,10 @@ const SocketContextProvider = ({ children, history }) => {
       connectDestroy();
     }
   }, [socketState]);
+
+  useEffect(async () => {
+    getDevices();
+  }, []);
 
   useEffect(() => {
     const location = window.location.href;
@@ -282,6 +330,8 @@ const SocketContextProvider = ({ children, history }) => {
         setOpenNewCall,
         stream2,
         closeCall,
+        devicesVideo,
+        devicesAudio,
       }}
     >
       {children}

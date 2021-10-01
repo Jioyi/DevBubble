@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import useSound from 'use-sound';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import CardMedia from '@material-ui/core/CardMedia';
 //components
 import TextTooltip from './../../TextTooltip';
 //icons
@@ -59,17 +60,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MenuOpenCall = ({ closeCall }) => {
+const MenuOpenCall = ({ closeCall, stream }) => {
   const classes = useStyles();
   const [playCancelConfirm] = useSound(SoundCancel);
+
+  const audio = useRef();
 
   const handleDisconectCall = () => {
     playCancelConfirm();
     closeCall();
   };
 
+  useEffect(() => {
+    if (stream) {
+      if (audio.current) {
+        audio.current.srcObject = stream;
+      }
+    }
+  }, [stream, audio]);
+
   return (
     <div className={classes.root}>
+      <CardMedia component="audio" hidden ref={audio} autoPlay />
       <TextTooltip title="Activar cámara" placement="top">
         <Button
           style={{ boxShadow: 'none' }}
