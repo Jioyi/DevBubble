@@ -7,7 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 //context
-import { SocketContext } from '../../SocketContext';
+import { SocketContext } from '../../contexts/SocketContext';
 //components
 import UserState from './components/UserState';
 import CreateOrAddGroup from './components/CreateOrAddGroup';
@@ -16,6 +16,7 @@ import ChannelsList from './components/ChannelList';
 import MenuOpenCall from './components/MenuOpenCall';
 import DirectMessagesList from './components/DirectMessagesList';
 import TopBar from '../TopBar';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 
 const drawerWidth = 300;
 const isElectron = require('is-electron');
@@ -140,7 +141,7 @@ const Nav = () => {
   const [group, setGroup] = useState(null);
   const [openMenuOpenCall, setOpenMenuOpenCall] = useState(false);
 
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useContext(AuthContext);
   const { groups, groupSelectedID } = useSelector((state) => state.group);
 
   useEffect(() => {

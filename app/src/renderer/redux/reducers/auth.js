@@ -15,6 +15,7 @@ const token = store.getItem('access_token');
 
 const initialState = {
   user: user ? user : null,
+  // para qué es hidden list
   hidden_list: [],
   token: token ? token : null,
   isAuthenticated: user && token ? true : false,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 
@@ -12,6 +12,7 @@ import TextField from '@material-ui/core/TextField';
 import SocialNetworkIcon from './../SocialNetworkIcon';
 //actions
 import { sendMessageToUser } from './../../redux/actions';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 
 const { SERVER_API_URL } = process.env;
 
@@ -144,7 +145,7 @@ const UserProfilePopover = ({ id, open, anchorEl, onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { userTarget } = useSelector((state) => state.ui);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useContext(AuthContext);
   const [message, setMessage] = useState('');
 
   const handleOnChange = (event) => {

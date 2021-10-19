@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
@@ -14,6 +14,7 @@ import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 //actions
 import { logOut, ChangeUserState } from '../../../redux/actions';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 const { SERVER_API_URL } = process.env;
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -116,6 +117,7 @@ const MenuUserState = ({ user, userState }) => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(null);
+	const { logOut } = useContext(AuthContext);
 
 	const handleUserMenuStateOpen = (event) => {
 		setOpen(event.currentTarget);
@@ -127,7 +129,7 @@ const MenuUserState = ({ user, userState }) => {
 
 	const handleLogOut = () => {
 		setOpen(null);
-		dispatch(logOut());
+		logOut();
 	};
 
 	const handleChangeUserState = (state) => {

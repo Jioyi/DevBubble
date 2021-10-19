@@ -33,55 +33,6 @@ export const refreshToken = () => {
   };
 };
 
-export const signUp = (body) => {
-  return async (dispatch) => {
-    dispatch(setLoading(true))
-    dispatch(setIsError(false))
-    try {
-      const response = await API.signUp(body);
-      const { user, token } = response.data;
-      dispatch(setUser(user));
-      dispatch(setToken(token));
-      dispatch(setLoading(false));
-      dispatch(setIsError(false));
-      dispatch(setAuthenticate(true))
-    } catch (err) {
-      dispatch(setLoading(false))
-      dispatch(setIsError(true))
-    }
-  };
-};
-
-export const signIn = (body) => {
-  return async (dispatch) => {
-    dispatch(setLoading(true))
-    dispatch(setIsError(false))
-    try {
-      const response = await API.signIn(body);
-      const { user, token } = response.data;
-      dispatch(setUser(user));
-      dispatch(setToken(token));
-      dispatch(setLoading(false));
-      dispatch(setIsError(false));
-      dispatch(setAuthenticate(true))
-    } catch (err) {
-      dispatch(setLoading(false))
-      dispatch(setIsError(true))
-    }
-  };
-};
-
-export const logOut = () => {
-  return (dispatch) => {
-    store.removeItem('user');
-    store.removeItem('access_token');
-    dispatch(setToken(null));
-    dispatch(setUser(null));
-    dispatch(setAuthenticate(false));
-    dispatch(setSocketState('destroy'));
-  };
-};
-
 export const setHiddenList = (list) => {
   return {
     type: SET_HIDDEN_LIST,
@@ -94,43 +45,6 @@ export const addHiddenItem = (DirectMessageID) => {
     type: ADD_HIDDEN_ITEM,
     payload: DirectMessageID,
   };
-};
-
-export const setUser = (user) => {
-  store.setItem('user', JSON.stringify(user));
-  return {
-    type: SET_USER,
-    payload: user,
-  };
-};
-
-export const setToken = (token) => {
-  store.setItem('access_token', token);
-  return {
-    type: SET_TOKEN,
-    payload: token,
-  };
-};
-
-export const setAuthenticate = (bolean) => {
-  return {
-    type: SET_AUTHENTICATE,
-    payload: bolean,
-  };
-};
-
-export const setLoading = (boolean) => {
-  return {
-    type: SET_LOADING,
-    payload: boolean,
-  };
-};
-
-export const setIsError = (boolean) => {
-  return {
-    type: SET_IS_ERROR,
-    payload: boolean
-  }
 };
 
 export const callbackTest = (time) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import { useSelector } from 'react-redux';
@@ -19,6 +19,7 @@ import Call from './views/Call';
 //actions
 import { setOpenAlert } from './redux/actions';
 import './App.css';
+import { AuthContext } from './contexts/AuthContext';
 
 const isElectron = require('is-electron');
 
@@ -39,14 +40,14 @@ const App = () => {
   const classes = useStyles();
   const electron = isElectron();
 
-  const { isLoading } = useSelector((state) => state.auth);
+  const { isLoadingAuth } = useContext(AuthContext);
   const { messageAlert, openAlert } = useSelector((state) => state.ui);
 
-  if (isLoading) {
+  if (isLoadingAuth) {
     return (
-      <div className={classes.app}>
+      <div className={ classes.app }>
         <CssBaseline />
-        {electron && <WindowControls />}
+        { electron && <WindowControls /> }
         <Loading />
       </div>
     );

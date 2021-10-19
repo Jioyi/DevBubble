@@ -19,7 +19,8 @@ import Brightness1Icon from '@material-ui/icons/Brightness1';
 import { setInputSearchMessage } from './../../../redux/actions';
 import { getUserInfo } from './../../../redux/actions';
 //context
-import { SocketContext } from '../../../SocketContext';
+import { SocketContext } from '../../../contexts/SocketContext';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -170,7 +171,7 @@ const DirectMessageTopBar = () => {
   const dispatch = useDispatch();
   const [data, setData] = useState(null);
   const { directMessages } = useSelector((state) => state.message);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [input, setInput] = useState('');
 

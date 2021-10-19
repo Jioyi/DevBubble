@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useStyles } from '../index';
+import { useStyles } from '../style';
 import {
   Typography,
   Box,

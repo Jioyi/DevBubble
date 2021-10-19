@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 import { useDispatch } from 'react-redux';
-import { signIn } from 'renderer/redux/actions';
 
-import { useStyles } from '../index';
+import { useStyles } from '../style';
 import { makeStyles } from '@material-ui/styles';
 import {
   Typography,
@@ -26,6 +26,8 @@ function SignIn({ showRegister, showRecoveryPassword }) {
   };
   const dispatch = useDispatch();
 
+  const { signIn } = useContext(AuthContext);
+  
   const [inputSignIn, setInputSignIn] = useState({
     email: 'karlosagreda@hotmail.com',
     password: '123456',
@@ -40,7 +42,7 @@ function SignIn({ showRegister, showRecoveryPassword }) {
 
   const handleSignIn = (e) => {
     e.preventDefault();
-    dispatch(signIn(inputSignIn));
+    signIn(inputSignIn)
   };
 
   return (
@@ -81,9 +83,9 @@ function SignIn({ showRegister, showRecoveryPassword }) {
           InputProps={{
             className: classes.input,
           }}
-          InputLabelProps={{
-            className: classes.input,
-          }}
+          // InputLabelProps={{
+          //   className: classes.input,
+          // }}
           margin="dense"
           variant="outlined"
         />

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { signUp } from '../../../redux/actions/index';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { useStyles } from '../index';
+import { useStyles } from '../style';
 import {
   Typography,
   Button,

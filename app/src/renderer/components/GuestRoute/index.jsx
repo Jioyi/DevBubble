@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 
 const GuestRoute = ({ component: Component, ...restOfProps }) => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useContext(AuthContext);
+  
   return (
     <Route
       {...restOfProps}
       render={(props) =>
-        isAuthenticated ? (
-          <Redirect to="/home" />
-        ) : (
-          <Component {...restOfProps} {...props} />
-        )
+        isAuthenticated && user ? 
+          (<Redirect to="/home" />)
+        : 
+          (<Component {...restOfProps} {...props} />)
       }
     />
   );

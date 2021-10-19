@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -27,6 +27,7 @@ import Loading from 'renderer/components/Loading';
 //hooks
 import useFetch from '../../components/hooks/useFetch';
 import useValue from './../../components/hooks/useValue';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 
 const isElectron = require('is-electron');
 const electron = isElectron();
@@ -136,7 +137,7 @@ const DirectMessage = () => {
   const dispatch = useDispatch();
 
   const { messages, inputSearch } = useSelector((state) => state.message);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useContext(AuthContext);
 
   const { loading, error, firstElementRef } = useFetch({
     limit: 20,

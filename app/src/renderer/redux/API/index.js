@@ -9,11 +9,13 @@ const API = axios.create({
   headers: {
     'Content-type': 'application/json',
   },
+  withCredentials: true,
 });
 
 API.interceptors.request.use((req) => {
   if (store.getItem('access_token')) {
     const token = store.getItem('access_token');
+    
     req.headers.Authorization = `${token}`;
   }
   return req;
@@ -23,6 +25,7 @@ API.interceptors.request.use((req) => {
 export const signUp = (body) => API.post('/auth/signup', body);
 export const signIn = (body) => API.post(`/auth/signin`, body);
 export const refreshToken = () => API.get(`/auth/refresh_token`);
+export const checkToken = () => API.get('/auth/check_token');
 
 /********** USER ROUTES **************/
 //user route

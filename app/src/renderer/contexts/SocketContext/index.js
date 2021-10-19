@@ -16,7 +16,7 @@ import {
   updateMessageInStore,
   setMessageAlert,
   setOpenAlert,
-} from '../redux/actions';
+} from '../../redux/actions';
 
 import ClientSocketIO from 'socket.io-client';
 const SocketContext = createContext();
@@ -233,14 +233,6 @@ const SocketContextProvider = ({ children, history }) => {
       render();
     }
   };
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(refreshToken());
-    } else {
-      dispatch(setLoading(false));
-    }
-  }, [isAuthenticated]);
 
   useEffect(() => {
     if (socketState === 'connecting') {

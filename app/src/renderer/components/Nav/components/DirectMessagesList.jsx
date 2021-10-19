@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ import {
   getDirectMessages,
   setHiddenDirectMessage,
 } from '../../../redux/actions';
+import { AuthContext } from 'renderer/contexts/AuthContext';
 
 const { SERVER_API_URL } = process.env;
 const useStyles = makeStyles((theme) => ({
@@ -132,7 +133,8 @@ const DirectMessagesList = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [open, setOpen] = useState(true);
-  const { hidden_list, user } = useSelector((state) => state.auth);
+  const { hidden_list } = useSelector((state) => state.auth);
+  const { user } = useContext(AuthContext)
   const { directMessages } = useSelector((state) => state.message);
 
   const handleOpen = () => {

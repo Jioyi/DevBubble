@@ -10,12 +10,13 @@ const passport = require('passport');
 const { validateToken } = require('./utils/passwordUtils');
 
 /*********************   SOCKET CONFIG      ************************/
-
-//  ****  ***   ***  *  *   *** *****
-//  *    *   * *     * *   *      *
-//   **  *   * *     **    * **   *
-//     * *   * *     * *   *      *
-//  ****  ***   ***  *  *   ***   *
+//   ______             _                 
+//  / _____)           | |            _   
+// ( (____   ___   ____| |  _ _____ _| |_ 
+//  \____ \ / _ \ / ___) |_/ ) ___ (_   _)
+//  _____) ) |_| ( (___|  _ (| ____| | |_ 
+// (______/ \___/ \____)_| \_)_____)  \__)
+//
 
 const socket = require('socket.io')(http, {
 	cors: {
@@ -90,6 +91,12 @@ server.use(bodyParser.json({ limit: '50mb' }));
 server.use(morgan('dev'));
 server.use(express.json());
 server.use(express.static(__dirname + '/public'));
+server.use(cookieParser())
+
+server.use((req,res,next)=>{
+	console.log(req.cookies);
+	next();
+})
 
 server.use(
 	cors({
@@ -110,6 +117,10 @@ server.use((req, res, next) => {
 	next();
 });
 //////////////// ENDS CORS CONFIG ///////////////////////
+
+/*************** LOG REQUEST **********************/
+/////////////////////////////////////////////////////
+
 
 /**************** PASSPORT JWT CONFIG ********************/
 require('./passport')(passport);

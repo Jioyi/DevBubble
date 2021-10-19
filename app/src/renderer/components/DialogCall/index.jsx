@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import DialogNewCall from './states/DialogNewCall';
 import DialogIncomingCall from './states/DialogIncomingCall';
-import { SocketContext } from '../../SocketContext';
+import { SocketContext } from '../../contexts/SocketContext';
 
 const DialogCall = () => {
   const {
